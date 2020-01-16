@@ -8,12 +8,12 @@ from serial_asyncio import create_serial_connection
 from threading import RLock
 
 _LOGGER = logging.getLogger(__name__)
+
 ZONE_PATTERN = re.compile('#>(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)')
 
 EOL = b'\r\n#'
 LEN_EOL = len(EOL)
 TIMEOUT = 2  # Number of seconds before serial operation timeout
-
 
 class ZoneStatus(object):
     def __init__(self,
@@ -50,9 +50,9 @@ class ZoneStatus(object):
         return ZoneStatus(*[int(m) for m in match.groups()])
 
 
-class Monoprice(object):
+class Xantech(object):
     """
-    Monoprice amplifier interface
+    Xantech amplifier interface
     """
 
     def zone_status(self, zone: int):
@@ -168,9 +168,9 @@ def _format_set_source(zone: int, source: int) -> bytes:
 
 def get_xantech(port_url):
     """
-    Return synchronous version of Monoprice interface
+    Return synchronous version of Xantech interface
     :param port_url: serial port, i.e. '/dev/ttyUSB0'
-    :return: synchronous implementation of Monoprice interface
+    :return: synchronous implementation of Xantech interface
     """
 
     lock = RLock()
@@ -182,7 +182,7 @@ def get_xantech(port_url):
                 return func(*args, **kwargs)
         return wrapper
 
-    class MonopriceSync(Monoprice):
+    class XantechSync(Xantech):
         def __init__(self, port_url):
             self._port = serial.serial_for_url(port_url, do_not_open=True)
             self._port.baudrate = 9600
@@ -263,15 +263,15 @@ def get_xantech(port_url):
             self.set_balance(status.zone, status.balance)
             self.set_source(status.zone, status.source)
 
-    return MonopriceSync(port_url)
+    return XantechSync(port_url)
 
 
 @asyncio.coroutine
 def get_async_xantech(port_url, loop):
     """
-    Return asynchronous version of Monoprice interface
+    Return asynchronous version of Xantech interface
     :param port_url: serial port, i.e. '/dev/ttyUSB0'
-    :return: asynchronous implementation of Monoprice interface
+    :return: asynchronous implementation of Xantech interface
     """
 
     lock = asyncio.Lock()
@@ -284,7 +284,7 @@ def get_async_xantech(port_url, loop):
                 return (yield from coro(*args, **kwargs))
         return wrapper
 
-    class MonopriceAsync(Monoprice):
+    class XantechAsync(Xantech):
         def __init__(self, xantech_protocol):
             self._protocol = xantech_protocol
 
@@ -341,7 +341,7 @@ def get_async_xantech(port_url, loop):
             yield from self._protocol.send(_format_set_balance(status.zone, status.balance))
             yield from self._protocol.send(_format_set_source(status.zone, status.source))
 
-    class MonopriceProtocol(asyncio.Protocol):
+    class XantechProtocol(asyncio.Protocol):
         def __init__(self, loop):
             super().__init__()
             self._loop = loop
@@ -380,6 +380,6 @@ def get_async_xantech(port_url, loop):
                     _LOGGER.error("Timeout during receiving response for command '%s', received='%s'", request, result)
                     raise
 
-    _, protocol = yield from create_serial_connection(loop, functools.partial(MonopriceProtocol, loop),
+    _, protocol = yield from create_serial_connection(loop, functools.partial(XantechProtocol, loop),
                                                       port_url, baudrate=9600)
-    return MonopriceAsync(protocol)
+    return XantechAsync(protocol)

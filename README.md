@@ -4,7 +4,7 @@
 [![Build Status](https://travis-ci.org/etsinko/pyxantech.svg?branch=master)](https://travis-ci.org/etsinko/pyxantech)[![Coverage Status](https://coveralls.io/repos/github/etsinko/pyxantech/badge.svg)](https://coveralls.io/github/etsinko/pyxantech)
 
 # pyxantech
-Python3 interface implementation for Monoprice 6 zone amplifier
+Python3 interface implementation for Xantech 6 zone amplifier
 
 ## Notes
 This is for use with [Home-Assistant](http://home-assistant.io)
@@ -57,7 +57,7 @@ xantech.restore_zone(zone_status)
 
 ## Usage with asyncio
 
-With `asyncio` flavor all methods of Monoprice object are coroutines.
+With `asyncio` flavor all methods of Xantech object are coroutines.
 
 ```python
 import asyncio

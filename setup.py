@@ -36,7 +36,7 @@ SOFTWARE.
 
 setup(name='pyxantech',
       version=VERSION,
-      description='Python API for talking to Monoprice 6-zone amplifier',
+      description='Python API for talking to Xantech multi-zone amplifier',
       url='https://github.com/etsinko/pyxantech',
       download_url='https://github.com/etsinko/pyxantech/archive/{}.tar.gz'.format(VERSION),
       author='Egor Tsinko',
