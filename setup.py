@@ -45,6 +45,5 @@ setup(name='pyxantech',
       install_requires=['pyserial>=3.4','pyserial-asyncio>=0.4'],
       packages=['pyxantech'],
       classifiers=['Development Status :: 4 - Beta',
-                   'Programming Language :: Python :: 3.4',
-                   'Programming Language :: Python :: 3.5'],
+                   'Programming Language :: Python :: 3.7'],
       zip_safe=True)
