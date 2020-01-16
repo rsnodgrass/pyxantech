@@ -16,6 +16,7 @@ if sys.argv[-1] == 'publish':
 
 license = """
 MIT License
+Copyright (c) 2020 Ryan Snodgrass
 Copyright (c) 2017 Egor Tsinko
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -36,11 +37,11 @@ SOFTWARE.
 
 setup(name='pyxantech',
       version=VERSION,
-      description='Python API for talking to Xantech multi-zone amplifier',
-      url='https://github.com/etsinko/pyxantech',
-      download_url='https://github.com/etsinko/pyxantech/archive/{}.tar.gz'.format(VERSION),
-      author='Egor Tsinko',
-      author_email='etsinko@gmail.com',
+      description='Python API for RS232 communication to Xantech multi-zone amplifiers',
+      url='https://github.com/rsnodgrass/pyxantech',
+      download_url='https://github.com/rsndograss/pyxantech/archive/{}.tar.gz'.format(VERSION),
+      author='Ryan Snodgrass',
+      author_email='rsnodgrass@gmail.com',
       license='MIT',
       install_requires=['pyserial>=3.4','pyserial-asyncio>=0.4'],
       packages=['pyxantech'],

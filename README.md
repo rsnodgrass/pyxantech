@@ -1,4 +1,4 @@
-# Python3 interface for Xantech amplifiers
+# Python interface for Xantech amplifiers
 
 ## Status
 [![Build Status](https://travis-ci.org/etsinko/pyxantech.svg?branch=master)](https://travis-ci.org/etsinko/pyxantech)[![Coverage Status](https://coveralls.io/repos/github/etsinko/pyxantech/badge.svg)](https://coveralls.io/github/etsinko/pyxantech)
@@ -14,6 +14,7 @@ This is for use with [Home-Assistant](http://home-assistant.io)
 from pyxantech import get_xantech
 
 xantech = get_xantech('/dev/ttyUSB0')
+
 # Valid zones are 11-16 for main xantech amplifier
 zone_status = xantech.zone_status(11)
 
