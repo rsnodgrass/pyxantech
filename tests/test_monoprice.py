@@ -2,7 +2,7 @@ import unittest
 
 import serial
 
-from pymonoprice import (get_monoprice, get_async_monoprice, ZoneStatus)
+from pyxantech import (get_xantech, get_async_xantech, ZoneStatus)
 from tests import create_dummy_port
 import asyncio
 
@@ -20,11 +20,11 @@ class TestZoneStatus(unittest.TestCase):
 class TestMonoprice(unittest.TestCase):
     def setUp(self):
         self.responses = {}
-        self.monoprice = get_monoprice(create_dummy_port(self.responses))
+        self.xantech = get_xantech(create_dummy_port(self.responses))
 
     def test_zone_status(self):
         self.responses[b'?1\r'] = b'\r\n#>1100010000131112100401\r\n#'
-        status = self.monoprice.zone_status(1)
+        status = self.xantech.zone_status(1)
         self.assertEqual(11, status.zone)
         self.assertFalse(status.pa)
         self.assertTrue(status.power)
@@ -40,91 +40,91 @@ class TestMonoprice(unittest.TestCase):
 
     def test_set_power(self):
         self.responses[b'<13PR01\r'] = b'\r\n#'
-        self.monoprice.set_power(13, True)
+        self.xantech.set_power(13, True)
         self.responses[b'<13PR01\r'] = b'\r\n#'
-        self.monoprice.set_power(13, 'True')
+        self.xantech.set_power(13, 'True')
         self.responses[b'<13PR01\r'] = b'\r\n#'
-        self.monoprice.set_power(13, 1)
+        self.xantech.set_power(13, 1)
         self.responses[b'<13PR00\r'] = b'\r\n#'
-        self.monoprice.set_power(13, False)
+        self.xantech.set_power(13, False)
         self.responses[b'<13PR00\r'] = b'\r\n#'
-        self.monoprice.set_power(13, None)
+        self.xantech.set_power(13, None)
         self.responses[b'<13PR00\r'] = b'\r\n#'
-        self.monoprice.set_power(13, 0)
+        self.xantech.set_power(13, 0)
         self.responses[b'<13PR00\r'] = b'\r\n#'
-        self.monoprice.set_power(13, '')
+        self.xantech.set_power(13, '')
         self.assertEqual(0, len(self.responses))
         
     def test_set_mute(self):
         self.responses[b'<13MU01\r'] = b'\r\n#'
-        self.monoprice.set_mute(13, True)
+        self.xantech.set_mute(13, True)
         self.responses[b'<13MU01\r'] = b'\r\n#'
-        self.monoprice.set_mute(13, 'True')
+        self.xantech.set_mute(13, 'True')
         self.responses[b'<13MU01\r'] = b'\r\n#'
-        self.monoprice.set_mute(13, 1)
+        self.xantech.set_mute(13, 1)
         self.responses[b'<13MU00\r'] = b'\r\n#'
-        self.monoprice.set_mute(13, False)
+        self.xantech.set_mute(13, False)
         self.responses[b'<13MU00\r'] = b'\r\n#'
-        self.monoprice.set_mute(13, None)
+        self.xantech.set_mute(13, None)
         self.responses[b'<13MU00\r'] = b'\r\n#'
-        self.monoprice.set_mute(13, 0)
+        self.xantech.set_mute(13, 0)
         self.responses[b'<13MU00\r'] = b'\r\n#'
-        self.monoprice.set_mute(13, '')
+        self.xantech.set_mute(13, '')
         self.assertEqual(0, len(self.responses))
 
     def test_set_volume(self):
         self.responses[b'<13VO01\r'] = b'\r\n#'
-        self.monoprice.set_volume(13, 1)
+        self.xantech.set_volume(13, 1)
         self.responses[b'<13VO38\r'] = b'\r\n#'
-        self.monoprice.set_volume(13, 100)
+        self.xantech.set_volume(13, 100)
         self.responses[b'<13VO00\r'] = b'\r\n#'
-        self.monoprice.set_volume(13, -100)
+        self.xantech.set_volume(13, -100)
         self.responses[b'<13VO20\r'] = b'\r\n#'
-        self.monoprice.set_volume(13, 20)
+        self.xantech.set_volume(13, 20)
         self.assertEqual(0, len(self.responses))
 
     def test_set_treble(self):
         self.responses[b'<13TR01\r'] = b'\r\n#'
-        self.monoprice.set_treble(13, 1)
+        self.xantech.set_treble(13, 1)
         self.responses[b'<13TR14\r'] = b'\r\n#'
-        self.monoprice.set_treble(13, 100)
+        self.xantech.set_treble(13, 100)
         self.responses[b'<13TR00\r'] = b'\r\n#'
-        self.monoprice.set_treble(13, -100)
+        self.xantech.set_treble(13, -100)
         self.responses[b'<13TR13\r'] = b'\r\n#'
-        self.monoprice.set_treble(13, 13)
+        self.xantech.set_treble(13, 13)
         self.assertEqual(0, len(self.responses))
 
     def test_set_bass(self):
         self.responses[b'<13BS01\r'] = b'\r\n#'
-        self.monoprice.set_bass(13, 1)
+        self.xantech.set_bass(13, 1)
         self.responses[b'<13BS14\r'] = b'\r\n#'
-        self.monoprice.set_bass(13, 100)
+        self.xantech.set_bass(13, 100)
         self.responses[b'<13BS00\r'] = b'\r\n#'
-        self.monoprice.set_bass(13, -100)
+        self.xantech.set_bass(13, -100)
         self.responses[b'<13BS13\r'] = b'\r\n#'
-        self.monoprice.set_bass(13, 13)
+        self.xantech.set_bass(13, 13)
         self.assertEqual(0, len(self.responses))
 
     def test_set_balance(self):
         self.responses[b'<13BL01\r'] = b'\r\n#'
-        self.monoprice.set_balance(13, 1)
+        self.xantech.set_balance(13, 1)
         self.responses[b'<13BL20\r'] = b'\r\n#'
-        self.monoprice.set_balance(13, 100)
+        self.xantech.set_balance(13, 100)
         self.responses[b'<13BL00\r'] = b'\r\n#'
-        self.monoprice.set_balance(13, -100)
+        self.xantech.set_balance(13, -100)
         self.responses[b'<13BL13\r'] = b'\r\n#'
-        self.monoprice.set_balance(13, 13)
+        self.xantech.set_balance(13, 13)
         self.assertEqual(0, len(self.responses))
 
     def test_set_source(self):
         self.responses[b'<13CH01\r'] = b'\r\n#'
-        self.monoprice.set_source(13, 1)
+        self.xantech.set_source(13, 1)
         self.responses[b'<13CH06\r'] = b'\r\n#'
-        self.monoprice.set_source(13, 100)
+        self.xantech.set_source(13, 100)
         self.responses[b'<13CH01\r'] = b'\r\n#'
-        self.monoprice.set_source(13, -100)
+        self.xantech.set_source(13, -100)
         self.responses[b'<13CH03\r'] = b'\r\n#'
-        self.monoprice.set_source(13, 3)
+        self.xantech.set_source(13, 3)
         self.assertEqual(0, len(self.responses))
 
     def test_restore_zone(self):
@@ -136,12 +136,12 @@ class TestMonoprice(unittest.TestCase):
         self.responses[b'<11BS12\r'] = b'\r\n#'
         self.responses[b'<11BL10\r'] = b'\r\n#'
         self.responses[b'<11CH04\r'] = b'\r\n#'
-        self.monoprice.restore_zone(zone)
+        self.xantech.restore_zone(zone)
         self.assertEqual(0, len(self.responses))
 
     def test_timeout(self):
         with self.assertRaises(serial.SerialTimeoutException):
-            self.monoprice.set_source(3, 3)
+            self.xantech.set_source(3, 3)
 
 
 class TestAsyncMonoprice(TestMonoprice):
@@ -149,19 +149,19 @@ class TestAsyncMonoprice(TestMonoprice):
     def setUp(self):
         self.responses = {}
         loop = asyncio.get_event_loop()
-        monoprice = loop.run_until_complete(get_async_monoprice(create_dummy_port(self.responses), loop))
+        xantech = loop.run_until_complete(get_async_xantech(create_dummy_port(self.responses), loop))
 
-        # Dummy monoprice that converts async to sync
+        # Dummy xantech that converts async to sync
         class DummyMonoprice():
             def __getattribute__(self, item):
                 def f(*args, **kwargs):
-                    return loop.run_until_complete(monoprice.__getattribute__(item)(*args, **kwargs))
+                    return loop.run_until_complete(xantech.__getattribute__(item)(*args, **kwargs))
                 return f
-        self.monoprice = DummyMonoprice()
+        self.xantech = DummyMonoprice()
 
     def test_timeout(self):
         with self.assertRaises(asyncio.TimeoutError):
-            self.monoprice.set_source(3, 3)
+            self.xantech.set_source(3, 3)
 
 if __name__ == '__main__':
     unittest.main()

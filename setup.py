@@ -34,16 +34,16 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-setup(name='pymonoprice',
+setup(name='pyxantech',
       version=VERSION,
       description='Python API for talking to Monoprice 6-zone amplifier',
-      url='https://github.com/etsinko/pymonoprice',
-      download_url='https://github.com/etsinko/pymonoprice/archive/{}.tar.gz'.format(VERSION),
+      url='https://github.com/etsinko/pyxantech',
+      download_url='https://github.com/etsinko/pyxantech/archive/{}.tar.gz'.format(VERSION),
       author='Egor Tsinko',
       author_email='etsinko@gmail.com',
       license='MIT',
       install_requires=['pyserial>=3.4','pyserial-asyncio>=0.4'],
-      packages=['pymonoprice'],
+      packages=['pyxantech'],
       classifiers=['Development Status :: 4 - Beta',
                    'Programming Language :: Python :: 3.4',
                    'Programming Language :: Python :: 3.5'],

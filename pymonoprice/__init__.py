@@ -166,7 +166,7 @@ def _format_set_source(zone: int, source: int) -> bytes:
     return '<{}CH{:02}\r'.format(zone, source).encode()
 
 
-def get_monoprice(port_url):
+def get_xantech(port_url):
     """
     Return synchronous version of Monoprice interface
     :param port_url: serial port, i.e. '/dev/ttyUSB0'
@@ -195,9 +195,9 @@ def get_monoprice(port_url):
 
         def _process_request(self, request: bytes, skip=0):
             """
-            :param request: request that is sent to the monoprice
+            :param request: request that is sent to the xantech
             :param skip: number of bytes to skip for end of transmission decoding
-            :return: ascii string returned by monoprice
+            :return: ascii string returned by xantech
             """
             _LOGGER.debug('Sending "%s"', request)
             # clear
@@ -267,7 +267,7 @@ def get_monoprice(port_url):
 
 
 @asyncio.coroutine
-def get_async_monoprice(port_url, loop):
+def get_async_xantech(port_url, loop):
     """
     Return asynchronous version of Monoprice interface
     :param port_url: serial port, i.e. '/dev/ttyUSB0'
@@ -285,8 +285,8 @@ def get_async_monoprice(port_url, loop):
         return wrapper
 
     class MonopriceAsync(Monoprice):
-        def __init__(self, monoprice_protocol):
-            self._protocol = monoprice_protocol
+        def __init__(self, xantech_protocol):
+            self._protocol = xantech_protocol
 
         @locked_coro
         @asyncio.coroutine
