@@ -10,7 +10,7 @@ as well as Daytona Audio DAX66 amplifiers.
 
 ## Usage
 
-For Monoprice 6-zone amplifier:
+For Monoprice and Dayton Audio 6-zone amplifiers:
 
 ```python
 from pyxantech import get_amp_controller, get_monoprice
@@ -31,7 +31,7 @@ amp.set_volume(13, 15)
 amp.set_source(14, 1)
 ```
 
-For Xantech 8-zone amplifier:
+For Xantech 8-zone amplifiers:
 
 ```python
 from pyxantech import get_amp_controller
