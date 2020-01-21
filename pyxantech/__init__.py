@@ -194,14 +194,20 @@ CONFIG ={
         'command_eol':     b'\r',
         'zone_pattern':    re.compile('#>(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)'),
         'max_zones':       6,
-        'max_linked_amps': 3
+        'max_linked_amps': 3,
+        'zones':           [ 11, 12, 13, 14, 15, 16,   # main amp
+                             21, 22, 23, 24, 25, 26,   # linked amp 2
+                             31, 32, 33, 34, 35, 36 ]  # linked amp 3
     },
     XANTECH8: {
         'protocol_eol':    b'\r\n#',
         'command_eol':     b'\r',
         'zone_pattern':    re.compile('#>(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)'),
         'max_zones':       8,
-        'max_linked_amps': 3
+        'max_linked_amps': 3,
+        'zones':           [ 11, 12, 13, 14, 15, 16, 17, 18,   # main amp
+                             21, 22, 23, 24, 25, 26, 27, 28,   # linked amp 2
+                             31, 32, 33, 34, 35, 36, 37, 38 ]  # linked amp 3
     }
 }
 
