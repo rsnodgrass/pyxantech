@@ -9,11 +9,26 @@ from threading import RLock
 
 _LOGGER = logging.getLogger(__name__)
 
+TIMEOUT = 2  # Number of seconds before serial operation timeout
+
+# Xantech
+EOL = b'\r\n#'
+MAX_SOURCE = 8 # Monoprice is 6
 ZONE_PATTERN = re.compile('#>(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)')
 
-EOL = b'\r\n#'
+# Monoprice
+# EOL = b'\r\n#'
+# MAX_SOURCE = 6
+# ZONE_PATTERN = re.compile('#>(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)')
+
 LEN_EOL = len(EOL)
-TIMEOUT = 2  # Number of seconds before serial operation timeout
+
+MAX_BALANCE = 20
+MAX_BASS = 14
+MAX_TREBLE = 14
+MAX_VOLUME = 38
+
+BAUD_RATE = 9600
 
 class ZoneStatus(object):
     def __init__(self,
@@ -50,9 +65,9 @@ class ZoneStatus(object):
         return ZoneStatus(*[int(m) for m in match.groups()])
 
 
-class Xantech(object):
+class AmplifierControlBase(object):
     """
-    Xantech amplifier interface
+    AmpliferControlBase amplifier interface
     """
 
     def zone_status(self, zone: int):
@@ -129,42 +144,113 @@ class Xantech(object):
 
 # Helpers
 
-def _format_zone_status_request(zone: int) -> bytes:
-    return '?{}\r'.format(zone).encode()
+FORMATS = {
+    'monoprice6': {
+        'zone_status': '?{zone}',
+        'power_on':    '<{zone}PR01',
+        'power_off':   '<{zone}PR00',
+        'mute_on':     '<{zone}MU01',
+        'mute_off':    '<{zone}MU00',
+        'set_volume':  '<{zone}VO{:02}',     # zone / 0-38
+        'set_treble':  '<{zone}TR{:02}',     # zone / 0-14
+        'set_bass':    '<{zone}BS{:02}',     # zone / 0-14
+        'set_balance': '<{zone}BL{:02}',     # zone / 0-20
+        'set_source':  '<{zone}CH{:02}'      # zone / 0-6
+    },
 
+    'xantech8': {
+        'zone_details':  '?{zone}ZD+',       # zone details
+        'power_on':      '!{zone}PR1+',
+        'power_off':     '!{zone}PR0+',
+        'all_zones_off': '!A0+',
+        'mute_on':       '!{zone}MU1+',
+        'mute_off':      '!{zone}MU0+',
+        'volume_up':     '!{zone}VI+',
+        'volume_down':   '!{zone}VD+',
+        'set_volume':    '!{zone}VO{:02}+',  # zone / level 0-38
+        'source_select': '!{zone}SS{source}+',
+        'balance_left':  '!{zone}BL+',
+        'balance_right': '!{zone}BR+',
+        'bass_up':       '!{zone}BI+',
+        'bass_down':     '!{zone}BD+',
+        'balance_left':  '!{zone}BL+',
+        'balance_right': '!{zone}BR+',
+        'treble_up':     '!{zone}TI+',
+        'treble_down':   '!{zone}TD+',
+        'disable_activity_updates': '!ZA0+',
+        'disable_status_updates':   '!ZP0+',
+
+        # FIXME: these aren't documented, do they work?
+        'set_treble':  '!{zone}TR{:02}',     # zone / 0-14
+        'set_bass':    '!{zone}BS{:02}',     # zone / 0-14
+        'set_balance': '!{zone}BL{:02}',     # zone / 0-20
+    }
+}
+
+CONFIG ={
+    'monoproce6': {
+        'protocol_eol': b'\r\n#',
+        'command_eol':  b'\r',
+        'zone_pattern': re.compile('#>(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)')
+    },
+    'xantech8': {
+        'protocol_eol': b'\r\n#',
+        'command_eol':  b'\r',
+        'zone_pattern': re.compile('#>(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)')
+    }
+}
+
+XANTECH8 = 'xantech8'
+MONOPRICE6 = 'monoprice6'
+
+def _format(amp_type: string, format_code: string):
+    return FORMATS[amp_type].get(format_code) + CONFIG[amp_type].get('command_eol')
+
+def _format_zone_status_request(zone: int) -> bytes:
+    return _format(XANTECH8, 'zone_status').format(zone).encode()
+#    return '?{}\r'.format(zone).encode() # Monoprice
 
 def _format_set_power(zone: int, power: bool) -> bytes:
-    return '<{}PR{}\r'.format(zone, '01' if power else '00').encode()
-
+    if power:
+        return _format(XANTECH8, 'power_on').encode()
+    else:
+        return _format(XANTECH8, 'power_off').encode()
+#    return '<{}PR{}\r'.format(zone, '01' if power else '00').encode() # Monoprice
 
 def _format_set_mute(zone: int, mute: bool) -> bytes:
-    return '<{}MU{}\r'.format(zone, '01' if mute else '00').encode()
-
+    if mute:
+        return _format(XANTECH8, 'mute_on').encode()
+    else:
+        return _format(XANTECH8, 'mute_off').encode()
+#    return '<{}MU{}\r'.format(zone, '01' if mute else '00').encode() # Monoprice
 
 def _format_set_volume(zone: int, volume: int) -> bytes:
-    volume = int(max(0, min(volume, 38)))
-    return '<{}VO{:02}\r'.format(zone, volume).encode()
+    volume = int(max(0, min(volume, MAX_VOLUME)))
+    return _format(XANTECH8, 'set_volume').format(zone, volume).encode()
+ #   return '<{}VO{:02}\r'.format(zone, volume).encode() # Monoprice
 
-
+# FIXME
 def _format_set_treble(zone: int, treble: int) -> bytes:
-    treble = int(max(0, min(treble, 14)))
-    return '<{}TR{:02}\r'.format(zone, treble).encode()
+    treble = int(max(0, min(treble, MAX_TREBLE)))
+    return _format(XANTECH8, 'set_treble').format(zone, treble).encode()
+#    return '<{}TR{:02}\r'.format(zone, treble).encode() # Monoprice
 
-
+# FIXME
 def _format_set_bass(zone: int, bass: int) -> bytes:
-    bass = int(max(0, min(bass, 14)))
-    return '<{}BS{:02}\r'.format(zone, bass).encode()
+    bass = int(max(0, min(bass, MAX_BASS)))
+    return _format(XANTECH8, 'set_bass').format(zone, bass).encode()
+#    return '<{}BS{:02}\r'.format(zone, bass).encode() # Monoprice
 
-
+# FIXME
 def _format_set_balance(zone: int, balance: int) -> bytes:
-    balance = max(0, min(balance, 20))
-    return '<{}BL{:02}\r'.format(zone, balance).encode()
-
+    balance = max(0, min(balance, MAX_BALANCE))
+    return _format(XANTECH8, 'set_balance').format(zone, balance).encode()
+#    return '<{}BL{:02}\r'.format(zone, balance).encode() # Monoprice
 
 def _format_set_source(zone: int, source: int) -> bytes:
-    source = int(max(1, min(source, 6)))
-    return '<{}CH{:02}\r'.format(zone, source).encode()
-
+    source = int(max(1, min(source, MAX_SOURCE)))
+    return _format(XANTECH8, 'set_source').format(zone, source).encode()
+#    return '<{}CH{:02}\r'.format(zone, source).encode() # Monoprice
 
 def get_xantech(port_url):
     """
@@ -182,10 +268,10 @@ def get_xantech(port_url):
                 return func(*args, **kwargs)
         return wrapper
 
-    class XantechSync(Xantech):
+    class XantechSync(AmplifierControlBase):
         def __init__(self, port_url):
             self._port = serial.serial_for_url(port_url, do_not_open=True)
-            self._port.baudrate = 9600
+            self._port.baudrate = BAUD_RATE
             self._port.stopbits = serial.STOPBITS_ONE
             self._port.bytesize = serial.EIGHTBITS
             self._port.parity = serial.PARITY_NONE
@@ -381,5 +467,5 @@ def get_async_xantech(port_url, loop):
                     raise
 
     _, protocol = yield from create_serial_connection(loop, functools.partial(XantechProtocol, loop),
-                                                      port_url, baudrate=9600)
+                                                      port_url, baudrate=BAUD_RATE)
     return XantechAsync(protocol)
