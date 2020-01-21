@@ -14,6 +14,18 @@ This is for use with [Home-Assistant](http://home-assistant.io)
 from pyxantech import get_amp_controller
 
 amp = get_amp_controller('xantech', '/dev/ttyUSB0')
+
+# Turn off zone #11
+amp.set_power(11, False)
+
+# Mute zone #12
+amp.set_mute(12, True)
+
+# Set volume for zone #13
+amp.set_volume(13, 15)
+
+# Set source 1 for zone #14 
+amp.set_source(14, 1)
 ```
 
 See also [example.py](example.py) for a more complete example.

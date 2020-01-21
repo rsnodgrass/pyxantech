@@ -11,13 +11,13 @@ _LOGGER = logging.getLogger(__name__)
 
 TIMEOUT = 2  # Number of seconds before serial operation timeout
 
-# Xantech
+# Xantech 8-zone amplifier
 XANTECH8 = 'xantech8'
 EOL = b'\r\n#'
 MAX_SOURCE = 8 # Monoprice is 6
 ZONE_PATTERN = re.compile('#>(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)')
 
-# Monoprice
+# Monoprice 6-zone amplifier
 MONOPRICE6 = 'monoprice6'
 # EOL = b'\r\n#'
 # MAX_SOURCE = 6
