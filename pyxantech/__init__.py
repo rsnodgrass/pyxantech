@@ -67,6 +67,8 @@ class ZoneStatus(object):
         return ZoneStatus(*[int(m) for m in match.groups()])
 
 
+# FIXME: for Xantech the zones can be 11..18, 21..28, 31..38; perhaps split this as;
+#   zone_status(self, zone: int, amp_num: int = 1)  with default amp_num
 class AmpControlBase(object):
     """
     AmpliferControlBase amplifier interface
@@ -188,14 +190,18 @@ FORMATS = {
 
 CONFIG ={
     MONOPRICE6: {
-        'protocol_eol': b'\r\n#',
-        'command_eol':  b'\r',
-        'zone_pattern': re.compile('#>(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)')
+        'protocol_eol':    b'\r\n#',
+        'command_eol':     b'\r',
+        'zone_pattern':    re.compile('#>(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)'),
+        'max_zones':       6,
+        'max_linked_amps': 3
     },
     XANTECH8: {
-        'protocol_eol': b'\r\n#',
-        'command_eol':  b'\r',
-        'zone_pattern': re.compile('#>(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)')
+        'protocol_eol':    b'\r\n#',
+        'command_eol':     b'\r',
+        'zone_pattern':    re.compile('#>(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)'),
+        'max_zones':       8,
+        'max_linked_amps': 3
     }
 }
 
