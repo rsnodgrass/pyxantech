@@ -1,6 +1,6 @@
 from pyxantech import get_amp_controller
 
-amp = get_amp_controller('xantech', '/dev/ttyUSB0')
+amp = get_amp_controller('xantech8', '/dev/ttyUSB0')
 
 # Valid zones are 11-16 for main xantech amplifier
 zone_status = xantech.zone_status(11)

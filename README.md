@@ -13,7 +13,7 @@ This is for use with [Home-Assistant](http://home-assistant.io)
 ```python
 from pyxantech import get_amp_controller
 
-amp = get_amp_controller('xantech', '/dev/ttyUSB0')
+amp = get_amp_controller('xantech8', '/dev/ttyUSB0')
 
 # Turn off zone #11
 amp.set_power(11, False)
@@ -39,7 +39,7 @@ import asyncio
 from pyxantech import get_async_xantech
 
 async def main(loop):
-    xantech = await get_async_xantech('/dev/ttyUSB0', loop)
+    xantech = await get_async_amp_controller('monoprice', '/dev/ttyUSB0', loop)
     zone_status = await xantech.zone_status(11)
     if zone_status.power:
         await xantech.set_power(zone_status.zone, False)
