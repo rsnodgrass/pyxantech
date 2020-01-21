@@ -11,6 +11,7 @@ _LOGGER = logging.getLogger(__name__)
 
 TIMEOUT = 2  # Number of seconds before serial operation timeout
 
+
 # Monoprice 6-zone amplifier
 MONOPRICE6 = 'monoprice6'
 MONOPRICE_ZONES = [ 11, 12, 13, 14, 15, 16,   # main amp
@@ -32,7 +33,75 @@ MAX_BASS = 14
 MAX_TREBLE = 14
 MAX_VOLUME = 38
 
-BAUD_RATE = 9600
+SUPPORTED_AMP_TYPES = [ MONOPRICE6, XANTECH8 ]
+
+AMP_TYPE_FORMATS = {
+    MONOPRICE6: {
+        'zone_status':   '?{}',
+        'power_on':      '<{}PR01',
+        'power_off':     '<{}PR00',
+        'mute_on':       '<{}MU01',
+        'mute_off':      '<{}MU00',
+        'set_volume':    '<{}VO{:02}',     # zone / 0-38
+        'set_treble':    '<{}TR{:02}',     # zone / 0-14
+        'set_bass':      '<{}BS{:02}',     # zone / 0-14
+        'set_balance':   '<{}BL{:02}',     # zone / 0-20
+        'set_source':    '<{}CH{:02}'      # zone / 0-6
+    },
+
+    XANTECH8: {
+        'zone_status':   '?{}ZD+',
+        'zone_details':  '?{}ZD+',         # zone details
+        'power_on':      '!{}PR1+',
+        'power_off':     '!{}PR0+',
+        'all_zones_off': '!A0+',
+        'mute_on':       '!{}MU1+',
+        'mute_off':      '!{}MU0+',
+        'volume_up':     '!{}VI+',
+        'volume_down':   '!{}VD+',
+        'set_volume':    '!{}VO{:02}+',  # zone / level 0-38
+        'source_select': '!{}SS{}+',     # zone / source (no leading zeros)
+        'balance_left':  '!{}BL+',
+        'balance_right': '!{}BR+',
+        'bass_up':       '!{}BI+',
+        'bass_down':     '!{}BD+',
+        'balance_left':  '!{}BL+',
+        'balance_right': '!{}BR+',
+        'treble_up':     '!{}TI+',
+        'treble_down':   '!{}TD+',
+        'disable_activity_updates': '!ZA0+',
+        'disable_status_updates':   '!ZP0+',
+
+        # FIXME: these aren't documented, do they work?
+        'set_treble':    '!{}TR{:02}',     # zone / 0-14
+        'set_bass':      '!{}BS{:02}',     # zone / 0-14
+        'set_balance':   '!{}BL{:02}'      # zone / 0-20
+    }
+}
+
+AMP_TYPE_CONFIG ={
+    MONOPRICE6: {
+        'protocol_eol':    b'\r\n#',
+        'command_eol':     "\r",
+        'zone_pattern':    re.compile('#>(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)'),
+        'max_sources':     6,
+        'max_zones':       6,
+        'max_linked_amps': 3,
+        'zones':           MONOPRICE_ZONES,
+        'baud_rate':       9600
+    },
+    XANTECH8: {
+        'protocol_eol':    b'\r\n#',
+        'command_eol':     "\r",
+        'zone_pattern':    re.compile('#>(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)'),
+        'max_sources':     8,
+        'max_zones':       8,
+        'max_linked_amps': 3,
+        'zones':           XANTECH8_ZONES,
+        'baud_rate':       9600
+    }
+}
+
 
 class ZoneStatus(object):
     def __init__(self,
@@ -148,71 +217,8 @@ class AmpControlBase(object):
         """
         raise NotImplemented()
 
-FORMATS = {
-    MONOPRICE6: {
-        'zone_status':   '?{}',
-        'power_on':      '<{}PR01',
-        'power_off':     '<{}PR00',
-        'mute_on':       '<{}MU01',
-        'mute_off':      '<{}MU00',
-        'set_volume':    '<{}VO{:02}',     # zone / 0-38
-        'set_treble':    '<{}TR{:02}',     # zone / 0-14
-        'set_bass':      '<{}BS{:02}',     # zone / 0-14
-        'set_balance':   '<{}BL{:02}',     # zone / 0-20
-        'set_source':    '<{}CH{:02}'      # zone / 0-6
-    },
-
-    XANTECH8: {
-        'zone_status':   '?{}ZD+',
-        'zone_details':  '?{}ZD+',       # zone details
-        'power_on':      '!{}PR1+',
-        'power_off':     '!{}PR0+',
-        'all_zones_off': '!A0+',
-        'mute_on':       '!{}MU1+',
-        'mute_off':      '!{}MU0+',
-        'volume_up':     '!{}VI+',
-        'volume_down':   '!{}VD+',
-        'set_volume':    '!{}VO{:02}+',  # zone / level 0-38
-        'source_select': '!{}SS{}+',     # zone / source (no leading zeros)
-        'balance_left':  '!{}BL+',
-        'balance_right': '!{}BR+',
-        'bass_up':       '!{}BI+',
-        'bass_down':     '!{}BD+',
-        'balance_left':  '!{}BL+',
-        'balance_right': '!{}BR+',
-        'treble_up':     '!{}TI+',
-        'treble_down':   '!{}TD+',
-        'disable_activity_updates': '!ZA0+',
-        'disable_status_updates':   '!ZP0+',
-
-        # FIXME: these aren't documented, do they work?
-        'set_treble':    '!{}TR{:02}',     # zone / 0-14
-        'set_bass':      '!{}BS{:02}',     # zone / 0-14
-        'set_balance':   '!{}BL{:02}'      # zone / 0-20
-    }
-}
-
-CONFIG ={
-    MONOPRICE6: {
-        'protocol_eol':    b'\r\n#',
-        'command_eol':     "\r",
-        'zone_pattern':    re.compile('#>(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)'),
-        'max_zones':       6,
-        'max_linked_amps': 3,
-        'zones':           MONOPRICE_ZONES
-    },
-    XANTECH8: {
-        'protocol_eol':    b'\r\n#',
-        'command_eol':     "\r",
-        'zone_pattern':    re.compile('#>(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)'),
-        'max_zones':       8,
-        'max_linked_amps': 3,
-        'zones':           XANTECH8_ZONES
-    }
-}
-
 def _format(amp_type: str, format_code: str):
-    return FORMATS[amp_type].get(format_code) + CONFIG[amp_type].get('command_eol')
+    return AMP_TYPE_FORMATS[amp_type].get(format_code) + AMP_TYPE_CONFIG[amp_type].get('command_eol')
 
 def _format_zone_status_request(amp_type, zone: int) -> bytes:
     return _format(amp_type, 'zone_status').format(zone).encode()
@@ -246,7 +252,7 @@ def _format_set_balance(amp_type, zone: int, balance: int) -> bytes:
     return _format(amp_type, 'set_balance').format(zone, balance).encode()
 
 def _format_set_source(amp_type, zone: int, source: int) -> bytes:
-    source = int(max(1, min(source, CONFIG[amp_type].get('max_source'))))
+    source = int(max(1, min(source, AMP_TYPE_CONFIG[amp_type].get('max_sources'))))
     return _format(amp_type, 'set_source').format(zone, source).encode()
 
 # backwards compatible API
@@ -266,7 +272,7 @@ def get_amp_controller(amp_type: str, port_url):
     """
 
     # sanity check the provided amplifier type
-    if amp_type not in FORMATS:
+    if amp_type not in SUPPORTED_AMP_TYPES:
         _LOGGER.error("Unsupported amplifier type '%s'", amp_type)
         return None
 
@@ -283,7 +289,7 @@ def get_amp_controller(amp_type: str, port_url):
         def __init__(self, amp_type, port_url):
             self._amp_type = amp_type
             self._port = serial.serial_for_url(port_url, do_not_open=True)
-            self._port.baudrate = BAUD_RATE
+            self._port.baudrate = AMP_TYPE_CONFIG[amp_type].get('command_eol')
             self._port.stopbits = serial.STOPBITS_ONE
             self._port.bytesize = serial.EIGHTBITS
             self._port.parity = serial.PARITY_NONE
@@ -383,7 +389,7 @@ def get_async_amp_controller(amp_type, port_url, loop):
     """
 
     # sanity check the provided amplifier type
-    if amp_type not in FORMATS:
+    if amp_type not in SUPPORTED_AMP_TYPES:
         _LOGGER.error("Unsupported amplifier type '%s'", amp_type)
         return None
 
@@ -494,6 +500,8 @@ def get_async_amp_controller(amp_type, port_url, loop):
                     _LOGGER.error("Timeout during receiving response for command '%s', received='%s'", request, result)
                     raise
 
-    _, protocol = yield from create_serial_connection(loop, functools.partial(AmpControlProtocol, loop),
-                                                      port_url, baudrate=BAUD_RATE)
+    _, protocol = yield from create_serial_connection(loop,
+                                                      functools.partial(AmpControlProtocol, loop),
+                                                      port_url,
+                                                      baudrate=AMP_TYPE_CONFIG[amp_type].get('baud_rate'))
     return AmpControlAsync(amp_type, protocol)
