@@ -163,7 +163,7 @@ FORMATS = {
     },
 
     XANTECH8: {
-        'zone_Status':   '?{}ZD+',       # zone details
+        'zone_status':   '?{}ZD+',
         'zone_details':  '?{}ZD+',       # zone details
         'power_on':      '!{}PR1+',
         'power_off':     '!{}PR0+',
