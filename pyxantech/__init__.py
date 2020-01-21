@@ -146,16 +146,16 @@ class AmplifierControlBase(object):
 
 FORMATS = {
     'monoprice6': {
-        'zone_status': '?{zone}',
-        'power_on':    '<{zone}PR01',
-        'power_off':   '<{zone}PR00',
-        'mute_on':     '<{zone}MU01',
-        'mute_off':    '<{zone}MU00',
-        'set_volume':  '<{zone}VO{:02}',     # zone / 0-38
-        'set_treble':  '<{zone}TR{:02}',     # zone / 0-14
-        'set_bass':    '<{zone}BS{:02}',     # zone / 0-14
-        'set_balance': '<{zone}BL{:02}',     # zone / 0-20
-        'set_source':  '<{zone}CH{:02}'      # zone / 0-6
+        'zone_status':   '?{zone}',
+        'power_on':      '<{zone}PR01',
+        'power_off':     '<{zone}PR00',
+        'mute_on':       '<{zone}MU01',
+        'mute_off':      '<{zone}MU00',
+        'set_volume':    '<{zone}VO{:02}',     # zone / 0-38
+        'set_treble':    '<{zone}TR{:02}',     # zone / 0-14
+        'set_bass':      '<{zone}BS{:02}',     # zone / 0-14
+        'set_balance':   '<{zone}BL{:02}',     # zone / 0-20
+        'set_source':    '<{zone}CH{:02}'      # zone / 0-6
     },
 
     'xantech8': {
@@ -181,9 +181,9 @@ FORMATS = {
         'disable_status_updates':   '!ZP0+',
 
         # FIXME: these aren't documented, do they work?
-        'set_treble':  '!{zone}TR{:02}',     # zone / 0-14
-        'set_bass':    '!{zone}BS{:02}',     # zone / 0-14
-        'set_balance': '!{zone}BL{:02}',     # zone / 0-20
+        'set_treble':    '!{zone}TR{:02}',     # zone / 0-14
+        'set_bass':      '!{zone}BS{:02}',     # zone / 0-14
+        'set_balance':   '!{zone}BL{:02}'      # zone / 0-20
     }
 }
 
@@ -207,58 +207,59 @@ def _format(amp_type, format_code):
     return FORMATS[amp_type].get(format_code) + CONFIG[amp_type].get('command_eol')
 
 def _format_zone_status_request(zone: int) -> bytes:
-    return _format(XANTECH8, 'zone_status').format(zone).encode()
+    return _format(amp_type, 'zone_status').format(zone).encode()
 #    return '?{}\r'.format(zone).encode() # Monoprice
 
-def _format_set_power(zone: int, power: bool) -> bytes:
+def _format_set_power(amp_type, zone: int, power: bool) -> bytes:
     if power:
-        return _format(XANTECH8, 'power_on').encode()
+        return _format(amp_type, 'power_on').encode()
     else:
-        return _format(XANTECH8, 'power_off').encode()
+        return _format(amp_type, 'power_off').encode()
 #    return '<{}PR{}\r'.format(zone, '01' if power else '00').encode() # Monoprice
 
-def _format_set_mute(zone: int, mute: bool) -> bytes:
+def _format_set_mute(amp_type, zone: int, mute: bool) -> bytes:
     if mute:
-        return _format(XANTECH8, 'mute_on').encode()
+        return _format(amp_type, 'mute_on').encode()
     else:
-        return _format(XANTECH8, 'mute_off').encode()
+        return _format(amp_type, 'mute_off').encode()
 #    return '<{}MU{}\r'.format(zone, '01' if mute else '00').encode() # Monoprice
 
-def _format_set_volume(zone: int, volume: int) -> bytes:
+def _format_set_volume(amp_type, zone: int, volume: int) -> bytes:
     volume = int(max(0, min(volume, MAX_VOLUME)))
-    return _format(XANTECH8, 'set_volume').format(zone, volume).encode()
+    return _format(amp_type, 'set_volume').format(zone, volume).encode()
  #   return '<{}VO{:02}\r'.format(zone, volume).encode() # Monoprice
 
 # FIXME
-def _format_set_treble(zone: int, treble: int) -> bytes:
+def _format_set_treble(amp_type, zone: int, treble: int) -> bytes:
     treble = int(max(0, min(treble, MAX_TREBLE)))
-    return _format(XANTECH8, 'set_treble').format(zone, treble).encode()
+    return _format(amp_type, 'set_treble').format(zone, treble).encode()
 #    return '<{}TR{:02}\r'.format(zone, treble).encode() # Monoprice
 
 # FIXME
-def _format_set_bass(zone: int, bass: int) -> bytes:
+def _format_set_bass(amp_type, zone: int, bass: int) -> bytes:
     bass = int(max(0, min(bass, MAX_BASS)))
-    return _format(XANTECH8, 'set_bass').format(zone, bass).encode()
+    return _format(amp_type, 'set_bass').format(zone, bass).encode()
 #    return '<{}BS{:02}\r'.format(zone, bass).encode() # Monoprice
 
 # FIXME
-def _format_set_balance(zone: int, balance: int) -> bytes:
+def _format_set_balance(amp_type, zone: int, balance: int) -> bytes:
     balance = max(0, min(balance, MAX_BALANCE))
-    return _format(XANTECH8, 'set_balance').format(zone, balance).encode()
+    return _format(amp_type, 'set_balance').format(zone, balance).encode()
 #    return '<{}BL{:02}\r'.format(zone, balance).encode() # Monoprice
 
-def _format_set_source(zone: int, source: int) -> bytes:
+def _format_set_source(amp_type, zone: int, source: int) -> bytes:
     source = int(max(1, min(source, MAX_SOURCE)))
-    return _format(XANTECH8, 'set_source').format(zone, source).encode()
+    return _format(amp_type, 'set_source').format(zone, source).encode()
 #    return '<{}CH{:02}\r'.format(zone, source).encode() # Monoprice
 
 def get_xantech(port_url):
     """
-    Return synchronous version of Xantech interface
+    Return synchronous version of amplifier control interface
     :param port_url: serial port, i.e. '/dev/ttyUSB0'
-    :return: synchronous implementation of Xantech interface
+    :return: synchronous implementation of amplifier control interface
     """
 
+    amp_type = 'xantech8'
     lock = RLock()
 
     def synchronized(func):
@@ -268,8 +269,9 @@ def get_xantech(port_url):
                 return func(*args, **kwargs)
         return wrapper
 
-    class XantechSync(AmplifierControlBase):
-        def __init__(self, port_url):
+    class AmplifierControlSync(AmplifierControlBase):
+        def __init__(self, amp_type, port_url):
+            self._amp_type = amp_type
             self._port = serial.serial_for_url(port_url, do_not_open=True)
             self._port.baudrate = BAUD_RATE
             self._port.stopbits = serial.STOPBITS_ONE
@@ -313,31 +315,31 @@ def get_xantech(port_url):
 
         @synchronized
         def set_power(self, zone: int, power: bool):
-            self._process_request(_format_set_power(zone, power))
+            self._process_request(_format_set_power(self._amp_type, zone, power))
 
         @synchronized
         def set_mute(self, zone: int, mute: bool):
-            self._process_request(_format_set_mute(zone, mute))
+            self._process_request(_format_set_mute(self._amp_type, zone, mute))
 
         @synchronized
         def set_volume(self, zone: int, volume: int):
-            self._process_request(_format_set_volume(zone, volume))
+            self._process_request(_format_set_volume(self._amp_type, zone, volume))
 
         @synchronized
         def set_treble(self, zone: int, treble: int):
-            self._process_request(_format_set_treble(zone, treble))
+            self._process_request(_format_set_treble(self._amp_type, zone, treble))
 
         @synchronized
         def set_bass(self, zone: int, bass: int):
-            self._process_request(_format_set_bass(zone, bass))
+            self._process_request(_format_set_bass(self._amp_type, zone, bass))
 
         @synchronized
         def set_balance(self, zone: int, balance: int):
-            self._process_request(_format_set_balance(zone, balance))
+            self._process_request(_format_set_balance(self._amp_type, zone, balance))
 
         @synchronized
         def set_source(self, zone: int, source: int):
-            self._process_request(_format_set_source(zone, source))
+            self._process_request(_format_set_source(self._amp_type, zone, source))
 
         @synchronized
         def restore_zone(self, status: ZoneStatus):
@@ -349,17 +351,18 @@ def get_xantech(port_url):
             self.set_balance(status.zone, status.balance)
             self.set_source(status.zone, status.source)
 
-    return XantechSync(port_url)
+    return AmplifierControlSync(amp_type, port_url)
 
 
 @asyncio.coroutine
 def get_async_xantech(port_url, loop):
     """
-    Return asynchronous version of Xantech interface
+    Return asynchronous version of amplifier control interface
     :param port_url: serial port, i.e. '/dev/ttyUSB0'
-    :return: asynchronous implementation of Xantech interface
+    :return: asynchronous implementation of amplifier control interface
     """
 
+    amp_type = 'xantech8'
     lock = asyncio.Lock()
 
     def locked_coro(coro):
@@ -370,62 +373,63 @@ def get_async_xantech(port_url, loop):
                 return (yield from coro(*args, **kwargs))
         return wrapper
 
-    class XantechAsync(Xantech):
-        def __init__(self, xantech_protocol):
+    class XantechAsync(AmplifierControlBase):
+        def __init__(self, amp_type, xantech_protocol):
+            self._amp_type = amp_type
             self._protocol = xantech_protocol
 
         @locked_coro
         @asyncio.coroutine
         def zone_status(self, zone: int):
             # Ignore first 6 bytes as they will contain 3 byte command and 3 bytes of EOL
-            string = yield from self._protocol.send(_format_zone_status_request(zone), skip=6)
+            string = yield from self._protocol.send(_format_zone_status_request(self._amp_type, zone), skip=6)
             return ZoneStatus.from_string(string)
 
         @locked_coro
         @asyncio.coroutine
         def set_power(self, zone: int, power: bool):
-            yield from self._protocol.send(_format_set_power(zone, power))
+            yield from self._protocol.send(_format_set_power(self._amp_type,zone, power))
 
         @locked_coro
         @asyncio.coroutine
         def set_mute(self, zone: int, mute: bool):
-            yield from self._protocol.send(_format_set_mute(zone, mute))
+            yield from self._protocol.send(_format_set_mute(self._amp_type,zone, mute))
 
         @locked_coro
         @asyncio.coroutine
         def set_volume(self, zone: int, volume: int):
-            yield from self._protocol.send(_format_set_volume(zone, volume))
+            yield from self._protocol.send(_format_set_volume(self._amp_type,zone, volume))
 
         @locked_coro
         @asyncio.coroutine
         def set_treble(self, zone: int, treble: int):
-            yield from self._protocol.send(_format_set_treble(zone, treble))
+            yield from self._protocol.send(_format_set_treble(self._amp_type,zone, treble))
 
         @locked_coro
         @asyncio.coroutine
         def set_bass(self, zone: int, bass: int):
-            yield from self._protocol.send(_format_set_bass(zone, bass))
+            yield from self._protocol.send(_format_set_bass(self._amp_type,zone, bass))
 
         @locked_coro
         @asyncio.coroutine
         def set_balance(self, zone: int, balance: int):
-            yield from self._protocol.send(_format_set_balance(zone, balance))
+            yield from self._protocol.send(_format_set_balance(self._amp_type,zone, balance))
 
         @locked_coro
         @asyncio.coroutine
         def set_source(self, zone: int, source: int):
-            yield from self._protocol.send(_format_set_source(zone, source))
+            yield from self._protocol.send(_format_set_source(self._amp_type,zone, source))
 
         @locked_coro
         @asyncio.coroutine
         def restore_zone(self, status: ZoneStatus):
-            yield from self._protocol.send(_format_set_power(status.zone, status.power))
-            yield from self._protocol.send(_format_set_mute(status.zone, status.mute))
-            yield from self._protocol.send(_format_set_volume(status.zone, status.volume))
-            yield from self._protocol.send(_format_set_treble(status.zone, status.treble))
-            yield from self._protocol.send(_format_set_bass(status.zone, status.bass))
-            yield from self._protocol.send(_format_set_balance(status.zone, status.balance))
-            yield from self._protocol.send(_format_set_source(status.zone, status.source))
+            yield from self._protocol.send(_format_set_power(self._amp_type,status.zone, status.power))
+            yield from self._protocol.send(_format_set_mute(self._amp_type,status.zone, status.mute))
+            yield from self._protocol.send(_format_set_volume(self._amp_type,status.zone, status.volume))
+            yield from self._protocol.send(_format_set_treble(self._amp_type,status.zone, status.treble))
+            yield from self._protocol.send(_format_set_bass(self._amp_type,status.zone, status.bass))
+            yield from self._protocol.send(_format_set_balance(self._amp_type,status.zone, status.balance))
+            yield from self._protocol.send(_format_set_source(self._amp_type,status.zone, status.source))
 
     class XantechProtocol(asyncio.Protocol):
         def __init__(self, loop):
@@ -468,4 +472,4 @@ def get_async_xantech(port_url, loop):
 
     _, protocol = yield from create_serial_connection(loop, functools.partial(XantechProtocol, loop),
                                                       port_url, baudrate=BAUD_RATE)
-    return XantechAsync(protocol)
+    return XantechAsync(amp_type, protocol)
