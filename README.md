@@ -8,10 +8,14 @@ used in other contexts as well. It supports both the 6-zone Monoprice and 8-zone
 [![Build Status](https://travis-ci.org/etsinko/pyxantech.svg?branch=master)](https://travis-ci.org/etsinko/pyxantech)[![Coverage Status](https://coveralls.io/repos/github/etsinko/pyxantech/badge.svg)](https://coveralls.io/github/etsinko/pyxantech)
 
 ## Usage
-```python
-from pyxantech import get_amp_controller
 
-amp = get_amp_controller('xantech8', '/dev/ttyUSB0')
+For Monoprice 6-zone amplifier:
+
+```python
+from pyxantech import get_amp_controller, get_monoprice
+
+# amp = get_monoprice('/dev/ttyUSB0')  # old style
+amp = get_amp_controller('monoprice', '/dev/ttyUSB0')
 
 # Turn off zone #11
 amp.set_power(11, False)
@@ -24,6 +28,14 @@ amp.set_volume(13, 15)
 
 # Set source 1 for zone #14 
 amp.set_source(14, 1)
+```
+
+For Xantech 8-zone amplifier:
+
+```python
+from pyxantech import get_amp_controller
+
+amp = get_amp_controller('xantech8', '/dev/ttyUSB0')
 ```
 
 See also [example.py](example.py) for a more complete example.
