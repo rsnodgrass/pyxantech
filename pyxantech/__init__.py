@@ -209,7 +209,7 @@ CONFIG ={
     }
 }
 
-def _format(amp_type, format_code):
+def _format(amp_type: str, format_code: str):
     return FORMATS[amp_type].get(format_code) + CONFIG[amp_type].get('command_eol')
 
 def _format_zone_status_request(amp_type, zone: int) -> bytes:
@@ -256,7 +256,7 @@ def get_monoprice(port_url):
     """
     return get_amp_controller(MONOPRICE6, port_url)
 
-def get_amp_controller(amp_type, port_url):
+def get_amp_controller(amp_type: str, port_url):
     """
     Return synchronous version of amplifier control interface
     :param port_url: serial port, i.e. '/dev/ttyUSB0'
@@ -453,7 +453,7 @@ def get_async_amp_controller(amp_type, port_url, loop):
             yield from self._protocol.send(_format_set_balance(self._amp_type,status.zone, status.balance))
             yield from self._protocol.send(_format_set_source(self._amp_type,status.zone, status.source))
 
-    class XantechProtocol(asyncio.Protocol):
+    class AmpControlProtocol(asyncio.Protocol):
         def __init__(self, loop):
             super().__init__()
             self._loop = loop
@@ -492,6 +492,6 @@ def get_async_amp_controller(amp_type, port_url, loop):
                     _LOGGER.error("Timeout during receiving response for command '%s', received='%s'", request, result)
                     raise
 
-    _, protocol = yield from create_serial_connection(loop, functools.partial(XantechProtocol, loop),
+    _, protocol = yield from create_serial_connection(loop, functools.partial(AmpControlProtocol, loop),
                                                       port_url, baudrate=BAUD_RATE)
     return AmpControlAsync(amp_type, protocol)
