@@ -319,7 +319,7 @@ def get_amp_controller(amp_type: str, port_url):
         @synchronized
         def zone_status(self, zone: int):
             # Ignore first 6 bytes as they will contain 3 byte command and 3 bytes of EOL
-            return ZoneStatus.from_string(self._process_request(_format_zone_status_request(zone), skip=6))
+            return ZoneStatus.from_string(self._process_request(_format_zone_status_request(self._amp_type, zone), skip=6))
 
         @synchronized
         def set_power(self, zone: int, power: bool):
