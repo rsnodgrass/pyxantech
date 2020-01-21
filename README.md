@@ -34,13 +34,13 @@ With `asyncio` flavor all methods of Xantech object are coroutines.
 
 ```python
 import asyncio
-from pyxantech import get_async_xantech
+from pyxantech import get_async_amp_controller
 
 async def main(loop):
-    xantech = await get_async_amp_controller('monoprice', '/dev/ttyUSB0', loop)
-    zone_status = await xantech.zone_status(11)
+    amp = await get_async_amp_controller('monoprice', '/dev/ttyUSB0', loop)
+    zone_status = await amp.zone_status(11)
     if zone_status.power:
-        await xantech.set_power(zone_status.zone, False)
+        await amp.set_power(zone_status.zone, False)
 
 loop = asyncio.get_event_loop()
 loop.run_until_complete(main(loop))
