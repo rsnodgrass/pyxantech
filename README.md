@@ -1,13 +1,11 @@
 # Python interface for Xantech amplifiers
 
+This was originally created for use with [Home-Assistant](http://home-assistant.io), but can be
+used in other contexts as well. It supports both the 6-zone Monoprice and 8-zone Xantech amplifiers.
+
 ## Status
+
 [![Build Status](https://travis-ci.org/etsinko/pyxantech.svg?branch=master)](https://travis-ci.org/etsinko/pyxantech)[![Coverage Status](https://coveralls.io/repos/github/etsinko/pyxantech/badge.svg)](https://coveralls.io/github/etsinko/pyxantech)
-
-# pyxantech
-Python3 interface implementation for Xantech 6 zone amplifier
-
-## Notes
-This is for use with [Home-Assistant](http://home-assistant.io)
 
 ## Usage
 ```python
@@ -48,3 +46,7 @@ loop = asyncio.get_event_loop()
 loop.run_until_complete(main(loop))
 
 ```
+
+## See Also
+
+* [Home Assistant integration](https://www.home-assistant.io/integrations/monoprice/)
