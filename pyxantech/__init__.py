@@ -143,49 +143,46 @@ class AmpControlBase(object):
         """
         raise NotImplemented()
 
-
-# Helpers
-
 FORMATS = {
     MONOPRICE6: {
-        'zone_status':   '?{zone}',
-        'power_on':      '<{zone}PR01',
-        'power_off':     '<{zone}PR00',
-        'mute_on':       '<{zone}MU01',
-        'mute_off':      '<{zone}MU00',
-        'set_volume':    '<{zone}VO{:02}',     # zone / 0-38
-        'set_treble':    '<{zone}TR{:02}',     # zone / 0-14
-        'set_bass':      '<{zone}BS{:02}',     # zone / 0-14
-        'set_balance':   '<{zone}BL{:02}',     # zone / 0-20
-        'set_source':    '<{zone}CH{:02}'      # zone / 0-6
+        'zone_status':   '?{}',
+        'power_on':      '<{}PR01',
+        'power_off':     '<{}PR00',
+        'mute_on':       '<{}MU01',
+        'mute_off':      '<{}MU00',
+        'set_volume':    '<{}VO{:02}',     # zone / 0-38
+        'set_treble':    '<{}TR{:02}',     # zone / 0-14
+        'set_bass':      '<{}BS{:02}',     # zone / 0-14
+        'set_balance':   '<{}BL{:02}',     # zone / 0-20
+        'set_source':    '<{}CH{:02}'      # zone / 0-6
     },
 
     XANTECH8: {
-        'zone_details':  '?{zone}ZD+',       # zone details
-        'power_on':      '!{zone}PR1+',
-        'power_off':     '!{zone}PR0+',
+        'zone_details':  '?{}ZD+',       # zone details
+        'power_on':      '!{}PR1+',
+        'power_off':     '!{}PR0+',
         'all_zones_off': '!A0+',
-        'mute_on':       '!{zone}MU1+',
-        'mute_off':      '!{zone}MU0+',
-        'volume_up':     '!{zone}VI+',
-        'volume_down':   '!{zone}VD+',
-        'set_volume':    '!{zone}VO{:02}+',  # zone / level 0-38
-        'source_select': '!{zone}SS{source}+',
-        'balance_left':  '!{zone}BL+',
-        'balance_right': '!{zone}BR+',
-        'bass_up':       '!{zone}BI+',
-        'bass_down':     '!{zone}BD+',
-        'balance_left':  '!{zone}BL+',
-        'balance_right': '!{zone}BR+',
-        'treble_up':     '!{zone}TI+',
-        'treble_down':   '!{zone}TD+',
+        'mute_on':       '!{}MU1+',
+        'mute_off':      '!{}MU0+',
+        'volume_up':     '!{}VI+',
+        'volume_down':   '!{}VD+',
+        'set_volume':    '!{}VO{:02}+',  # zone / level 0-38
+        'source_select': '!{}SS{}+',     # zone / source (no leading zeros)
+        'balance_left':  '!{}BL+',
+        'balance_right': '!{}BR+',
+        'bass_up':       '!{}BI+',
+        'bass_down':     '!{}BD+',
+        'balance_left':  '!{}BL+',
+        'balance_right': '!{}BR+',
+        'treble_up':     '!{}TI+',
+        'treble_down':   '!{}TD+',
         'disable_activity_updates': '!ZA0+',
         'disable_status_updates':   '!ZP0+',
 
         # FIXME: these aren't documented, do they work?
-        'set_treble':    '!{zone}TR{:02}',     # zone / 0-14
-        'set_bass':      '!{zone}BS{:02}',     # zone / 0-14
-        'set_balance':   '!{zone}BL{:02}'      # zone / 0-20
+        'set_treble':    '!{}TR{:02}',     # zone / 0-14
+        'set_bass':      '!{}BS{:02}',     # zone / 0-14
+        'set_balance':   '!{}BL{:02}'      # zone / 0-20
     }
 }
 
@@ -201,7 +198,6 @@ CONFIG ={
         'zone_pattern': re.compile('#>(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)')
     }
 }
-
 
 def _format(amp_type, format_code):
     return FORMATS[amp_type].get(format_code) + CONFIG[amp_type].get('command_eol')
@@ -225,17 +221,14 @@ def _format_set_volume(amp_type, zone: int, volume: int) -> bytes:
     volume = int(max(0, min(volume, MAX_VOLUME)))
     return _format(amp_type, 'set_volume').format(zone, volume).encode()
 
-# FIXME
 def _format_set_treble(amp_type, zone: int, treble: int) -> bytes:
     treble = int(max(0, min(treble, MAX_TREBLE)))
     return _format(amp_type, 'set_treble').format(zone, treble).encode()
 
-# FIXME
 def _format_set_bass(amp_type, zone: int, bass: int) -> bytes:
     bass = int(max(0, min(bass, MAX_BASS)))
     return _format(amp_type, 'set_bass').format(zone, bass).encode()
 
-# FIXME
 def _format_set_balance(amp_type, zone: int, balance: int) -> bytes:
     balance = max(0, min(balance, MAX_BALANCE))
     return _format(amp_type, 'set_balance').format(zone, balance).encode()
