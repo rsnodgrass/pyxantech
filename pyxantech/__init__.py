@@ -11,7 +11,6 @@ _LOGGER = logging.getLogger(__name__)
 
 TIMEOUT = 2  # Number of seconds before serial operation timeout
 
-
 # Monoprice 6-zone amplifier
 MONOPRICE6 = 'monoprice6'
 MONOPRICE_ZONES = [ 11, 12, 13, 14, 15, 16,   # main amp
@@ -102,6 +101,12 @@ AMP_TYPE_CONFIG ={
     }
 }
 
+def _get_config(amp_type: str, key: str):
+    config = AMP_TYPE_CONFIG.get(amp_type)
+    if config:
+        return config.get(key)
+    _LOGGER.error("Invalid amp type '%s' config key '%s'; returning None", amp_type, key)
+    return None
 
 class ZoneStatus(object):
     def __init__(self,
@@ -218,7 +223,8 @@ class AmpControlBase(object):
         raise NotImplemented()
 
 def _format(amp_type: str, format_code: str):
-    return AMP_TYPE_FORMATS[amp_type].get(format_code) + AMP_TYPE_CONFIG[amp_type].get('command_eol')
+    eol = _get_config(amp_type, 'command_eol')
+    return AMP_TYPE_FORMATS[amp_type].get(format_code) + eol
 
 def _format_zone_status_request(amp_type, zone: int) -> bytes:
     return _format(amp_type, 'zone_status').format(zone).encode()
@@ -252,7 +258,7 @@ def _format_set_balance(amp_type, zone: int, balance: int) -> bytes:
     return _format(amp_type, 'set_balance').format(zone, balance).encode()
 
 def _format_set_source(amp_type, zone: int, source: int) -> bytes:
-    source = int(max(1, min(source, AMP_TYPE_CONFIG[amp_type].get('max_sources'))))
+    source = int(max(1, min(source, _get_config(amp_type, 'max_sources'))))
     return _format(amp_type, 'set_source').format(zone, source).encode()
 
 # backwards compatible API
@@ -289,7 +295,7 @@ def get_amp_controller(amp_type: str, port_url):
         def __init__(self, amp_type, port_url):
             self._amp_type = amp_type
             self._port = serial.serial_for_url(port_url, do_not_open=True)
-            self._port.baudrate = AMP_TYPE_CONFIG[amp_type].get('command_eol')
+            self._port.baudrate = _get_config(amp_type, 'command_eol')
             self._port.stopbits = serial.STOPBITS_ONE
             self._port.bytesize = serial.EIGHTBITS
             self._port.parity = serial.PARITY_NONE
@@ -503,5 +509,5 @@ def get_async_amp_controller(amp_type, port_url, loop):
     _, protocol = yield from create_serial_connection(loop,
                                                       functools.partial(AmpControlProtocol, loop),
                                                       port_url,
-                                                      baudrate=AMP_TYPE_CONFIG[amp_type].get('baud_rate'))
+                                                      baudrate=_get_config(amp_type, 'baud_rate'))
     return AmpControlAsync(amp_type, protocol)
