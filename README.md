@@ -11,9 +11,9 @@ This is for use with [Home-Assistant](http://home-assistant.io)
 
 ## Usage
 ```python
-from pyxantech import get_xantech
+from pyxantech import get_amp_controller
 
-xantech = get_xantech('/dev/ttyUSB0')
+xantech = get_amp_controller('xantech', '/dev/ttyUSB0')
 
 # Valid zones are 11-16 for main xantech amplifier
 zone_status = xantech.zone_status(11)

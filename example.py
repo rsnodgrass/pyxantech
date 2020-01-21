@@ -1,6 +1,6 @@
-from pyxantech import get_xantech
+from pyxantech import get_amp_controller
 
-xantech = get_xantech('/dev/ttyUSB0')
+amp = get_amp_controller('xantech', '/dev/ttyUSB0')
 
 # Valid zones are 11-16 for main xantech amplifier
 zone_status = xantech.zone_status(11)
@@ -19,25 +19,25 @@ print('Source = {}'.format(zone_status.source))
 print('Keypad is {}'.format('connected' if zone_status.keypad else 'disconnected'))
 
 # Turn off zone #11
-xantech.set_power(11, False)
+amp.set_power(11, False)
 
 # Mute zone #12
-xantech.set_mute(12, True)
+amp.set_mute(12, True)
 
 # Set volume for zone #13
-xantech.set_volume(13, 15)
+amp.set_volume(13, 15)
 
 # Set source 1 for zone #14 
-xantech.set_source(14, 1)
+amp.set_source(14, 1)
 
 # Set treble for zone #15
-xantech.set_treble(15, 10)
+amp.set_treble(15, 10)
 
 # Set bass for zone #16
-xantech.set_bass(16, 7)
+amp.set_bass(16, 7)
 
 # Set balance for zone #11
-xantech.set_balance(11, 3)
+amp.set_balance(11, 3)
 
 # Restore zone #11 to it's original state
-xantech.restore_zone(zone_status)
+amp.restore_zone(zone_status)

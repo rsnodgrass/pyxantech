@@ -251,9 +251,9 @@ def get_monoprice(port_url):
     :param port_url: serial port, i.e. '/dev/ttyUSB0'
     :return: synchronous implementation of amplifier control interface
     """
-    return get_amplifier(MONOPRICE6, port_url)
+    return get_amp_control(MONOPRICE6, port_url)
 
-def get_amplifier(amp_type, port_url):
+def get_amp_controller(amp_type, port_url):
     """
     Return synchronous version of amplifier control interface
     :param port_url: serial port, i.e. '/dev/ttyUSB0'
@@ -370,7 +370,7 @@ def get_async_monoprice(port_url, loop):
     return get_async_amplifier(MONOPRICE6, port_url, loop)
 
 @asyncio.coroutine
-def get_async_amplifier(amp_type, port_url, loop):
+def get_async_amp_controller(amp_type, port_url, loop):
     """
     Return asynchronous version of amplifier control interface
     :param port_url: serial port, i.e. '/dev/ttyUSB0'
