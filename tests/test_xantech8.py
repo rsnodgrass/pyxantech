@@ -17,7 +17,7 @@ class TestZoneStatus(unittest.TestCase):
         self.assertIsNone(ZoneStatus.from_string('\r\n#>\r\n#'))
 
 
-class TestMonoprice(unittest.TestCase):
+class TestXantech8(unittest.TestCase):
     def setUp(self):
         self.responses = {}
         self.xantech = get_xantech(create_dummy_port(self.responses))
@@ -144,7 +144,7 @@ class TestMonoprice(unittest.TestCase):
             self.xantech.set_source(3, 3)
 
 
-class TestAsyncMonoprice(TestMonoprice):
+class TestAsyncXantech8(TestXantech8):
 
     def setUp(self):
         self.responses = {}
@@ -152,12 +152,12 @@ class TestAsyncMonoprice(TestMonoprice):
         xantech = loop.run_until_complete(get_async_xantech(create_dummy_port(self.responses), loop))
 
         # Dummy xantech that converts async to sync
-        class DummyMonoprice():
+        class DummyXantech8():
             def __getattribute__(self, item):
                 def f(*args, **kwargs):
                     return loop.run_until_complete(xantech.__getattribute__(item)(*args, **kwargs))
                 return f
-        self.xantech = DummyMonoprice()
+        self.xantech = DummyXantech8()
 
     def test_timeout(self):
         with self.assertRaises(asyncio.TimeoutError):
