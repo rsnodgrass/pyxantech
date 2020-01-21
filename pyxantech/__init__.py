@@ -11,18 +11,20 @@ _LOGGER = logging.getLogger(__name__)
 
 TIMEOUT = 2  # Number of seconds before serial operation timeout
 
-# Xantech 8-zone amplifier
-XANTECH8 = 'xantech8'
-EOL = b'\r\n#'
-MAX_SOURCE = 8 # Monoprice is 6
-ZONE_PATTERN = re.compile('#>(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)')
-
 # Monoprice 6-zone amplifier
 MONOPRICE6 = 'monoprice6'
-# EOL = b'\r\n#'
-# MAX_SOURCE = 6
-# ZONE_PATTERN = re.compile('#>(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)')
+MONOPRICE_ZONES = [ 11, 12, 13, 14, 15, 16,   # main amp
+                    21, 22, 23, 24, 25, 26,   # linked amp 2
+                    31, 32, 33, 34, 35, 36 ]  # linked amp 3
 
+# Xantech 8-zone amplifier
+XANTECH8 = 'xantech8'
+XANTECH8_ZONES= [ 11, 12, 13, 14, 15, 16, 17, 18,   # main amp
+                  21, 22, 23, 24, 25, 26, 27, 28,   # linked amp 2
+                  31, 32, 33, 34, 35, 36, 37, 38 ]  # linked amp 3
+
+ZONE_PATTERN = re.compile('#>(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)')
+EOL = b'\r\n#'
 LEN_EOL = len(EOL)
 
 MAX_BALANCE = 20
@@ -195,9 +197,7 @@ CONFIG ={
         'zone_pattern':    re.compile('#>(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)'),
         'max_zones':       6,
         'max_linked_amps': 3,
-        'zones':           [ 11, 12, 13, 14, 15, 16,   # main amp
-                             21, 22, 23, 24, 25, 26,   # linked amp 2
-                             31, 32, 33, 34, 35, 36 ]  # linked amp 3
+        'zones':           MONOPRICE_ZONES
     },
     XANTECH8: {
         'protocol_eol':    b'\r\n#',
@@ -205,9 +205,7 @@ CONFIG ={
         'zone_pattern':    re.compile('#>(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)'),
         'max_zones':       8,
         'max_linked_amps': 3,
-        'zones':           [ 11, 12, 13, 14, 15, 16, 17, 18,   # main amp
-                             21, 22, 23, 24, 25, 26, 27, 28,   # linked amp 2
-                             31, 32, 33, 34, 35, 36, 37, 38 ]  # linked amp 3
+        'zones':           XANTECH8_ZONES
     }
 }
 
@@ -228,7 +226,7 @@ def _format_set_mute(amp_type, zone: int, mute: bool) -> bytes:
         return _format(amp_type, 'mute_on').encode()
     else:
         return _format(amp_type, 'mute_off').encode()
-
+    
 def _format_set_volume(amp_type, zone: int, volume: int) -> bytes:
     volume = int(max(0, min(volume, MAX_VOLUME)))
     return _format(amp_type, 'set_volume').format(zone, volume).encode()
@@ -246,7 +244,7 @@ def _format_set_balance(amp_type, zone: int, balance: int) -> bytes:
     return _format(amp_type, 'set_balance').format(zone, balance).encode()
 
 def _format_set_source(amp_type, zone: int, source: int) -> bytes:
-    source = int(max(1, min(source, MAX_SOURCE)))
+    source = int(max(1, min(source, CONFIG[amp_type].get('max_source'))))
     return _format(amp_type, 'set_source').format(zone, source).encode()
 
 # backwards compatible API
