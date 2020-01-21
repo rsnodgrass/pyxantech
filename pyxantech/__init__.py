@@ -193,7 +193,7 @@ FORMATS = {
 CONFIG ={
     MONOPRICE6: {
         'protocol_eol':    b'\r\n#',
-        'command_eol':     b'\r',
+        'command_eol':     "\r",
         'zone_pattern':    re.compile('#>(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)'),
         'max_zones':       6,
         'max_linked_amps': 3,
@@ -201,7 +201,7 @@ CONFIG ={
     },
     XANTECH8: {
         'protocol_eol':    b'\r\n#',
-        'command_eol':     b'\r',
+        'command_eol':     "\r",
         'zone_pattern':    re.compile('#>(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)'),
         'max_zones':       8,
         'max_linked_amps': 3,
