@@ -65,6 +65,7 @@ class ZoneStatus(object):
             return None
         match = re.search(ZONE_PATTERN, string)
         if not match:
+            _LOGGER.debug("Could not pattern match zone status '%s' with '%s'", string, ZONE_PATTERN)
             return None
         return ZoneStatus(*[int(m) for m in match.groups()])
 
@@ -162,6 +163,7 @@ FORMATS = {
     },
 
     XANTECH8: {
+        'zone_Status':   '?{}ZD+',       # zone details
         'zone_details':  '?{}ZD+',       # zone details
         'power_on':      '!{}PR1+',
         'power_off':     '!{}PR0+',
