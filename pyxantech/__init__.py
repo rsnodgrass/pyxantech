@@ -203,7 +203,7 @@ CONFIG ={
 XANTECH8 = 'xantech8'
 MONOPRICE6 = 'monoprice6'
 
-def _format(amp_type: string, format_code: string):
+def _format(amp_type, format_code):
     return FORMATS[amp_type].get(format_code) + CONFIG[amp_type].get('command_eol')
 
 def _format_zone_status_request(zone: int) -> bytes:
