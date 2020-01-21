@@ -12,11 +12,13 @@ _LOGGER = logging.getLogger(__name__)
 TIMEOUT = 2  # Number of seconds before serial operation timeout
 
 # Xantech
+XANTECH8 = 'xantech8'
 EOL = b'\r\n#'
 MAX_SOURCE = 8 # Monoprice is 6
 ZONE_PATTERN = re.compile('#>(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)')
 
 # Monoprice
+MONOPRICE6 = 'monoprice6'
 # EOL = b'\r\n#'
 # MAX_SOURCE = 6
 # ZONE_PATTERN = re.compile('#>(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)')
@@ -65,7 +67,7 @@ class ZoneStatus(object):
         return ZoneStatus(*[int(m) for m in match.groups()])
 
 
-class AmplifierControlBase(object):
+class AmpControlBase(object):
     """
     AmpliferControlBase amplifier interface
     """
@@ -145,7 +147,7 @@ class AmplifierControlBase(object):
 # Helpers
 
 FORMATS = {
-    'monoprice6': {
+    MONOPRICE6: {
         'zone_status':   '?{zone}',
         'power_on':      '<{zone}PR01',
         'power_off':     '<{zone}PR00',
@@ -158,7 +160,7 @@ FORMATS = {
         'set_source':    '<{zone}CH{:02}'      # zone / 0-6
     },
 
-    'xantech8': {
+    XANTECH8: {
         'zone_details':  '?{zone}ZD+',       # zone details
         'power_on':      '!{zone}PR1+',
         'power_off':     '!{zone}PR0+',
@@ -188,78 +190,81 @@ FORMATS = {
 }
 
 CONFIG ={
-    'monoproce6': {
+    MONOPRICE6: {
         'protocol_eol': b'\r\n#',
         'command_eol':  b'\r',
         'zone_pattern': re.compile('#>(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)')
     },
-    'xantech8': {
+    XANTECH8: {
         'protocol_eol': b'\r\n#',
         'command_eol':  b'\r',
         'zone_pattern': re.compile('#>(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)')
     }
 }
 
-XANTECH8 = 'xantech8'
-MONOPRICE6 = 'monoprice6'
 
 def _format(amp_type, format_code):
     return FORMATS[amp_type].get(format_code) + CONFIG[amp_type].get('command_eol')
 
-def _format_zone_status_request(zone: int) -> bytes:
+def _format_zone_status_request(amp_type, zone: int) -> bytes:
     return _format(amp_type, 'zone_status').format(zone).encode()
-#    return '?{}\r'.format(zone).encode() # Monoprice
 
 def _format_set_power(amp_type, zone: int, power: bool) -> bytes:
     if power:
         return _format(amp_type, 'power_on').encode()
     else:
         return _format(amp_type, 'power_off').encode()
-#    return '<{}PR{}\r'.format(zone, '01' if power else '00').encode() # Monoprice
 
 def _format_set_mute(amp_type, zone: int, mute: bool) -> bytes:
     if mute:
         return _format(amp_type, 'mute_on').encode()
     else:
         return _format(amp_type, 'mute_off').encode()
-#    return '<{}MU{}\r'.format(zone, '01' if mute else '00').encode() # Monoprice
 
 def _format_set_volume(amp_type, zone: int, volume: int) -> bytes:
     volume = int(max(0, min(volume, MAX_VOLUME)))
     return _format(amp_type, 'set_volume').format(zone, volume).encode()
- #   return '<{}VO{:02}\r'.format(zone, volume).encode() # Monoprice
 
 # FIXME
 def _format_set_treble(amp_type, zone: int, treble: int) -> bytes:
     treble = int(max(0, min(treble, MAX_TREBLE)))
     return _format(amp_type, 'set_treble').format(zone, treble).encode()
-#    return '<{}TR{:02}\r'.format(zone, treble).encode() # Monoprice
 
 # FIXME
 def _format_set_bass(amp_type, zone: int, bass: int) -> bytes:
     bass = int(max(0, min(bass, MAX_BASS)))
     return _format(amp_type, 'set_bass').format(zone, bass).encode()
-#    return '<{}BS{:02}\r'.format(zone, bass).encode() # Monoprice
 
 # FIXME
 def _format_set_balance(amp_type, zone: int, balance: int) -> bytes:
     balance = max(0, min(balance, MAX_BALANCE))
     return _format(amp_type, 'set_balance').format(zone, balance).encode()
-#    return '<{}BL{:02}\r'.format(zone, balance).encode() # Monoprice
 
 def _format_set_source(amp_type, zone: int, source: int) -> bytes:
     source = int(max(1, min(source, MAX_SOURCE)))
     return _format(amp_type, 'set_source').format(zone, source).encode()
-#    return '<{}CH{:02}\r'.format(zone, source).encode() # Monoprice
 
-def get_xantech(port_url):
+# backwards compatible API
+def get_monoprice(port_url):
+    """
+    Return synchronous version of amplifier control interface
+    :param port_url: serial port, i.e. '/dev/ttyUSB0'
+    :return: synchronous implementation of amplifier control interface
+    """
+    return get_amplifier(MONOPRICE6, port_url)
+
+def get_amplifier(amp_type, port_url):
     """
     Return synchronous version of amplifier control interface
     :param port_url: serial port, i.e. '/dev/ttyUSB0'
     :return: synchronous implementation of amplifier control interface
     """
 
-    amp_type = 'xantech8'
+    # sanity check the provided amplifier type
+    if amp_type not in FORMATS:
+        _LOGGER.error("Unsupported amplifier type '%s'", amp_type)
+        return None
+
     lock = RLock()
 
     def synchronized(func):
@@ -269,7 +274,7 @@ def get_xantech(port_url):
                 return func(*args, **kwargs)
         return wrapper
 
-    class AmplifierControlSync(AmplifierControlBase):
+    class AmpControlSync(AmpControlBase):
         def __init__(self, amp_type, port_url):
             self._amp_type = amp_type
             self._port = serial.serial_for_url(port_url, do_not_open=True)
@@ -351,18 +356,32 @@ def get_xantech(port_url):
             self.set_balance(status.zone, status.balance)
             self.set_source(status.zone, status.source)
 
-    return AmplifierControlSync(amp_type, port_url)
+    return AmpControlSync(amp_type, port_url)
 
+
+# backwards compatible API
+@asyncio.coroutine
+def get_async_monoprice(port_url, loop):
+    """
+    Return asynchronous version of amplifier control interface
+    :param port_url: serial port, i.e. '/dev/ttyUSB0'
+    :return: asynchronous implementation of amplifier control interface
+    """
+    return get_async_amplifier(MONOPRICE6, port_url, loop)
 
 @asyncio.coroutine
-def get_async_xantech(port_url, loop):
+def get_async_amplifier(amp_type, port_url, loop):
     """
     Return asynchronous version of amplifier control interface
     :param port_url: serial port, i.e. '/dev/ttyUSB0'
     :return: asynchronous implementation of amplifier control interface
     """
 
-    amp_type = 'xantech8'
+    # sanity check the provided amplifier type
+    if amp_type not in FORMATS:
+        _LOGGER.error("Unsupported amplifier type '%s'", amp_type)
+        return None
+
     lock = asyncio.Lock()
 
     def locked_coro(coro):
@@ -373,7 +392,7 @@ def get_async_xantech(port_url, loop):
                 return (yield from coro(*args, **kwargs))
         return wrapper
 
-    class XantechAsync(AmplifierControlBase):
+    class AmpControlAsync(AmpControlBase):
         def __init__(self, amp_type, xantech_protocol):
             self._amp_type = amp_type
             self._protocol = xantech_protocol
@@ -472,4 +491,4 @@ def get_async_xantech(port_url, loop):
 
     _, protocol = yield from create_serial_connection(loop, functools.partial(XantechProtocol, loop),
                                                       port_url, baudrate=BAUD_RATE)
-    return XantechAsync(amp_type, protocol)
+    return AmpControlAsync(amp_type, protocol)
