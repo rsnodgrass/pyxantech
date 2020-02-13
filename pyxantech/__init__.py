@@ -4,7 +4,6 @@ import logging
 import re
 import serial
 from functools import wraps
-from serial_asyncio import create_serial_connection
 from threading import RLock
 
 _LOGGER = logging.getLogger(__name__)
@@ -295,7 +294,7 @@ def get_amp_controller(amp_type: str, port_url):
         def __init__(self, amp_type, port_url):
             self._amp_type = amp_type
             self._port = serial.serial_for_url(port_url, do_not_open=True)
-            self._port.baudrate = _get_config(amp_type, 'command_eol')
+            self._port.baudrate = _get_config(amp_type, 'baud_rate')
             self._port.stopbits = serial.STOPBITS_ONE
             self._port.bytesize = serial.EIGHTBITS
             self._port.parity = serial.PARITY_NONE
@@ -393,6 +392,7 @@ def get_async_amp_controller(amp_type, port_url, loop):
     :param port_url: serial port, i.e. '/dev/ttyUSB0'
     :return: asynchronous implementation of amplifier control interface
     """
+    from serial_asyncio import create_serial_connection
 
     # sanity check the provided amplifier type
     if amp_type not in SUPPORTED_AMP_TYPES:

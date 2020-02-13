@@ -1,9 +1,10 @@
 from pyxantech import get_amp_controller
 
-amp = get_amp_controller('xantech8', '/dev/ttyUSB0')
+#amp = get_amp_controller('xantech8', '/dev/ttyUSB0')
+amp = get_amp_controller('xantech8', '/dev/tty.usbserial-A501SGSU')
 
 # Valid zones are 11-16 for main xantech amplifier
-zone_status = xantech.zone_status(11)
+zone_status = amp.zone_status(11)
 
 # Print zone status
 print('Zone Number = {}'.format(zone_status.zone))
