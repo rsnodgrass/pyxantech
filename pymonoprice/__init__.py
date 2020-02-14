@@ -423,9 +423,9 @@ def get_async_amp_controller(amp_type, port_url, loop):
         return wrapper
 
     class AmpControlAsync(AmpControlBase):
-        def __init__(self, amp_type, xantech_protocol):
+        def __init__(self, amp_type, protocol):
             self._amp_type = amp_type
-            self._protocol = xantech_protocol
+            self._protocol = protocol
 
         @locked_coro
         @asyncio.coroutine

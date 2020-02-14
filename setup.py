@@ -35,16 +35,16 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-setup(name='pyxantech',
+setup(name='pymonoprice',
       version=VERSION,
       description='Python API for RS232 communication with Monoprice, Xantech, and Dayton Audio multi-zone amplifiers',
-      url='https://github.com/rsnodgrass/pyxantech',
-      download_url='https://github.com/rsndograss/pyxantech/archive/{}.tar.gz'.format(VERSION),
+      url='https://github.com/rsnodgrass/pymonoprice',
+      download_url='https://github.com/rsndograss/pymonoprice/archive/{}.tar.gz'.format(VERSION),
       author='Egor Tsinko',
       author_email='etsinko@gmail.com',
       license='MIT',
       install_requires=['pyserial>=3.4','pyserial-asyncio>=0.4'],
-      packages=['pyxantech'],
+      packages=['pymonoprice'],
       classifiers=['Development Status :: 4 - Beta',
                    'License :: OSI Approved :: MIT License',
                    'Programming Language :: Python :: 3' ],
