@@ -9,6 +9,7 @@ from threading import RLock
 _LOGGER = logging.getLogger(__name__)
 
 MONOPRICE6 = 'monoprice6'   # Monoprice 6-zone amplifier
+DAYTON6    = 'monoprice6'   # Dayton Audio 6-zone amplifiers are idential to Monoprice
 XANTECH8   = 'xantech8'     # Xantech 8-zone amplifier
 SUPPORTED_AMP_TYPES = [ MONOPRICE6, XANTECH8 ]
 
