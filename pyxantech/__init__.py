@@ -20,6 +20,7 @@ MAX_BASS = 14
 MAX_TREBLE = 14
 MAX_VOLUME = 38
 
+# technically zone = {amp_number}{zone_num_within_amp_1-6} (e.g. 11 = amp number 1, zone 1)
 RS232_COMMANDS = {
     MONOPRICE6: {
         'zone_status':   '?{zone}',
@@ -70,9 +71,9 @@ AMP_TYPE_CONFIG ={
         'command_eol':     "\r",
         'zone_pattern':    re.compile('#>(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)'),
         'max_sources':     6,
-        'max_zones':       6,
-        'max_linked_amps': 3,
-        'zones':           [ 11, 12, 13, 14, 15, 16,   # main amp
+        'max_amps':        3,
+        'sources':         [ 1, 2, 3, 4, 5, 6 ],
+        'zones':           [ 11, 12, 13, 14, 15, 16,   # main amp 1
                              21, 22, 23, 24, 25, 26,   # linked amp 2
                              31, 32, 33, 34, 35, 36 ]  # linked amp 3
     },
@@ -82,9 +83,9 @@ AMP_TYPE_CONFIG ={
         'command_eol':     "\r",
         'zone_pattern':    re.compile('#>(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)'),
         'max_sources':     8,
-        'max_zones':       8,
-        'max_linked_amps': 3,
-        'zones':           [ 11, 12, 13, 14, 15, 16, 17, 18,   # main amp
+        'max_amps':        3,
+        'sources':         [ 1, 2, 3, 4, 5, 6, 7, 8 ],
+        'zones':           [ 11, 12, 13, 14, 15, 16, 17, 18,   # main amp 1
                              21, 22, 23, 24, 25, 26, 27, 28,   # linked amp 2
                              31, 32, 33, 34, 35, 36, 37, 38 ]  # linked amp 3
     }
@@ -134,12 +135,13 @@ class ZoneStatus(object):
         self.keypad = bool(keypad)
 
     @classmethod
-    def from_string(cls, string: str):
+    def from_string(cls, amp_type, string: str):
         if not string:
             return None
-        match = re.search(ZONE_PATTERN, string)
+        pattern = _get_config(amp_type, 'zone_pattern')
+        match = re.search(pattern, string)
         if not match:
-            _LOGGER.debug("Could not pattern match zone status '%s' with '%s'", string, ZONE_PATTERN)
+            _LOGGER.debug("Could not pattern match zone status '%s' with '%s'", string, pattern)
             return None
         return ZoneStatus(*[int(m) for m in match.groups()])
 
@@ -228,42 +230,51 @@ def _format(amp_type: str, format_code: str, args = {}):
     return command.format(args).encode()
 
 def _format_zone_status_request(amp_type, zone: int) -> bytes:
-    return _format(amp_type, 'zone_status').format(zone)
+    assert zone in _get_config(amp_type, 'zones')
+    return _format(amp_type, 'zone_status', args = { 'zone': zone })
 
 def _format_set_power(amp_type, zone: int, power: bool) -> bytes:
+    assert zone in _get_config(amp_type, 'zones')
     if power:
         return _format(amp_type, 'power_on')
     else:
         return _format(amp_type, 'power_off')
 
 def _format_set_mute(amp_type, zone: int, mute: bool) -> bytes:
+    assert zone in _get_config(amp_type, 'zones')
     if mute:
         return _format(amp_type, 'mute_on')
     else:
         return _format(amp_type, 'mute_off')
     
 def _format_set_volume(amp_type, zone: int, volume: int) -> bytes:
+    assert zone in _get_config(amp_type, 'zones')
     volume = int(max(0, min(volume, MAX_VOLUME)))
     return _format(amp_type, 'set_volume', args = { 'zone': zone, 'volume': volume })
 
 def _format_set_volume(amp_type, zone: int, volume: int) -> bytes:
+    assert zone in _get_config(amp_type, 'zones')
     volume = int(max(0, min(volume, MAX_VOLUME)))
     return _format(amp_type, 'set_volume', args = { 'zone': zone, 'volume': volume })
 
 def _format_set_treble(amp_type, zone: int, treble: int) -> bytes:
+    assert zone in _get_config(amp_type, 'zones')
     treble = int(max(0, min(treble, MAX_TREBLE)))
     return _format(amp_type, 'set_treble', args = { 'zone': zone, 'treble': treble })
 
 def _format_set_bass(amp_type, zone: int, bass: int) -> bytes:
+    assert zone in _get_config(amp_type, 'zones')
     bass = int(max(0, min(bass, MAX_BASS)))
     return _format(amp_type, 'set_bass', args = { 'zone': zone, 'bass': bass })
 
 def _format_set_balance(amp_type, zone: int, balance: int) -> bytes:
+    assert zone in _get_config(amp_type, 'zones')
     balance = max(0, min(balance, MAX_BALANCE))
     return _format(amp_type, 'set_balance', args = { 'zone': zone, 'balance': balance })
 
 def _format_set_source(amp_type, zone: int, source: int) -> bytes:
-    source = int(max(1, min(source, _get_config(amp_type, 'max_sources'))))
+    assert zone in _get_config(amp_type, 'zones')
+    assert source in _get_config(amp_type, 'sources')
     return _format(amp_type, 'set_source', args = { 'zone': zone, 'source': source })
 
 # backwards compatible API
@@ -334,7 +345,8 @@ def get_amp_controller(amp_type: str, port_url):
         @synchronized
         def zone_status(self, zone: int):
             # Ignore first 6 bytes as they will contain 3 byte command and 3 bytes of EOL
-            return ZoneStatus.from_string(self._process_request(_format_zone_status_request(self._amp_type, zone), skip=6))
+            response = self._process_request(_format_zone_status_request(self._amp_type, zone), skip=6)
+            return ZoneStatus.from_string(self._amp_type, response)
 
         @synchronized
         def set_power(self, zone: int, power: bool):
