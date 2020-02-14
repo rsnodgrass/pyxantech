@@ -8,12 +8,10 @@ from threading import RLock
 
 _LOGGER = logging.getLogger(__name__)
 
-TIMEOUT = 2  # Number of seconds before serial operation timeout
-
 MONOPRICE6 = 'monoprice6'   # Monoprice 6-zone amplifier
-XANTECH8 = 'xantech8'       # Xantech 8-zone amplifier
+XANTECH8   = 'xantech8'     # Xantech 8-zone amplifier
+SUPPORTED_AMP_TYPES = [ MONOPRICE6, XANTECH8 ]
 
-ZONE_PATTERN = re.compile('#>(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)')
 EOL = b'\r\n#'
 LEN_EOL = len(EOL)
 
@@ -21,8 +19,6 @@ MAX_BALANCE = 20
 MAX_BASS = 14
 MAX_TREBLE = 14
 MAX_VOLUME = 38
-
-SUPPORTED_AMP_TYPES = [ MONOPRICE6, XANTECH8 ]
 
 RS232_COMMANDS = {
     MONOPRICE6: {
@@ -94,8 +90,10 @@ AMP_TYPE_CONFIG ={
     }
 }
 
+TIMEOUT = 2  # serial operation timeout (seconds)
+
 SERIAL_INIT_ARGS = {
-    'baudrate':      BAUD_RATE,
+    'baudrate':      9600,
     'stopbits':      serial.STOPBITS_ONE,
     'bytesize':      serial.EIGHTBITS,
     'parity':        serial.PARITY_NONE,
