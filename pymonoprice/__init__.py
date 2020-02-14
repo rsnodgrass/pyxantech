@@ -13,9 +13,6 @@ DAYTON6    = 'monoprice6'   # Dayton Audio 6-zone amplifiers are idential to Mon
 XANTECH8   = 'xantech8'     # Xantech 8-zone amplifier
 SUPPORTED_AMP_TYPES = [ MONOPRICE6, XANTECH8 ]
 
-EOL = b'\r\n#'
-LEN_EOL = len(EOL)
-
 MAX_BALANCE = 20
 MAX_BASS = 14
 MAX_TREBLE = 14
@@ -59,10 +56,19 @@ RS232_COMMANDS = {
         'disable_activity_updates': '!ZA0+',
         'disable_status_updates':   '!ZP0+',
 
+        'current_source':  '?{zone}SS+', # RESPONSE: ?{zone}SS{source}+
+        'current_volume':  '?{zone}VO+', # RESPONSE: ?{zone}VO{volume}+
+        'current_mute':    '?{zone}MU+', # RESPONSE: ?{zone}MU{0/1}+
+        'current_power':   '?{zone}PR+', # RESPONSE: ?{zone}PR{0/1}+
+        'current_treble':  '?{zone}TR+', # RESPONSE: ?{zone}TR{level}+
+        'current_bass':    '?{zone}BS+', # RESPONSE: ?{zone}BS{level}+
+        'current_balance': '?{zone}BA+', # RESPONSE: ?{zone}BA{level}+
+
         # FIXME: these aren't documented, do they work?
         'set_treble':    '!{zone}TR{level:02}',     # level: 0-14
         'set_bass':      '!{zone}BS{level:02}',     # level: 0-14
-        'set_balance':   '!{zone}BL{level:02}'      # level: 0-20
+        'set_balance':   '!{zone}BL{level:02}',     # level: 0-20
+        'all_zones_on':  '!A1+', 
     }
 }
 
@@ -78,6 +84,7 @@ AMP_TYPE_CONFIG ={
                              31, 32, 33, 34, 35, 36 ]          # linked amp 3
     },
 
+    # NOTE: Xantech MRC88 seems to indicate zones are 1..8, or 1..16 if expanded; perhaps this scheme for multi-amps changed
     XANTECH8: {
         'protocol_eol':    b'\r\n#',
         'command_eol':     "\r",
@@ -321,12 +328,18 @@ def get_amp_controller(amp_type: str, port_url):
             :return: ascii string returned by xantech
             """
             _LOGGER.debug('Sending "%s"', request)
+
             # clear
             self._port.reset_output_buffer()
             self._port.reset_input_buffer()
+
             # send
             self._port.write(request)
             self._port.flush()
+
+            eol = _get_config(self._amp_type, 'protocol_eol')
+            len_eol = len(eol)
+
             # receive
             result = bytearray()
             while True:
@@ -335,8 +348,9 @@ def get_amp_controller(amp_type: str, port_url):
                     raise serial.SerialTimeoutException(
                         'Connection timed out! Last received bytes {}'.format([hex(a) for a in result]))
                 result += c
-                if len(result) > skip and result[-LEN_EOL:] == EOL:
+                if len(result) > skip and result[-len_eol:] == EOL:
                     break
+
             ret = bytes(result)
             _LOGGER.debug('Received "%s"', ret)
             return ret.decode('ascii')
@@ -344,7 +358,7 @@ def get_amp_controller(amp_type: str, port_url):
         @synchronized
         def zone_status(self, zone: int):
             # Ignore first 6 bytes as they will contain 3 byte command and 3 bytes of EOL
-            response = self._process_request(_format_zone_status_request(self._amp_type, zone), skip=6)
+            response = self._process_request(_zone_status_cmd(self._amp_type, zone), skip=6)
             return ZoneStatus.from_string(self._amp_type, response)
 
         @synchronized
@@ -481,8 +495,9 @@ def get_async_amp_controller(amp_type, port_url, loop):
             yield from self._protocol.send(_set_source_cmd(self._amp_type, status.zone, status.source))
 
     class AmpControlProtocol(asyncio.Protocol):
-        def __init__(self, loop):
+        def __init__(self, config, loop):
             super().__init__()
+            self._config = config
             self._loop = loop
             self._lock = asyncio.Lock()
             self._transport = None
@@ -501,6 +516,10 @@ def get_async_amp_controller(amp_type, port_url, loop):
         def send(self, request: bytes, skip=0):
             yield from self._connected.wait()
             result = bytearray()
+
+            eol = self._config.get('protocol_eol')
+            len_eol = len(eol)
+
             # Only one transaction at a time
             with (yield from self._lock):
                 self._transport.serial.reset_output_buffer()
@@ -511,7 +530,7 @@ def get_async_amp_controller(amp_type, port_url, loop):
                 try:
                     while True:
                         result += yield from asyncio.wait_for(self.q.get(), TIMEOUT, loop=self._loop)
-                        if len(result) > skip and result[-LEN_EOL:] == EOL:
+                        if len(result) > skip and result[-len_eol:] == eol:
                             ret = bytes(result)
                             _LOGGER.debug('Received "%s"', ret)
                             return ret.decode('ascii')
@@ -520,7 +539,7 @@ def get_async_amp_controller(amp_type, port_url, loop):
                     raise
 
     _, protocol = yield from create_serial_connection(loop,
-                                                      functools.partial(AmpControlProtocol, loop),
+                                                      functools.partial(AmpControlProtocol, AMP_TYPE_CONFIG.get(amp_type), loop),
                                                       port_url,
                                                       **SERIAL_INIT_ARGS)
     return AmpControlAsync(amp_type, protocol)
