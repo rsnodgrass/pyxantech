@@ -3,7 +3,7 @@
 import os
 import sys
 
-VERSION = '0.3.6'
+VERSION = '0.4.0'
 
 try:
     from setuptools import setup
@@ -16,8 +16,8 @@ if sys.argv[-1] == 'publish':
 
 license = """
 MIT License
-Copyright (c) 2020 Ryan Snodgrass
 Copyright (c) 2017 Egor Tsinko
+Copyright (c) 2020 Ryan Snodgrass
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
@@ -37,14 +37,15 @@ SOFTWARE.
 
 setup(name='pyxantech',
       version=VERSION,
-      description='Python API for RS232 communication to Xantech multi-zone amplifiers',
+      description='Python API for RS232 communication with Monoprice, Xantech, and Dayton Audio multi-zone amplifiers',
       url='https://github.com/rsnodgrass/pyxantech',
       download_url='https://github.com/rsndograss/pyxantech/archive/{}.tar.gz'.format(VERSION),
-      author='Ryan Snodgrass',
-      author_email='rsnodgrass@gmail.com',
+      author='Egor Tsinko',
+      author_email='etsinko@gmail.com',
       license='MIT',
       install_requires=['pyserial>=3.4','pyserial-asyncio>=0.4'],
       packages=['pyxantech'],
       classifiers=['Development Status :: 4 - Beta',
-                   'Programming Language :: Python :: 3.7'],
+                   'License :: OSI Approved :: MIT License',
+                   'Programming Language :: Python :: 3' ],
       zip_safe=True)

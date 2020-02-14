@@ -6,7 +6,6 @@ from pyxantech import (get_xantech, get_async_xantech, ZoneStatus)
 from tests import create_dummy_port
 import asyncio
 
-
 class TestZoneStatus(unittest.TestCase):
 
     def test_zone_status_broken(self):
@@ -15,7 +14,6 @@ class TestZoneStatus(unittest.TestCase):
         self.assertIsNone(ZoneStatus.from_string('\r\n#>a100010000101112100401\r\n#'))
         self.assertIsNone(ZoneStatus.from_string('\r\n#>a1000100dfsf112100401\r\n#'))
         self.assertIsNone(ZoneStatus.from_string('\r\n#>\r\n#'))
-
 
 class TestXantech8(unittest.TestCase):
     def setUp(self):
@@ -142,7 +140,6 @@ class TestXantech8(unittest.TestCase):
     def test_timeout(self):
         with self.assertRaises(serial.SerialTimeoutException):
             self.xantech.set_source(3, 3)
-
 
 class TestAsyncXantech8(TestXantech8):
 
