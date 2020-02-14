@@ -70,23 +70,21 @@ AMP_TYPE_CONFIG ={
         'protocol_eol':    b'\r\n#',
         'command_eol':     "\r",
         'zone_pattern':    re.compile('#>(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)'),
-        'max_sources':     6,
         'max_amps':        3,
         'sources':         [ 1, 2, 3, 4, 5, 6 ],
-        'zones':           [ 11, 12, 13, 14, 15, 16,   # main amp 1
-                             21, 22, 23, 24, 25, 26,   # linked amp 2
-                             31, 32, 33, 34, 35, 36 ]  # linked amp 3
+        'zones':           [ 11, 12, 13, 14, 15, 16,           # main amp 1    (e.g. 15 = amp 1, zone 5)
+                             21, 22, 23, 24, 25, 26,           # linked amp 2  (e.g. 23 = amp 2, zone 3)
+                             31, 32, 33, 34, 35, 36 ]          # linked amp 3
     },
 
     XANTECH8: {
         'protocol_eol':    b'\r\n#',
         'command_eol':     "\r",
         'zone_pattern':    re.compile('#>(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)'),
-        'max_sources':     8,
         'max_amps':        3,
         'sources':         [ 1, 2, 3, 4, 5, 6, 7, 8 ],
-        'zones':           [ 11, 12, 13, 14, 15, 16, 17, 18,   # main amp 1
-                             21, 22, 23, 24, 25, 26, 27, 28,   # linked amp 2
+        'zones':           [ 11, 12, 13, 14, 15, 16, 17, 18,   # main amp 1    (e.g. 15 = amp 1, zone 5)
+                             21, 22, 23, 24, 25, 26, 27, 28,   # linked amp 2  (e.g. 23 = amp 2, zone 3)
                              31, 32, 33, 34, 35, 36, 37, 38 ]  # linked amp 3
     }
 }
@@ -219,7 +217,7 @@ class AmpControlBase(object):
 
     def restore_zone(self, status: ZoneStatus):
         """
-        Restores zone to it's previous state
+        Restores zone to its previous state
         :param status: zone state to restore
         """
         raise NotImplemented()
@@ -438,37 +436,37 @@ def get_async_amp_controller(amp_type, port_url, loop):
         @locked_coro
         @asyncio.coroutine
         def set_power(self, zone: int, power: bool):
-            yield from self._protocol.send(_format_set_power(self._amp_type,zone, power))
+            yield from self._protocol.send(_format_set_power(self._amp_type, zone, power))
 
         @locked_coro
         @asyncio.coroutine
         def set_mute(self, zone: int, mute: bool):
-            yield from self._protocol.send(_format_set_mute(self._amp_type,zone, mute))
+            yield from self._protocol.send(_format_set_mute(self._amp_type, zone, mute))
 
         @locked_coro
         @asyncio.coroutine
         def set_volume(self, zone: int, volume: int):
-            yield from self._protocol.send(_format_set_volume(self._amp_type,zone, volume))
+            yield from self._protocol.send(_format_set_volume(self._amp_type, zone, volume))
 
         @locked_coro
         @asyncio.coroutine
         def set_treble(self, zone: int, treble: int):
-            yield from self._protocol.send(_format_set_treble(self._amp_type,zone, treble))
+            yield from self._protocol.send(_format_set_treble(self._amp_type, zone, treble))
 
         @locked_coro
         @asyncio.coroutine
         def set_bass(self, zone: int, bass: int):
-            yield from self._protocol.send(_format_set_bass(self._amp_type,zone, bass))
+            yield from self._protocol.send(_format_set_bass(self._amp_type, zone, bass))
 
         @locked_coro
         @asyncio.coroutine
         def set_balance(self, zone: int, balance: int):
-            yield from self._protocol.send(_format_set_balance(self._amp_type,zone, balance))
+            yield from self._protocol.send(_format_set_balance(self._amp_type, zone, balance))
 
         @locked_coro
         @asyncio.coroutine
         def set_source(self, zone: int, source: int):
-            yield from self._protocol.send(_format_set_source(self._amp_type,zone, source))
+            yield from self._protocol.send(_format_set_source(self._amp_type, zone, source))
 
         @locked_coro
         @asyncio.coroutine
