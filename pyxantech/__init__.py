@@ -227,50 +227,50 @@ def _format(amp_type: str, format_code: str, args = {}):
     command = RS232_COMMANDS[amp_type].get(format_code) + eol
     return command.format(args).encode()
 
-def _format_zone_status_request(amp_type, zone: int) -> bytes:
+def _zone_status_request_cmd(amp_type, zone: int) -> bytes:
     assert zone in _get_config(amp_type, 'zones')
     return _format(amp_type, 'zone_status', args = { 'zone': zone })
 
-def _format_set_power(amp_type, zone: int, power: bool) -> bytes:
+def _set_power_cmd(amp_type, zone: int, power: bool) -> bytes:
     assert zone in _get_config(amp_type, 'zones')
     if power:
         return _format(amp_type, 'power_on')
     else:
         return _format(amp_type, 'power_off')
 
-def _format_set_mute(amp_type, zone: int, mute: bool) -> bytes:
+def _set_mute_cmd(amp_type, zone: int, mute: bool) -> bytes:
     assert zone in _get_config(amp_type, 'zones')
     if mute:
         return _format(amp_type, 'mute_on')
     else:
         return _format(amp_type, 'mute_off')
     
-def _format_set_volume(amp_type, zone: int, volume: int) -> bytes:
+def _set_volume_cmd(amp_type, zone: int, volume: int) -> bytes:
     assert zone in _get_config(amp_type, 'zones')
     volume = int(max(0, min(volume, MAX_VOLUME)))
     return _format(amp_type, 'set_volume', args = { 'zone': zone, 'volume': volume })
 
-def _format_set_volume(amp_type, zone: int, volume: int) -> bytes:
+def _set_volume_cmd(amp_type, zone: int, volume: int) -> bytes:
     assert zone in _get_config(amp_type, 'zones')
     volume = int(max(0, min(volume, MAX_VOLUME)))
     return _format(amp_type, 'set_volume', args = { 'zone': zone, 'volume': volume })
 
-def _format_set_treble(amp_type, zone: int, treble: int) -> bytes:
+def _set_treble_cmd(amp_type, zone: int, treble: int) -> bytes:
     assert zone in _get_config(amp_type, 'zones')
     treble = int(max(0, min(treble, MAX_TREBLE)))
     return _format(amp_type, 'set_treble', args = { 'zone': zone, 'treble': treble })
 
-def _format_set_bass(amp_type, zone: int, bass: int) -> bytes:
+def _set_bass_cmd(amp_type, zone: int, bass: int) -> bytes:
     assert zone in _get_config(amp_type, 'zones')
     bass = int(max(0, min(bass, MAX_BASS)))
     return _format(amp_type, 'set_bass', args = { 'zone': zone, 'bass': bass })
 
-def _format_set_balance(amp_type, zone: int, balance: int) -> bytes:
+def _set_balance_cmd(amp_type, zone: int, balance: int) -> bytes:
     assert zone in _get_config(amp_type, 'zones')
     balance = max(0, min(balance, MAX_BALANCE))
     return _format(amp_type, 'set_balance', args = { 'zone': zone, 'balance': balance })
 
-def _format_set_source(amp_type, zone: int, source: int) -> bytes:
+def _set_source_cmd(amp_type, zone: int, source: int) -> bytes:
     assert zone in _get_config(amp_type, 'zones')
     assert source in _get_config(amp_type, 'sources')
     return _format(amp_type, 'set_source', args = { 'zone': zone, 'source': source })
@@ -348,31 +348,31 @@ def get_amp_controller(amp_type: str, port_url):
 
         @synchronized
         def set_power(self, zone: int, power: bool):
-            self._process_request(_format_set_power(self._amp_type, zone, power))
+            self._process_request(_set_power_cmd(self._amp_type, zone, power))
 
         @synchronized
         def set_mute(self, zone: int, mute: bool):
-            self._process_request(_format_set_mute(self._amp_type, zone, mute))
+            self._process_request(_set_mute_cmd(self._amp_type, zone, mute))
 
         @synchronized
         def set_volume(self, zone: int, volume: int):
-            self._process_request(_format_set_volume(self._amp_type, zone, volume))
+            self._process_request(_set_volume_cmd(self._amp_type, zone, volume))
 
         @synchronized
         def set_treble(self, zone: int, treble: int):
-            self._process_request(_format_set_treble(self._amp_type, zone, treble))
+            self._process_request(_set_treble_cmd(self._amp_type, zone, treble))
 
         @synchronized
         def set_bass(self, zone: int, bass: int):
-            self._process_request(_format_set_bass(self._amp_type, zone, bass))
+            self._process_request(_set_bass_cmd(self._amp_type, zone, bass))
 
         @synchronized
         def set_balance(self, zone: int, balance: int):
-            self._process_request(_format_set_balance(self._amp_type, zone, balance))
+            self._process_request(_set_balance_cmd(self._amp_type, zone, balance))
 
         @synchronized
         def set_source(self, zone: int, source: int):
-            self._process_request(_format_set_source(self._amp_type, zone, source))
+            self._process_request(_set_source_cmd(self._amp_type, zone, source))
 
         @synchronized
         def restore_zone(self, status: ZoneStatus):
@@ -430,54 +430,54 @@ def get_async_amp_controller(amp_type, port_url, loop):
         @asyncio.coroutine
         def zone_status(self, zone: int):
             # Ignore first 6 bytes as they will contain 3 byte command and 3 bytes of EOL
-            string = yield from self._protocol.send(_format_zone_status_request(self._amp_type, zone), skip=6)
+            string = yield from self._protocol.send(_zone_status_request_cmd(self._amp_type, zone), skip=6)
             return ZoneStatus.from_string(string)
 
         @locked_coro
         @asyncio.coroutine
         def set_power(self, zone: int, power: bool):
-            yield from self._protocol.send(_format_set_power(self._amp_type, zone, power))
+            yield from self._protocol.send(_set_power_cmd(self._amp_type, zone, power))
 
         @locked_coro
         @asyncio.coroutine
         def set_mute(self, zone: int, mute: bool):
-            yield from self._protocol.send(_format_set_mute(self._amp_type, zone, mute))
+            yield from self._protocol.send(_set_mute_cmd(self._amp_type, zone, mute))
 
         @locked_coro
         @asyncio.coroutine
         def set_volume(self, zone: int, volume: int):
-            yield from self._protocol.send(_format_set_volume(self._amp_type, zone, volume))
+            yield from self._protocol.send(_set_volume_cmd(self._amp_type, zone, volume))
 
         @locked_coro
         @asyncio.coroutine
         def set_treble(self, zone: int, treble: int):
-            yield from self._protocol.send(_format_set_treble(self._amp_type, zone, treble))
+            yield from self._protocol.send(_set_treble_cmd(self._amp_type, zone, treble))
 
         @locked_coro
         @asyncio.coroutine
         def set_bass(self, zone: int, bass: int):
-            yield from self._protocol.send(_format_set_bass(self._amp_type, zone, bass))
+            yield from self._protocol.send(_set_bass_cmd(self._amp_type, zone, bass))
 
         @locked_coro
         @asyncio.coroutine
         def set_balance(self, zone: int, balance: int):
-            yield from self._protocol.send(_format_set_balance(self._amp_type, zone, balance))
+            yield from self._protocol.send(_set_balance_cmd(self._amp_type, zone, balance))
 
         @locked_coro
         @asyncio.coroutine
         def set_source(self, zone: int, source: int):
-            yield from self._protocol.send(_format_set_source(self._amp_type, zone, source))
+            yield from self._protocol.send(_set_source_cmd(self._amp_type, zone, source))
 
         @locked_coro
         @asyncio.coroutine
         def restore_zone(self, status: ZoneStatus):
-            yield from self._protocol.send(_format_set_power(self._amp_type, status.zone, status.power))
-            yield from self._protocol.send(_format_set_mute(self._amp_type, status.zone, status.mute))
-            yield from self._protocol.send(_format_set_volume(self._amp_type, status.zone, status.volume))
-            yield from self._protocol.send(_format_set_treble(self._amp_type, status.zone, status.treble))
-            yield from self._protocol.send(_format_set_bass(self._amp_type, status.zone, status.bass))
-            yield from self._protocol.send(_format_set_balance(self._amp_type, status.zone, status.balance))
-            yield from self._protocol.send(_format_set_source(self._amp_type, status.zone, status.source))
+            yield from self._protocol.send(_set_power_cmd(self._amp_type, status.zone, status.power))
+            yield from self._protocol.send(_set_mute_cmd(self._amp_type, status.zone, status.mute))
+            yield from self._protocol.send(_set_volume_cmd(self._amp_type, status.zone, status.volume))
+            yield from self._protocol.send(_set_treble_cmd(self._amp_type, status.zone, status.treble))
+            yield from self._protocol.send(_set_bass_cmd(self._amp_type, status.zone, status.bass))
+            yield from self._protocol.send(_set_balance_cmd(self._amp_type, status.zone, status.balance))
+            yield from self._protocol.send(_set_source_cmd(self._amp_type, status.zone, status.source))
 
     class AmpControlProtocol(asyncio.Protocol):
         def __init__(self, loop):
