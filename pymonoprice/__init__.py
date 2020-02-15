@@ -92,6 +92,7 @@ AMP_TYPE_CONFIG ={
         'protocol_eol':    b'\r\n#',
         'command_eol':     "\r",
         'zone_pattern':    re.compile('#>(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)'),
+        'zone_vars':       '#>{zone}{pa}{power}{mute}{do_not_disturb}{volume}{treble}{bass}{balance}{source}{keypad}',
         'max_amps':        3,
         'sources':         [ 1, 2, 3, 4, 5, 6 ],
         'zones':           [ 11, 12, 13, 14, 15, 16,           # main amp 1    (e.g. 15 = amp 1, zone 5)
@@ -104,6 +105,7 @@ AMP_TYPE_CONFIG ={
         'protocol_eol':    b'\r\n#',
         'command_eol':     "\r",
         'zone_pattern':    re.compile('#>(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)'),
+        'zone_vars':       '#>{zone}{pa}{power}{mute}{do_not_disturb}{volume}{treble}{bass}{balance}{source}{keypad}',
         'max_amps':        3,
         'sources':         [ 1, 2, 3, 4, 5, 6, 7, 8 ],
         'zones':           [ 11, 12, 13, 14, 15, 16, 17, 18,   # main amp 1    (e.g. 15 = amp 1, zone 5)
