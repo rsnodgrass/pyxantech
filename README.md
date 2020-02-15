@@ -80,8 +80,6 @@ loop.run_until_complete(main(loop))
 |              | CM8X8 / CM8X8DR          | 8     | *MAYBE*   | commercial rack mount matrix controller (BNC) |
 | Monoprice    | MPR-SG6Z / 10761         | 6     | *MAYBE*   | audio only; mid-fi version of Xantech |
 | Dayton Audio | DAX66                    | 6     | *MAYBE*   | audio only; mid-fi version of Xantech |
-| Anthem       | MDX-8                    | 4     | *NO*      | RS232 specification available, but not yet implemented |
-| Anthem       | MDX-16                   | 8     | *NO*      | RS232 specification available, but not yet implemented |
 
 * The [Monoprice MPR-SG6Z](https://www.monoprice.com/product?p_id=10761) and
   [Dayton Audio DAX66](https://www.parts-express.com/dayton-audio-dax66-6-source-6-room-distributed-whole-house-audio-system-with-keypads-25-wpc--300-585)
