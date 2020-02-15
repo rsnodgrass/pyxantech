@@ -60,6 +60,47 @@ loop = asyncio.get_event_loop()
 loop.run_until_complete(main(loop))
 ```
 
+
+## Required Hardware
+ 
+* multi-zone/matrix amplifier or controller that supports variations of the Xantech RS232 serial protocol (see below)
+* host machine with a serial cable or network serial adapter to physically connect to a Xantech supported multi-zone amplifier/controller
+* host machine for executing the Docker container (e.g. [Raspberry Pi](https://www.raspberrypi.org/) running Home Assistant's [Hass.io](https://www.home-assistant.io/hassio/) hypervisor)
+
+#### Supported Amplifiers/Controllers
+
+| Manufacturer | Model(s)                 | Zones | Supported | Notes |
+| ------------ | ------------------------ |:-----:|:---------:| ----- |
+| Xantech      | MRAUDIO8X8 / MRAUDIO8X8m | 6+2   | YES       | audio only; zones 7-8 are preamp outputs only |
+|              | MX88a / MX88ai           | **8** | YES       | audio only; ai = Ethernet support (MRIP) |
+|              | MRC88 / MRC88m           | 6+2   | YES       | audio + video; zones 7-8 are preamp outputs only |
+|              | MX88 / MX88vi            | **8** | YES       | audio + video; vi = Ethernet support (MRIP) |
+|              | MRAUDIO4X4 / BXAUDIO4x4  | 4     | *NO*      | audio only; 4-zone uses different protocol |
+|              | MRC44 / MRC44CTL         | 4     | *NO*      | audio + video; 4-zone uses different protocol |
+|              | CM8X8 / CM8X8DR          | 8     | *MAYBE*   | commercial rack mount matrix controller (BNC) |
+| Monoprice    | MPR-SG6Z / 10761         | 6     | *MAYBE*   | audio only; mid-fi version of Xantech |
+| Dayton Audio | DAX66                    | 6     | *MAYBE*   | audio only; mid-fi version of Xantech |
+| Anthem       | MDX-8                    | 4     | *NO*      | RS232 specification available, but not yet implemented |
+| Anthem       | MDX-16                   | 8     | *NO*      | RS232 specification available, but not yet implemented |
+
+* The [Monoprice MPR-SG6Z](https://www.monoprice.com/product?p_id=10761) and
+  [Dayton Audio DAX66](https://www.parts-express.com/dayton-audio-dax66-6-source-6-room-distributed-whole-house-audio-system-with-keypads-25-wpc--300-585)
+  appear to have licensed or copies the serial interface from Xantech. Both Monoprice
+  and Dayton Audio use a version of the Xantech multi-zone controller protocol.
+
+* Some Xantech MX88 models use DB15 outputs on the rear, requiring a DB15 to DB9 adapter cable (PN 05913665). The pinouts of 05913665 are not currently documented ([possibly DB15-DB9 modem cable](https://www.aggsoft.com/rs232-pinout-cable/modem-db9-to-db15.htm)). These Xantech models have a DB9 RS232 port on the front which can also be used.
+
 ## See Also
 
 * [Home Assistant integration](https://www.home-assistant.io/integrations/monoprice/)
+* [Monoprice RS232 serial protocol manual](doc/Monoprice-RS232-Manual.pdf)
+* [Monoprice RS232 serial protocol control](doc/Monoprice-RS232-Control.pdf)
+
+#### Community Engagement
+
+Sites with active community engagement around the Xantech, Monoprice, and Daytona AUdio
+multi-zone amplifiers:
+
+* (https://www.avsforum.com/forum/36-home-v-distribution/1506842-any-experience-monoprice-6-zone-home-audio-multizone-controller-23.html)
+* (http://cocoontech.com/forums/topic/25893-monoprice-multi-zone-audio/)
+* (https://community.home-assistant.io/t/monoprice-whole-home-audio-controller-10761-success/19734/67)
