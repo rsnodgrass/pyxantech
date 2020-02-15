@@ -16,10 +16,9 @@ This was originally created by Egor Tsinko for use with [Home-Assistant](http://
 For Monoprice and Dayton Audio 6-zone amplifiers:
 
 ```python
-from pymonoprice import get_amp_controller, get_monoprice, MONOPRICE6
+from pymonoprice import get_amp_controller, MONOPRICE6
 
 amp = get_amp_controller(MONOPRICE6, '/dev/ttyUSB0')
-# amp = get_monoprice('/dev/ttyUSB0') # DEPRECATED STYLE
 
 # Turn off zone #12 (amplifier 1 / zone 1)
 amp.set_power(12, False)
