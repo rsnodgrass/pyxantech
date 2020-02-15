@@ -37,7 +37,7 @@ SOFTWARE.
 
 setup(name='pymonoprice',
       version=VERSION,
-      description='Python API for RS232 communication with Monoprice, Xantech, and Dayton Audio multi-zone amplifiers',
+      description='# Python RS232 API for Monoprice/Xantech/Dayton Audio multi-zone amps',
       url='https://github.com/rsnodgrass/pymonoprice',
       download_url='https://github.com/rsndograss/pymonoprice/archive/{}.tar.gz'.format(VERSION),
       author='Egor Tsinko',

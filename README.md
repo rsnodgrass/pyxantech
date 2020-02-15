@@ -1,4 +1,4 @@
-# Python interface for Monoprice, Xantech, and Dayton Audio amplifiers
+# Python RS232 API for Monoprice/Xantech/Dayton Audio multi-zone amps
 
 This was originally created for use with [Home-Assistant](http://home-assistant.io), but can be
 used in other contexts as well. It supports both the 6-zone Monoprice and 8-zone Xantech amplifiers,
