@@ -39,11 +39,7 @@ RS232_COMMANDS = {
     },
 
     XANTECH8: {
-        'zone_status':   '?{zone}ZD+',
-        'zone_details':  '?{zone}ZD+',
-        'source_select': '!{zone}SS{source}+',    # source (no leading zeros)
-
-        'set_power':     '<{zone}PR{onoff}+',
+        'set_power':     '!{zone}PR{onoff}+',
         'power_on':      '!{zone}PR1+',
         'power_off':     '!{zone}PR0+',
         'all_zones_off': '!AO+',
@@ -53,10 +49,12 @@ RS232_COMMANDS = {
         'mute_off':      '!{zone}MU0+',
         'mute_toggle':   '!{zone}MT+',
 
-        'set_volume':    '!{zone}VO{level:02}+',  # level: 0-38
+        'set_volume':    '!{zone}VO{level:02}+',    # level: 0-38
         'volume_up':     '!{zone}VI+',
         'volume_down':   '!{zone}VD+',
-        
+
+        'source_select': '!{zone}SS{source}+',      # source (no leading zeros)
+
         'set_bass':      '!{zone}BS{level:02}',     # level: 0-14
         'bass_up':       '!{zone}BI+',
         'bass_down':     '!{zone}BD+',
@@ -73,6 +71,9 @@ RS232_COMMANDS = {
         'disable_status_updates':   '!ZP0+',
         'power_toggle':  '!{zone}PT+',
 
+        # queries
+        'zone_status':     '?{zone}ZD+',
+        'zone_details':    '?{zone}ZD+',
         'current_source':  '?{zone}SS+', # RESPONSE: ?{zone}SS{source}+
         'current_volume':  '?{zone}VO+', # RESPONSE: ?{zone}VO{volume}+
         'current_mute':    '?{zone}MU+', # RESPONSE: ?{zone}MU{0/1}+
@@ -345,6 +346,7 @@ def get_amp_controller(amp_type: str, port_url):
             :param skip: number of bytes to skip for end of transmission decoding
             :return: ascii string returned by xantech
             """
+            print('Sending "%s"', request)
             _LOGGER.debug('Sending "%s"', request)
 
             # clear
@@ -363,6 +365,8 @@ def get_amp_controller(amp_type: str, port_url):
             while True:
                 c = self._port.read(1)
                 if not c:
+                    print('Result "%s"', result)
+                    _LOGGER.info(result)
                     raise serial.SerialTimeoutException(
                         'Connection timed out! Last received bytes {}'.format([hex(a) for a in result]))
                 result += c
