@@ -103,8 +103,8 @@ AMP_TYPE_CONFIG ={
 
     # NOTE: Xantech MRC88 seems to indicate zones are 1..8, or 1..16 if expanded; perhaps this scheme for multi-amps changed
     XANTECH8: {
-        'protocol_eol':    b'\r\n#',
-        'command_eol':     "\r",
+        'protocol_eol':    b'+', # '+'
+        'command_eol':     '', # '+'
         'zone_pattern':    re.compile('#>(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)'),
         'zone_vars':       '#>{zone}{pa}{power}{mute}{do_not_disturb}{volume}{treble}{bass}{balance}{source}{keypad}',
         'max_amps':        3,
@@ -335,10 +335,7 @@ def get_amp_controller(amp_type: str, port_url):
     class AmpControlSync(AmpControlBase):
         def __init__(self, amp_type, port_url):
             self._amp_type = amp_type
-            self._port = serial.serial_for_url(port_url, do_not_open=True, **SERIAL_INIT_ARGS)
-            self._port.timeout = TIMEOUT
-            self._port.write_timeout = TIMEOUT
-            self._port.open()
+            self._port = serial.serial_for_url(port_url, **SERIAL_INIT_ARGS)
 
         def _process_request(self, request: bytes, skip=0):
             """
@@ -365,7 +362,9 @@ def get_amp_controller(amp_type: str, port_url):
             while True:
                 c = self._port.read(1)
                 if not c:
+                    ret = bytes(result)
                     print('Result "%s"', result)
+                    print("Result 2: ", ret.decode('ascii'))
                     _LOGGER.info(result)
                     raise serial.SerialTimeoutException(
                         'Connection timed out! Last received bytes {}'.format([hex(a) for a in result]))
