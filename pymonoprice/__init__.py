@@ -22,10 +22,15 @@ MAX_VOLUME = 38
 RS232_COMMANDS = {
     MONOPRICE6: {
         'zone_status':   '?{zone}',
+
+        'set_power':     '<{zone}PR{on_off:02}',    # on_off: 1 = on; 0 = off
         'power_on':      '<{zone}PR01',
         'power_off':     '<{zone}PR00',
+
+        'set_mute':      '<{zone}MU{on_off:02}',
         'mute_on':       '<{zone}MU01',
         'mute_off':      '<{zone}MU00',
+
         'set_volume':    '<{zone}VO{level:02}',     # level: 0-38
         'set_treble':    '<{zone}TR{level:02}',     # level: 0-14
         'set_bass':      '<{zone}BS{level:02}',     # level: 0-14
@@ -36,25 +41,37 @@ RS232_COMMANDS = {
     XANTECH8: {
         'zone_status':   '?{zone}ZD+',
         'zone_details':  '?{zone}ZD+',
+        'source_select': '!{zone}SS{source}+',    # source (no leading zeros)
+
+        'set_power':     '<{zone}PR{onoff}+',
         'power_on':      '!{zone}PR1+',
         'power_off':     '!{zone}PR0+',
-        'all_zones_off': '!A0+',
+        'all_zones_off': '!AO+',
+
+        'set_mute':      '!{zone}MU{on_off}+',
         'mute_on':       '!{zone}MU1+',
         'mute_off':      '!{zone}MU0+',
+        'mute_toggle':   '!{zone}MT+',
+
+        'set_volume':    '!{zone}VO{level:02}+',  # level: 0-38
         'volume_up':     '!{zone}VI+',
         'volume_down':   '!{zone}VD+',
-        'set_volume':    '!{zone}VO{level:02}+',  # level: 0-38
-        'source_select': '!{zone}SS{source}+',    # source (no leading zeros)
-        'balance_left':  '!{zone}BL+',
-        'balance_right': '!{zone}BR+',
+        
+        'set_bass':      '!{zone}BS{level:02}',     # level: 0-14
         'bass_up':       '!{zone}BI+',
         'bass_down':     '!{zone}BD+',
+
+        'set_balance':   '!{zone}BL{level:02}',     # level: 0-20
         'balance_left':  '!{zone}BL+',
         'balance_right': '!{zone}BR+',
+
+        'set_treble':    '!{zone}TR{level:02}',     # level: 0-14
         'treble_up':     '!{zone}TI+',
         'treble_down':   '!{zone}TD+',
+
         'disable_activity_updates': '!ZA0+',
         'disable_status_updates':   '!ZP0+',
+        'power_toggle':  '!{zone}PT+',
 
         'current_source':  '?{zone}SS+', # RESPONSE: ?{zone}SS{source}+
         'current_volume':  '?{zone}VO+', # RESPONSE: ?{zone}VO{volume}+
@@ -65,10 +82,8 @@ RS232_COMMANDS = {
         'current_balance': '?{zone}BA+', # RESPONSE: ?{zone}BA{level}+
 
         # FIXME: these aren't documented, do they work?
-        'set_treble':    '!{zone}TR{level:02}',     # level: 0-14
-        'set_bass':      '!{zone}BS{level:02}',     # level: 0-14
-        'set_balance':   '!{zone}BL{level:02}',     # level: 0-20
-        'all_zones_on':  '!A1+', 
+        'set_activity_updates': '!ZA{on_off}+',      # on_off: 1 = on; 0 = off
+        'set_status_updates':   '!ZP{on_off}+',      # on_off: 1 = on; 0 = off
     }
 }
 
