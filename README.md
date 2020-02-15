@@ -1,8 +1,11 @@
 # Python RS232 API for Monoprice/Xantech/Dayton Audio multi-zone amps
 
-This was originally created for use with [Home-Assistant](http://home-assistant.io), but can be
-used in other contexts as well. It supports both the 6-zone Monoprice and 8-zone Xantech amplifiers,
-as well as 6-zone Dayton Audio DAX66 amplifiers.
+Library for communicating via RS232 serial to Monoprice, Xantech and Dayton Audio multi-zone amps.
+This supports any serial protocol for communicating with the amps, including DB9/DB15 RS232 ports,
+USB serial ports, and possibly the RS232-over-IP interface for more recent Xantech amps. See below
+for exactly which amplifier models are supported.
+
+This was originally created by Egor Tsinko for use with [Home-Assistant](http://home-assistant.io).
 
 ## Status
 
