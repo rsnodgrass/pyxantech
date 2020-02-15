@@ -303,6 +303,7 @@ def _set_source_cmd(amp_type, zone: int, source: int) -> bytes:
 # backwards compatible API
 def get_monoprice(port_url):
     """
+    *DEPRECATED* For backwards compatibility only.
     Return synchronous version of amplifier control interface
     :param port_url: serial port, i.e. '/dev/ttyUSB0'
     :return: synchronous implementation of amplifier control interface
@@ -423,6 +424,7 @@ def get_amp_controller(amp_type: str, port_url):
 @asyncio.coroutine
 def get_async_monoprice(port_url, loop):
     """
+    *DEPRECATED* For backwards compatibility only.
     Return asynchronous version of amplifier control interface
     :param port_url: serial port, i.e. '/dev/ttyUSB0'
     :return: asynchronous implementation of amplifier control interface
