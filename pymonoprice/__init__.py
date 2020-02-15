@@ -250,9 +250,9 @@ class AmpControlBase(object):
 def _format(amp_type: str, format_code: str, args = {}):
     eol = _get_config(amp_type, 'command_eol')
     command = RS232_COMMANDS[amp_type].get(format_code) + eol
-    return command.format(args).encode()
+    return command.format(**args).encode()
 
-def _zone_status_request_cmd(amp_type, zone: int) -> bytes:
+def _zone_status_cmd(amp_type, zone: int) -> bytes:
     assert zone in _get_config(amp_type, 'zones')
     return _format(amp_type, 'zone_status', args = { 'zone': zone })
 
@@ -464,7 +464,7 @@ def get_async_amp_controller(amp_type, port_url, loop):
         @asyncio.coroutine
         def zone_status(self, zone: int):
             # Ignore first 6 bytes as they will contain 3 byte command and 3 bytes of EOL
-            string = yield from self._protocol.send(_zone_status_request_cmd(self._amp_type, zone), skip=6)
+            string = yield from self._protocol.send(_zone_status_cmd(self._amp_type, zone), skip=6)
             return ZoneStatus.from_string(string)
 
         @locked_coro
