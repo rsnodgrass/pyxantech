@@ -42,7 +42,7 @@ RS232_COMMANDS = {
         'set_power':     '!{zone}PR{onoff}+',
         'power_on':      '!{zone}PR1+',
         'power_off':     '!{zone}PR0+',
-        'all_zones_off': '!AO+',
+        'all_zones_off': '!A0+',
 
         'set_mute':      '!{zone}MU{on_off}+',
         'mute_on':       '!{zone}MU1+',
@@ -369,7 +369,7 @@ def get_amp_controller(amp_type: str, port_url):
                     raise serial.SerialTimeoutException(
                         'Connection timed out! Last received bytes {}'.format([hex(a) for a in result]))
                 result += c
-                if len(result) > skip and result[-len_eol:] == EOL:
+                if len(result) > skip and result[-len_eol:] == eol:
                     break
 
             ret = bytes(result)
@@ -409,6 +409,10 @@ def get_amp_controller(amp_type: str, port_url):
         @synchronized
         def set_source(self, zone: int, source: int):
             self._process_request(_set_source_cmd(self._amp_type, zone, source))
+
+        def all_off(self):
+            command = _format(amp_type, 'all_zones_off')
+            self._process_request(command)
 
         @synchronized
         def restore_zone(self, status: ZoneStatus):
