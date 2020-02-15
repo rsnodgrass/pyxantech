@@ -1,5 +1,5 @@
 [run]
-source = pyxantech
+source = pymonoprice
 
 [report]
 # Regexes for lines to exclude from consideration
