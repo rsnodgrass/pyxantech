@@ -251,7 +251,7 @@ class AmpControlBase(object):
 def _format(amp_type: str, format_code: str, args = {}):
     eol = _get_config(amp_type, 'command_eol')
     command = RS232_COMMANDS[amp_type].get(format_code) + eol
-    return command.format(**args).encode()
+    return command.format(**args).encode('ascii')
 
 def _zone_status_cmd(amp_type, zone: int) -> bytes:
     assert zone in _get_config(amp_type, 'zones')

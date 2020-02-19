@@ -1,10 +1,12 @@
+#!/usr/local/bin/python3
+
 from pymonoprice import get_amp_controller, XANTECH8
 
 amp = get_amp_controller(XANTECH8, '/dev/tty.usbserial-A501SGSZ')
 
 amp.all_off()
 
-exit
+exit()
 
 # Valid zones are 11-16 for main xantech amplifier
 zone_status = amp.zone_status(11)
