@@ -11,7 +11,7 @@ _LOGGER = logging.getLogger(__name__)
 MONOPRICE6 = 'monoprice6'   # Monoprice 6-zone amplifier
 DAYTON6    = 'monoprice6'   # Dayton Audio 6-zone amplifiers are idential to Monoprice
 XANTECH8   = 'xantech8'     # Xantech 8-zone amplifier
-SUPPORTED_AMP_TYPES = [ MONOPRICE6, XANTECH8 ]
+SUPPORTED_AMP_TYPES= [ MONOPRICE6, XANTECH8 ]
 
 MAX_BALANCE = 20
 MAX_BASS = 14
@@ -55,15 +55,15 @@ RS232_COMMANDS = {
 
         'source_select': '!{zone}SS{source}+',      # source (no leading zeros)
 
-        'set_bass':      '!{zone}BS{level:02}',     # level: 0-14
+        'set_bass':      '!{zone}BS{level:02}+',     # level: 0-14
         'bass_up':       '!{zone}BI+',
         'bass_down':     '!{zone}BD+',
 
-        'set_balance':   '!{zone}BL{level:02}',     # level: 0-20
+        'set_balance':   '!{zone}BL{level:02}+',     # level: 0-20
         'balance_left':  '!{zone}BL+',
         'balance_right': '!{zone}BR+',
 
-        'set_treble':    '!{zone}TR{level:02}',     # level: 0-14
+        'set_treble':    '!{zone}TR{level:02}+',     # level: 0-14
         'treble_up':     '!{zone}TI+',
         'treble_down':   '!{zone}TD+',
 
@@ -90,9 +90,11 @@ RS232_COMMANDS = {
 
 RS232_RESPONSES = {
     MONOPRICE6: {
+        'zone_status':    "#>(?P<zone>\d\d)(?P<power>[01]{2})(?P<power>[01]{2})(?P<mute[01]{2})(?P<do_not_disturb[01])(?P<volume>\d\d)(?P<treble>\d\d)(?P<bass>\d\d)(?P<balance>\d\d)(?P<source>\d\d)(?P<keypad>\d\d)",
     },
 
     XANTECH8: {
+        'zone_status':    "#>(?P<zone>\d\d)(?P<power>[01]{2})(?P<power>[01]{2})(?P<mute[01]{2})(?P<do_not_disturb[01])(?P<volume>\d\d)(?P<treble>\d\d)(?P<bass>\d\d)(?P<balance>\d\d)(?P<source>\d\d)(?P<keypad>\d\d)",
         'power_status':   "\?(?P<zone>\d+)PR(?P<power[01])\+",
         'source_status':  "\?(?P<zone>\d+)SS(?P<source>[1-8])\+",
         'volume_status':  "\?(?P<zone>\d+)VO(?P<volume>\d+)\+",
@@ -107,8 +109,6 @@ AMP_TYPE_CONFIG ={
     MONOPRICE6: {
         'protocol_eol':    b'\r\n#',
         'command_eol':     "\r",
-        'zone_pattern':    re.compile('#>(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)'),
-        'zone_vars':       '#>{zone}{pa}{power}{mute}{do_not_disturb}{volume}{treble}{bass}{balance}{source}{keypad}',
         'max_amps':        3,
         'sources':         [ 1, 2, 3, 4, 5, 6 ],
         'zones':           [ 11, 12, 13, 14, 15, 16,           # main amp 1    (e.g. 15 = amp 1, zone 5)
@@ -120,8 +120,6 @@ AMP_TYPE_CONFIG ={
     XANTECH8: {
         'protocol_eol':    b'+', # '+'
         'command_eol':     '', # '+'
-        'zone_pattern':    re.compile('#>(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)'),
-        'zone_vars':       '#>{zone}{pa}{power}{mute}{do_not_disturb}{volume}{treble}{bass}{balance}{source}{keypad}',
         'max_amps':        3,
         'sources':         [ 1, 2, 3, 4, 5, 6, 7, 8 ],
         'zones':           [ 11, 12, 13, 14, 15, 16, 17, 18,   # main amp 1    (e.g. 15 = amp 1, zone 5)
@@ -473,8 +471,8 @@ def get_async_amp_controller(amp_type, port_url, loop):
         @asyncio.coroutine
         @wraps(coro)
         def wrapper(*args, **kwargs):
-            with (yield from lock):
-                return (yield from coro(*args, **kwargs))
+            with (await lock):
+                return (await coro(*args, **kwargs))
         return wrapper
 
     class AmpControlAsync(AmpControlBase):
@@ -486,54 +484,54 @@ def get_async_amp_controller(amp_type, port_url, loop):
         @asyncio.coroutine
         def zone_status(self, zone: int):
             # Ignore first 6 bytes as they will contain 3 byte command and 3 bytes of EOL
-            string = yield from self._protocol.send(_zone_status_cmd(self._amp_type, zone), skip=6)
+            string = await self._protocol.send(_zone_status_cmd(self._amp_type, zone), skip=6)
             return ZoneStatus.from_string(string)
 
         @locked_coro
         @asyncio.coroutine
         def set_power(self, zone: int, power: bool):
-            yield from self._protocol.send(_set_power_cmd(self._amp_type, zone, power))
+            await self._protocol.send(_set_power_cmd(self._amp_type, zone, power))
 
         @locked_coro
         @asyncio.coroutine
         def set_mute(self, zone: int, mute: bool):
-            yield from self._protocol.send(_set_mute_cmd(self._amp_type, zone, mute))
+            await self._protocol.send(_set_mute_cmd(self._amp_type, zone, mute))
 
         @locked_coro
         @asyncio.coroutine
         def set_volume(self, zone: int, volume: int):
-            yield from self._protocol.send(_set_volume_cmd(self._amp_type, zone, volume))
+            await self._protocol.send(_set_volume_cmd(self._amp_type, zone, volume))
 
         @locked_coro
         @asyncio.coroutine
         def set_treble(self, zone: int, treble: int):
-            yield from self._protocol.send(_set_treble_cmd(self._amp_type, zone, treble))
+            await self._protocol.send(_set_treble_cmd(self._amp_type, zone, treble))
 
         @locked_coro
         @asyncio.coroutine
         def set_bass(self, zone: int, bass: int):
-            yield from self._protocol.send(_set_bass_cmd(self._amp_type, zone, bass))
+            await self._protocol.send(_set_bass_cmd(self._amp_type, zone, bass))
 
         @locked_coro
         @asyncio.coroutine
         def set_balance(self, zone: int, balance: int):
-            yield from self._protocol.send(_set_balance_cmd(self._amp_type, zone, balance))
+            await self._protocol.send(_set_balance_cmd(self._amp_type, zone, balance))
 
         @locked_coro
         @asyncio.coroutine
         def set_source(self, zone: int, source: int):
-            yield from self._protocol.send(_set_source_cmd(self._amp_type, zone, source))
+            await self._protocol.send(_set_source_cmd(self._amp_type, zone, source))
 
         @locked_coro
         @asyncio.coroutine
         def restore_zone(self, status: ZoneStatus):
-            yield from self._protocol.send(_set_power_cmd(self._amp_type, status.zone, status.power))
-            yield from self._protocol.send(_set_mute_cmd(self._amp_type, status.zone, status.mute))
-            yield from self._protocol.send(_set_volume_cmd(self._amp_type, status.zone, status.volume))
-            yield from self._protocol.send(_set_treble_cmd(self._amp_type, status.zone, status.treble))
-            yield from self._protocol.send(_set_bass_cmd(self._amp_type, status.zone, status.bass))
-            yield from self._protocol.send(_set_balance_cmd(self._amp_type, status.zone, status.balance))
-            yield from self._protocol.send(_set_source_cmd(self._amp_type, status.zone, status.source))
+            await self._protocol.send(_set_power_cmd(self._amp_type, status.zone, status.power))
+            await self._protocol.send(_set_mute_cmd(self._amp_type, status.zone, status.mute))
+            await self._protocol.send(_set_volume_cmd(self._amp_type, status.zone, status.volume))
+            await self._protocol.send(_set_treble_cmd(self._amp_type, status.zone, status.treble))
+            await self._protocol.send(_set_bass_cmd(self._amp_type, status.zone, status.bass))
+            await self._protocol.send(_set_balance_cmd(self._amp_type, status.zone, status.balance))
+            await self._protocol.send(_set_source_cmd(self._amp_type, status.zone, status.source))
 
     class AmpControlProtocol(asyncio.Protocol):
         def __init__(self, config, loop):
@@ -555,14 +553,14 @@ def get_async_amp_controller(amp_type, port_url, loop):
 
         @asyncio.coroutine
         def send(self, request: bytes, skip=0):
-            yield from self._connected.wait()
+            await self._connected.wait()
             result = bytearray()
 
             eol = self._config.get('protocol_eol')
             len_eol = len(eol)
 
             # Only one transaction at a time
-            with (yield from self._lock):
+            with (await self._lock):
                 self._transport.serial.reset_output_buffer()
                 self._transport.serial.reset_input_buffer()
                 while not self.q.empty():
@@ -570,7 +568,7 @@ def get_async_amp_controller(amp_type, port_url, loop):
                 self._transport.write(request)
                 try:
                     while True:
-                        result += yield from asyncio.wait_for(self.q.get(), TIMEOUT, loop=self._loop)
+                        result += await asyncio.wait_for(self.q.get(), TIMEOUT, loop=self._loop)
                         if len(result) > skip and result[-len_eol:] == eol:
                             ret = bytes(result)
                             _LOGGER.debug('Received "%s"', ret)
@@ -579,8 +577,8 @@ def get_async_amp_controller(amp_type, port_url, loop):
                     _LOGGER.error("Timeout during receiving response for command '%s', received='%s'", request, result)
                     raise
 
-    _, protocol = yield from create_serial_connection(loop,
-                                                      functools.partial(AmpControlProtocol, AMP_TYPE_CONFIG.get(amp_type), loop),
-                                                      port_url,
-                                                      **SERIAL_INIT_ARGS)
+    _, protocol = await create_serial_connection(loop,
+                                                 functools.partial(AmpControlProtocol, AMP_TYPE_CONFIG.get(amp_type), loop),
+                                                 port_url,
+                                                 **SERIAL_INIT_ARGS)
     return AmpControlAsync(amp_type, protocol)
