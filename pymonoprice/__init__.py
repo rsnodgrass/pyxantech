@@ -6,7 +6,9 @@ import serial
 from functools import wraps
 from threading import RLock
 
-_LOGGER = logging.getLogger(__name__)
+from .protocol import (get_rs232_async_protocol, DEFAULT_SERIAL_CONFIG)
+
+LOG = logging.getLogger(__name__)
 
 MONOPRICE6 = 'monoprice6'   # Monoprice 6-zone amplifier
 DAYTON6    = 'monoprice6'   # Dayton Audio 6-zone amplifiers are idential to Monoprice
@@ -143,7 +145,7 @@ def _get_config(amp_type: str, key: str):
     config = AMP_TYPE_CONFIG.get(amp_type)
     if config:
         return config.get(key)
-    _LOGGER.error("Invalid amp type '%s' config key '%s'; returning None", amp_type, key)
+    LOG.error("Invalid amp type '%s' config key '%s'; returning None", amp_type, key)
     return None
 
 class ZoneStatus(object):
@@ -152,13 +154,11 @@ class ZoneStatus(object):
                  pa: bool,
                  power: bool,
                  mute: bool,
-                 do_not_disturb: bool,
                  volume: int,  # 0 - 38
                  treble: int,  # 0 -> -7,  14-> +7
                  bass: int,  # 0 -> -7,  14-> +7
                  balance: int,  # 00 - left, 10 - center, 20 right
-                 source: int,
-                 keypad: bool):
+                 source: int):
         self.zone = zone
         self.pa = bool(pa)
         self.power = bool(power)
@@ -178,10 +178,9 @@ class ZoneStatus(object):
         pattern = _get_config(amp_type, 'zone_pattern')
         match = re.search(pattern, string)
         if not match:
-            _LOGGER.debug("Could not pattern match zone status '%s' with '%s'", string, pattern)
+            LOG.debug("Could not pattern match zone status '%s' with '%s'", string, pattern)
             return None
         return ZoneStatus(*[int(m) for m in match.groups()])
-
 
 # FIXME: for Xantech the zones can be 11..18, 21..28, 31..38; perhaps split this as;
 #   zone_status(self, zone: int, amp_num: int = 1)  with default amp_num
@@ -261,58 +260,58 @@ class AmpControlBase(object):
         """
         raise NotImplemented()
 
-def _format(amp_type: str, format_code: str, args = {}):
+def _command(amp_type: str, format_code: str, args = {}):
     eol = _get_config(amp_type, 'command_eol')
     command = RS232_COMMANDS[amp_type].get(format_code) + eol
     return command.format(**args).encode('ascii')
 
 def _zone_status_cmd(amp_type, zone: int) -> bytes:
     assert zone in _get_config(amp_type, 'zones')
-    return _format(amp_type, 'zone_status', args = { 'zone': zone })
+    return _command(amp_type, 'zone_status', args = { 'zone': zone })
 
 def _set_power_cmd(amp_type, zone: int, power: bool) -> bytes:
     assert zone in _get_config(amp_type, 'zones')
     if power:
-        return _format(amp_type, 'power_on')
+        return _command(amp_type, 'power_on')
     else:
-        return _format(amp_type, 'power_off')
+        return _command(amp_type, 'power_off')
 
 def _set_mute_cmd(amp_type, zone: int, mute: bool) -> bytes:
     assert zone in _get_config(amp_type, 'zones')
     if mute:
-        return _format(amp_type, 'mute_on')
+        return _command(amp_type, 'mute_on')
     else:
-        return _format(amp_type, 'mute_off')
+        return _command(amp_type, 'mute_off')
     
 def _set_volume_cmd(amp_type, zone: int, volume: int) -> bytes:
     assert zone in _get_config(amp_type, 'zones')
     volume = int(max(0, min(volume, MAX_VOLUME)))
-    return _format(amp_type, 'set_volume', args = { 'zone': zone, 'volume': volume })
+    return _command(amp_type, 'set_volume', args = { 'zone': zone, 'volume': volume })
 
 def _set_volume_cmd(amp_type, zone: int, volume: int) -> bytes:
     assert zone in _get_config(amp_type, 'zones')
     volume = int(max(0, min(volume, MAX_VOLUME)))
-    return _format(amp_type, 'set_volume', args = { 'zone': zone, 'volume': volume })
+    return _command(amp_type, 'set_volume', args = { 'zone': zone, 'volume': volume })
 
 def _set_treble_cmd(amp_type, zone: int, treble: int) -> bytes:
     assert zone in _get_config(amp_type, 'zones')
     treble = int(max(0, min(treble, MAX_TREBLE)))
-    return _format(amp_type, 'set_treble', args = { 'zone': zone, 'treble': treble })
+    return _command(amp_type, 'set_treble', args = { 'zone': zone, 'treble': treble })
 
 def _set_bass_cmd(amp_type, zone: int, bass: int) -> bytes:
     assert zone in _get_config(amp_type, 'zones')
     bass = int(max(0, min(bass, MAX_BASS)))
-    return _format(amp_type, 'set_bass', args = { 'zone': zone, 'bass': bass })
+    return _command(amp_type, 'set_bass', args = { 'zone': zone, 'bass': bass })
 
 def _set_balance_cmd(amp_type, zone: int, balance: int) -> bytes:
     assert zone in _get_config(amp_type, 'zones')
     balance = max(0, min(balance, MAX_BALANCE))
-    return _format(amp_type, 'set_balance', args = { 'zone': zone, 'balance': balance })
+    return _command(amp_type, 'set_balance', args = { 'zone': zone, 'balance': balance })
 
 def _set_source_cmd(amp_type, zone: int, source: int) -> bytes:
     assert zone in _get_config(amp_type, 'zones')
     assert source in _get_config(amp_type, 'sources')
-    return _format(amp_type, 'set_source', args = { 'zone': zone, 'source': source })
+    return _command(amp_type, 'set_source', args = { 'zone': zone, 'source': source })
 
 # backwards compatible API
 def get_monoprice(port_url):
@@ -333,7 +332,7 @@ def get_amp_controller(amp_type: str, port_url):
 
     # sanity check the provided amplifier type
     if amp_type not in SUPPORTED_AMP_TYPES:
-        _LOGGER.error("Unsupported amplifier type '%s'", amp_type)
+        LOG.error("Unsupported amplifier type '%s'", amp_type)
         return None
 
     lock = RLock()
@@ -345,19 +344,20 @@ def get_amp_controller(amp_type: str, port_url):
                 return func(*args, **kwargs)
         return wrapper
 
+
     class AmpControlSync(AmpControlBase):
         def __init__(self, amp_type, port_url):
             self._amp_type = amp_type
             self._port = serial.serial_for_url(port_url, **SERIAL_INIT_ARGS)
 
-        def _process_request(self, request: bytes, skip=0):
+        def _send_request(self, request: bytes, skip=0):
             """
             :param request: request that is sent to the xantech
             :param skip: number of bytes to skip for end of transmission decoding
             :return: ascii string returned by xantech
             """
             print('Sending "%s"', request)
-            _LOGGER.debug('Sending "%s"', request)
+            LOG.debug('Sending "%s"', request)
 
             # clear
             self._port.reset_output_buffer()
@@ -378,7 +378,7 @@ def get_amp_controller(amp_type: str, port_url):
                     ret = bytes(result)
                     print('Result "%s"', result)
                     print("Result 2: ", ret.decode('ascii'))
-                    _LOGGER.info(result)
+                    LOG.info(result)
                     raise serial.SerialTimeoutException(
                         'Connection timed out! Last received bytes {}'.format([hex(a) for a in result]))
                 result += c
@@ -386,63 +386,52 @@ def get_amp_controller(amp_type: str, port_url):
                     break
 
             ret = bytes(result)
-            _LOGGER.debug('Received "%s"', ret)
+            LOG.debug('Received "%s"', ret)
             return ret.decode('ascii')
 
         @synchronized
         def zone_status(self, zone: int):
             # Ignore first 6 bytes as they will contain 3 byte command and 3 bytes of EOL
-            response = self._process_request(_zone_status_cmd(self._amp_type, zone), skip=6)
+            response = self._send_request(_zone_status_cmd(self._amp_type, zone), skip=6)
             return ZoneStatus.from_string(self._amp_type, response)
 
         @synchronized
         def set_power(self, zone: int, power: bool):
-            self._process_request(_set_power_cmd(self._amp_type, zone, power))
+            self._send_request(_set_power_cmd(self._amp_type, zone, power))
 
         @synchronized
         def set_mute(self, zone: int, mute: bool):
-            self._process_request(_set_mute_cmd(self._amp_type, zone, mute))
+            self._send_request(_set_mute_cmd(self._amp_type, zone, mute))
 
         @synchronized
         def set_volume(self, zone: int, volume: int):
-            self._process_request(_set_volume_cmd(self._amp_type, zone, volume))
+            self._send_request(_set_volume_cmd(self._amp_type, zone, volume))
 
         @synchronized
         def set_treble(self, zone: int, treble: int):
-            self._process_request(_set_treble_cmd(self._amp_type, zone, treble))
+            self._send_request(_set_treble_cmd(self._amp_type, zone, treble))
 
         @synchronized
         def set_bass(self, zone: int, bass: int):
-            self._process_request(_set_bass_cmd(self._amp_type, zone, bass))
+            self._send_request(_set_bass_cmd(self._amp_type, zone, bass))
 
         @synchronized
         def set_balance(self, zone: int, balance: int):
-            self._process_request(_set_balance_cmd(self._amp_type, zone, balance))
+            self._send_request(_set_balance_cmd(self._amp_type, zone, balance))
 
         @synchronized
         def set_source(self, zone: int, source: int):
-            self._process_request(_set_source_cmd(self._amp_type, zone, source))
-
-        def all_off(self):
-            command = _format(amp_type, 'all_zones_off')
-            self._process_request(command)
+            self._send_request(_set_source_cmd(self._amp_type, zone, source))
 
         @synchronized
-        def restore_zone(self, status: ZoneStatus):
-            self.set_power(status.zone, status.power)
-            self.set_mute(status.zone, status.mute)
-            self.set_volume(status.zone, status.volume)
-            self.set_treble(status.zone, status.treble)
-            self.set_bass(status.zone, status.bass)
-            self.set_balance(status.zone, status.balance)
-            self.set_source(status.zone, status.source)
+        def all_off(self):
+            self._send_request( _command(amp_type, 'all_zones_off') )
 
     return AmpControlSync(amp_type, port_url)
 
 
 # backwards compatible API
-@asyncio.coroutine
-def get_async_monoprice(port_url, loop):
+async def get_async_monoprice(port_url, loop):
     """
     *DEPRECATED* For backwards compatibility only.
     Return asynchronous version of amplifier control interface
@@ -451,26 +440,26 @@ def get_async_monoprice(port_url, loop):
     """
     return get_async_amp_controller(MONOPRICE6, port_url, loop)
 
-@asyncio.coroutine
-def get_async_amp_controller(amp_type, port_url, loop):
+async def get_async_amp_controller(amp_type, port_url, loop):
     """
     Return asynchronous version of amplifier control interface
     :param port_url: serial port, i.e. '/dev/ttyUSB0'
     :return: asynchronous implementation of amplifier control interface
     """
-    from serial_asyncio import create_serial_connection
 
     # sanity check the provided amplifier type
     if amp_type not in SUPPORTED_AMP_TYPES:
-        _LOGGER.error("Unsupported amplifier type '%s'", amp_type)
+        LOG.error("Unsupported amplifier type '%s'", amp_type)
         return None
+
+    config = AMP_TYPE_CONFIG[amp_type]
+    protocol_type = config.get('protocol')
 
     lock = asyncio.Lock()
 
     def locked_coro(coro):
-        @asyncio.coroutine
         @wraps(coro)
-        def wrapper(*args, **kwargs):
+        async def wrapper(*args, **kwargs):
             with (await lock):
                 return (await coro(*args, **kwargs))
         return wrapper
@@ -481,104 +470,53 @@ def get_async_amp_controller(amp_type, port_url, loop):
             self._protocol = protocol
 
         @locked_coro
-        @asyncio.coroutine
-        def zone_status(self, zone: int):
+        async def zone_status(self, zone: int):
             # Ignore first 6 bytes as they will contain 3 byte command and 3 bytes of EOL
             string = await self._protocol.send(_zone_status_cmd(self._amp_type, zone), skip=6)
             return ZoneStatus.from_string(string)
 
         @locked_coro
-        @asyncio.coroutine
-        def set_power(self, zone: int, power: bool):
+        async def set_power(self, zone: int, power: bool):
             await self._protocol.send(_set_power_cmd(self._amp_type, zone, power))
 
         @locked_coro
-        @asyncio.coroutine
-        def set_mute(self, zone: int, mute: bool):
+        async def set_mute(self, zone: int, mute: bool):
             await self._protocol.send(_set_mute_cmd(self._amp_type, zone, mute))
 
         @locked_coro
-        @asyncio.coroutine
-        def set_volume(self, zone: int, volume: int):
+        async def set_volume(self, zone: int, volume: int):
             await self._protocol.send(_set_volume_cmd(self._amp_type, zone, volume))
 
         @locked_coro
-        @asyncio.coroutine
-        def set_treble(self, zone: int, treble: int):
+        async def set_treble(self, zone: int, treble: int):
             await self._protocol.send(_set_treble_cmd(self._amp_type, zone, treble))
 
         @locked_coro
-        @asyncio.coroutine
-        def set_bass(self, zone: int, bass: int):
+        async def set_bass(self, zone: int, bass: int):
             await self._protocol.send(_set_bass_cmd(self._amp_type, zone, bass))
 
         @locked_coro
-        @asyncio.coroutine
-        def set_balance(self, zone: int, balance: int):
+        async def set_balance(self, zone: int, balance: int):
             await self._protocol.send(_set_balance_cmd(self._amp_type, zone, balance))
 
         @locked_coro
-        @asyncio.coroutine
-        def set_source(self, zone: int, source: int):
+        async def set_source(self, zone: int, source: int):
             await self._protocol.send(_set_source_cmd(self._amp_type, zone, source))
 
         @locked_coro
-        @asyncio.coroutine
-        def restore_zone(self, status: ZoneStatus):
-            await self._protocol.send(_set_power_cmd(self._amp_type, status.zone, status.power))
-            await self._protocol.send(_set_mute_cmd(self._amp_type, status.zone, status.mute))
-            await self._protocol.send(_set_volume_cmd(self._amp_type, status.zone, status.volume))
-            await self._protocol.send(_set_treble_cmd(self._amp_type, status.zone, status.treble))
-            await self._protocol.send(_set_bass_cmd(self._amp_type, status.zone, status.bass))
-            await self._protocol.send(_set_balance_cmd(self._amp_type, status.zone, status.balance))
-            await self._protocol.send(_set_source_cmd(self._amp_type, status.zone, status.source))
+        async def all_off(self):
+            self._protocol.send(_command(amp_type, 'all_zones_off'))
 
-    class AmpControlProtocol(asyncio.Protocol):
-        def __init__(self, config, loop):
-            super().__init__()
-            self._config = config
-            self._loop = loop
-            self._lock = asyncio.Lock()
-            self._transport = None
-            self._connected = asyncio.Event(loop=loop)
-            self.q = asyncio.Queue(loop=loop)
+#        @locked_coro
+#        async def restore_zone(self, status: ZoneStatus):
+#            await self._protocol.send(_set_power_cmd(self._amp_type, status.zone, status.power))
+#            await self._protocol.send(_set_mute_cmd(self._amp_type, status.zone, status.mute))
+#            await self._protocol.send(_set_volume_cmd(self._amp_type, status.zone, status.volume))
+#            await self._protocol.send(_set_treble_cmd(self._amp_type, status.zone, status.treble))
+#            await self._protocol.send(_set_bass_cmd(self._amp_type, status.zone, status.bass))
+#            await self._protocol.send(_set_balance_cmd(self._amp_type, status.zone, status.balance))
+#            await self._protocol.send(_set_source_cmd(self._amp_type, status.zone, status.source))
 
-        def connection_made(self, transport):
-            self._transport = transport
-            self._connected.set()
-            _LOGGER.debug('port opened %s', self._transport)
 
-        def data_received(self, data):
-            asyncio.ensure_future(self.q.put(data), loop=self._loop)
-
-        @asyncio.coroutine
-        def send(self, request: bytes, skip=0):
-            await self._connected.wait()
-            result = bytearray()
-
-            eol = self._config.get('protocol_eol')
-            len_eol = len(eol)
-
-            # Only one transaction at a time
-            with (await self._lock):
-                self._transport.serial.reset_output_buffer()
-                self._transport.serial.reset_input_buffer()
-                while not self.q.empty():
-                    self.q.get_nowait()
-                self._transport.write(request)
-                try:
-                    while True:
-                        result += await asyncio.wait_for(self.q.get(), TIMEOUT, loop=self._loop)
-                        if len(result) > skip and result[-len_eol:] == eol:
-                            ret = bytes(result)
-                            _LOGGER.debug('Received "%s"', ret)
-                            return ret.decode('ascii')
-                except asyncio.TimeoutError:
-                    _LOGGER.error("Timeout during receiving response for command '%s', received='%s'", request, result)
-                    raise
-
-    _, protocol = await create_serial_connection(loop,
-                                                 functools.partial(AmpControlProtocol, AMP_TYPE_CONFIG.get(amp_type), loop),
-                                                 port_url,
-                                                 **SERIAL_INIT_ARGS)
-    return AmpControlAsync(amp_type, protocol)
+    protocol = get_rs232_async_protocol(port_url, DEFAULT_SERIAL_CONFIG, config, loop)
+    return AmpControlAsync(protocol_type, protocol)
