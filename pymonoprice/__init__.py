@@ -259,6 +259,28 @@ class AmpControlBase(object):
         :param status: zone state to restore
         """
         raise NotImplemented()
+    
+
+def _pattern_to_dictionary(pattern: str, text: str) -> dict:
+    result = pattern.match(text)
+    if not result:
+        LOG.error(f"Could not parse '{text}' with pattern '{pattern}'")
+        return None
+
+    d = result.groupdict()
+
+    # FIXME: for safety, we may want to limit which keys this applies to
+    # replace and 0 or 1 with True or False
+    boolean_keys = [ 'power', 'mute', 'pa' ]
+    for k, v in d.items():
+        if k in boolean_keys:
+            if v == '0':
+                d[k] = False
+            elif v == '1':
+                d[k] = True
+
+    return d
+
 
 def _command(amp_type: str, format_code: str, args = {}):
     eol = _get_config(amp_type, 'command_eol')
@@ -272,45 +294,49 @@ def _zone_status_cmd(amp_type, zone: int) -> bytes:
 def _set_power_cmd(amp_type, zone: int, power: bool) -> bytes:
     assert zone in _get_config(amp_type, 'zones')
     if power:
+        LOG.info("Powering on {amp_type} zone {zone}")
         return _command(amp_type, 'power_on')
     else:
+        LOG.info("Powering off {amp_type} zone {zone}")
         return _command(amp_type, 'power_off')
 
 def _set_mute_cmd(amp_type, zone: int, mute: bool) -> bytes:
     assert zone in _get_config(amp_type, 'zones')
     if mute:
+        LOG.info("Muting {amp_type} zone {zone}")
         return _command(amp_type, 'mute_on')
     else:
+        LOG.info("Turning off mute {amp_type} zone {zone}")
         return _command(amp_type, 'mute_off')
     
 def _set_volume_cmd(amp_type, zone: int, volume: int) -> bytes:
     assert zone in _get_config(amp_type, 'zones')
     volume = int(max(0, min(volume, MAX_VOLUME)))
-    return _command(amp_type, 'set_volume', args = { 'zone': zone, 'volume': volume })
-
-def _set_volume_cmd(amp_type, zone: int, volume: int) -> bytes:
-    assert zone in _get_config(amp_type, 'zones')
-    volume = int(max(0, min(volume, MAX_VOLUME)))
+    LOG.info("Setting volume {amp_type} zone {zone} to {volume}")
     return _command(amp_type, 'set_volume', args = { 'zone': zone, 'volume': volume })
 
 def _set_treble_cmd(amp_type, zone: int, treble: int) -> bytes:
     assert zone in _get_config(amp_type, 'zones')
     treble = int(max(0, min(treble, MAX_TREBLE)))
+    LOG.info("Setting treble {amp_type} zone {zone} to {treble}")
     return _command(amp_type, 'set_treble', args = { 'zone': zone, 'treble': treble })
 
 def _set_bass_cmd(amp_type, zone: int, bass: int) -> bytes:
     assert zone in _get_config(amp_type, 'zones')
     bass = int(max(0, min(bass, MAX_BASS)))
+    LOG.info("Setting bass {amp_type} zone {zone} to {bass}")
     return _command(amp_type, 'set_bass', args = { 'zone': zone, 'bass': bass })
 
 def _set_balance_cmd(amp_type, zone: int, balance: int) -> bytes:
     assert zone in _get_config(amp_type, 'zones')
     balance = max(0, min(balance, MAX_BALANCE))
+    LOG.info("Setting balance {amp_type} zone {zone} to {balance}")
     return _command(amp_type, 'set_balance', args = { 'zone': zone, 'balance': balance })
 
 def _set_source_cmd(amp_type, zone: int, source: int) -> bytes:
     assert zone in _get_config(amp_type, 'zones')
     assert source in _get_config(amp_type, 'sources')
+    LOG.info("Setting source {amp_type} zone {zone} to {source}")
     return _command(amp_type, 'set_source', args = { 'zone': zone, 'source': source })
 
 # backwards compatible API
