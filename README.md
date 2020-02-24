@@ -36,7 +36,7 @@ amp.set_source(14, 1)
 For Xantech 8-zone amplifiers:
 
 ```python
-from pyxantech import get_amp_controller, XANTECH8
+from pymonoprice import get_amp_controller, XANTECH8
 
 amp = get_amp_controller(XANTECH8, '/dev/ttyUSB0')
 amp.set_source(12, 3)

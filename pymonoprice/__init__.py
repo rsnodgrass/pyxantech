@@ -72,19 +72,34 @@ RS232_COMMANDS = {
         'power_toggle':  '!{zone}PT+',
 
         # queries
-        'zone_status':     '?{zone}ZD+',
-        'zone_details':    '?{zone}ZD+',
-        'current_source':  '?{zone}SS+', # RESPONSE: ?{zone}SS{source}+
-        'current_volume':  '?{zone}VO+', # RESPONSE: ?{zone}VO{volume}+
-        'current_mute':    '?{zone}MU+', # RESPONSE: ?{zone}MU{0/1}+
-        'current_power':   '?{zone}PR+', # RESPONSE: ?{zone}PR{0/1}+
-        'current_treble':  '?{zone}TR+', # RESPONSE: ?{zone}TR{level}+
-        'current_bass':    '?{zone}BS+', # RESPONSE: ?{zone}BS{level}+
-        'current_balance': '?{zone}BA+', # RESPONSE: ?{zone}BA{level}+
+        'zone_status':    '?{zone}ZD+',
+        'zone_details':   '?{zone}ZD+',
+        'source_status':  '?{zone}SS+',
+        'volume_status':  '?{zone}VO+',
+        'mute_status':    '?{zone}MU+',
+        'power_status':   '?{zone}PR+',
+        'treble_status':  '?{zone}TR+',
+        'bass_status':    '?{zone}BS+',
+        'balance_status': '?{zone}BA+',
 
         # FIXME: these aren't documented, do they work?
         'set_activity_updates': '!ZA{on_off}+',      # on_off: 1 = on; 0 = off
         'set_status_updates':   '!ZP{on_off}+',      # on_off: 1 = on; 0 = off
+    }
+}
+
+RS232_RESPONSES = {
+    MONOPRICE6: {
+    },
+
+    XANTECH8: {
+        'power_status':   "\?(?P<zone>\d+)PR(?P<power[01])\+",
+        'source_status':  "\?(?P<zone>\d+)SS(?P<source>[1-8])\+",
+        'volume_status':  "\?(?P<zone>\d+)VO(?P<volume>\d+)\+",
+        'mute_status':    "\?(?P<zone>\d+)MU(?P<mute>[01])\+",
+        'treble_status':  "\?(?P<zone>\d+)TR(?P<treble>\d+)\+",
+        'bass_status':    "\?(?P<zone>\d+)BS(?P<bass>\d+)\+",
+        'balance_status': "\?(?P<zone>\d+)BA(?P<balance>\d+)\+",
     }
 }
 
