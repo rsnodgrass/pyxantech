@@ -337,18 +337,7 @@ def _set_source_cmd(amp_type, zone: int, source: int) -> bytes:
     LOG.info("Setting source {amp_type} zone {zone} to {source}")
     return _command(amp_type, 'set_source', args = { 'zone': zone, 'source': source })
 
-
-# backwards compatible API
-def get_monoprice(port_url):
-    """
-    *DEPRECATED* For backwards compatibility only.
-    Return synchronous version of amplifier control interface
-    :param port_url: serial port, i.e. '/dev/ttyUSB0'
-    :return: synchronous implementation of amplifier control interface
-    """
-    return get_amp_controller(MONOPRICE6, port_url)
-
-def get_amp_controller(amp_type: str, port_url):
+def get_amp_controller(amp_type: str, port_url, config):
     """
     Return synchronous version of amplifier control interface
     :param port_url: serial port, i.e. '/dev/ttyUSB0'
@@ -375,7 +364,11 @@ def get_amp_controller(amp_type: str, port_url):
             self._amp_type = amp_type
             self._config = config
 
-            self._port = serial.serial_for_url(port_url, **config.get("rs232"))
+            serial_init_config = DEFAULT_SERIAL_CONFIG
+            serial_init_config.update(config.get("rs232"))
+            print(serial_init_config)
+
+            self._port = serial.serial_for_url(port_url, **serial_init_config)
 
         def _send_request(self, request: bytes, skip=0):
             """
@@ -454,7 +447,7 @@ def get_amp_controller(amp_type: str, port_url):
         def all_off(self):
             self._send_request( _command(amp_type, 'all_zones_off') )
 
-    return AmpControlSync(amp_type, port_url)
+    return AmpControlSync(amp_type, port_url, config)
 
 
 # backwards compatible API

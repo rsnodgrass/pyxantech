@@ -1,8 +1,21 @@
 #!/usr/local/bin/python3
 
+import argparse                                                                                             
+
 from pymonoprice import get_amp_controller, XANTECH8
 
-amp = get_amp_controller(XANTECH8, '/dev/tty.usbserial-A501SGSZ')
+parser = argparse.ArgumentParser(description='Anthem RS232 client example')
+parser.add_argument('--tty', help='/dev/tty to use (e.g. /dev/tty.usbserial-A501SGSZ)', required=True)
+parser.add_argument('--baud',type=int,default=9600,help='baud rate')
+args = parser.parse_args()
+
+config = {                          
+    'rs232': {
+        'baudrate': args.baud
+    }
+}
+
+amp = get_amp_controller(XANTECH8, args.tty, config)
 
 amp.all_off()
 
