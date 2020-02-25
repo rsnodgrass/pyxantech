@@ -6,7 +6,7 @@ import serial
 from functools import wraps
 from threading import RLock
 
-from .protocol import (get_rs232_async_protocol, DEFAULT_SERIAL_CONFIG)
+from .protocol import get_rs232_async_protocol
 
 LOG = logging.getLogger(__name__)
 
@@ -19,6 +19,15 @@ MAX_BALANCE = 20
 MAX_BASS = 14
 MAX_TREBLE = 14
 MAX_VOLUME = 38
+
+DEFAULT_SERIAL_CONFIG = {
+    'baudrate':      9600,
+    'bytesize':      serial.EIGHTBITS,
+    'parity':        serial.PARITY_NONE,
+    'stopbits':      serial.STOPBITS_ONE,
+    'timeout':       1.0,
+    'write_timeout': 1.0
+}
 
 # technically zone = {amp_number}{zone_num_within_amp_1-6} (e.g. 11 = amp number 1, zone 1)
 RS232_COMMANDS = {
@@ -109,6 +118,7 @@ RS232_RESPONSES = {
 
 AMP_TYPE_CONFIG ={
     MONOPRICE6: {
+        'rs232':           DEFAULT_SERIAL_CONFIG,
         'protocol_eol':    b'\r\n#',
         'command_eol':     "\r",
         'max_amps':        3,
@@ -120,6 +130,7 @@ AMP_TYPE_CONFIG ={
 
     # NOTE: Xantech MRC88 seems to indicate zones are 1..8, or 1..16 if expanded; perhaps this scheme for multi-amps changed
     XANTECH8: {
+        'rs232':           DEFAULT_SERIAL_CONFIG,
         'protocol_eol':    b'+', # '+'
         'command_eol':     '', # '+'
         'max_amps':        3,
@@ -128,17 +139,6 @@ AMP_TYPE_CONFIG ={
                              21, 22, 23, 24, 25, 26, 27, 28,   # linked amp 2  (e.g. 23 = amp 2, zone 3)
                              31, 32, 33, 34, 35, 36, 37, 38 ]  # linked amp 3
     }
-}
-
-TIMEOUT = 2  # serial operation timeout (seconds)
-
-SERIAL_INIT_ARGS = {
-    'baudrate':      9600,
-    'stopbits':      serial.STOPBITS_ONE,
-    'bytesize':      serial.EIGHTBITS,
-    'parity':        serial.PARITY_NONE,
-    'timeout':       TIMEOUT,
-    'write_timeout': TIMEOUT
 }
 
 def _get_config(amp_type: str, key: str):
@@ -163,13 +163,11 @@ class ZoneStatus(object):
         self.pa = bool(pa)
         self.power = bool(power)
         self.mute = bool(mute)
-        self.do_not_disturb = bool(do_not_disturb)
         self.volume = volume
         self.treble = treble
         self.bass = bass
         self.balance = balance
         self.source = source
-        self.keypad = bool(keypad)
 
     @classmethod
     def from_string(cls, amp_type, string: str):
@@ -339,6 +337,7 @@ def _set_source_cmd(amp_type, zone: int, source: int) -> bytes:
     LOG.info("Setting source {amp_type} zone {zone} to {source}")
     return _command(amp_type, 'set_source', args = { 'zone': zone, 'source': source })
 
+
 # backwards compatible API
 def get_monoprice(port_url):
     """
@@ -372,9 +371,11 @@ def get_amp_controller(amp_type: str, port_url):
 
 
     class AmpControlSync(AmpControlBase):
-        def __init__(self, amp_type, port_url):
+        def __init__(self, amp_type, port_url, config):
             self._amp_type = amp_type
-            self._port = serial.serial_for_url(port_url, **SERIAL_INIT_ARGS)
+            self._config = config
+
+            self._port = serial.serial_for_url(port_url, **config.get("rs232"))
 
         def _send_request(self, request: bytes, skip=0):
             """
@@ -464,9 +465,9 @@ async def get_async_monoprice(port_url, loop):
     :param port_url: serial port, i.e. '/dev/ttyUSB0'
     :return: asynchronous implementation of amplifier control interface
     """
-    return get_async_amp_controller(MONOPRICE6, port_url, loop)
+    return get_async_amp_controller(MONOPRICE6, port_url, DEFAULT_SERIAL_CONFIG, loop)
 
-async def get_async_amp_controller(amp_type, port_url, loop):
+async def get_async_amp_controller(amp_type, port_url, config_override, loop):
     """
     Return asynchronous version of amplifier control interface
     :param port_url: serial port, i.e. '/dev/ttyUSB0'
@@ -479,6 +480,8 @@ async def get_async_amp_controller(amp_type, port_url, loop):
         return None
 
     config = AMP_TYPE_CONFIG[amp_type]
+    config.update(config_override)
+
     protocol_type = config.get('protocol')
 
     lock = asyncio.Lock()
@@ -544,5 +547,5 @@ async def get_async_amp_controller(amp_type, port_url, loop):
 #            await self._protocol.send(_set_source_cmd(self._amp_type, status.zone, status.source))
 
 
-    protocol = get_rs232_async_protocol(port_url, DEFAULT_SERIAL_CONFIG, config, loop)
+    protocol = get_rs232_async_protocol(port_url, config.get('rs232'), config, loop)
     return AmpControlAsync(protocol_type, protocol)

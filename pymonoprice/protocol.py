@@ -1,9 +1,10 @@
 import logging
 
-import asyncio
 import functools
 import serial
-from serial_asyncio import create_serial_connection
+
+import asyncio
+#import serial_asyncio
 
 LOG = logging.getLogger(__name__)
 
@@ -23,6 +24,7 @@ DEFAULT_PROTOCOL_CONFIG = {
 }
 
 async def get_rs232_async_protocol(serial_port_url, serial_config, protocol_config, loop):
+    import serial_asyncio
 
     class RS232ControlProtocol(asyncio.Protocol):
         def __init__(self, serial_port_url, protocol_config, loop):
@@ -83,5 +85,5 @@ async def get_rs232_async_protocol(serial_port_url, serial_config, protocol_conf
                     raise
 
     factory = functools.partial(RS232ControlProtocol, serial_port_url, protocol_config, loop)
-    _, protocol = await create_serial_connection(loop, factory, serial_port_url, **serial_config)
+    _, protocol = await serial_asyncio.create_serial_connection(loop, factory, serial_port_url, **serial_config)
     return protocol
