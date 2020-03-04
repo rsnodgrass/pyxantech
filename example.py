@@ -20,13 +20,10 @@ zone = 1
 amp = get_amp_controller(XANTECH8, args.tty, config)
 
 amp.all_off()
-#amp.set_source(zone, 1)
-
-#time.sleep(1)
-
 
 for zone in range(1, 8):
 #    amp.set_power(zone, True)
+    amp.set_source(zone, 1)
     amp.set_mute(zone, False)
     print(amp.zone_status(zone).dict)
 

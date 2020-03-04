@@ -158,13 +158,14 @@ class ZoneStatus(object):
 #       bass     # 0 -> -7,  14-> +7
 #       balance  # 0 - left, 10 - center, 20 right
         self.dict = status
+        print(status)
         self.retype_bools(['power', 'mute', 'paged', 'linked', 'pa'])
         self.retype_ints(['zone', 'volume', 'treble', 'bass', 'balance', 'source'])
 
     def retype_bools(self, keys):
         for key in keys:
             if key in self.dict:
-                self.dict[key] = bool(self.dict[key])
+                self.dict[key] = (self.dict[key] == '1')
 
     def retype_ints(self, keys):
         for key in keys:
