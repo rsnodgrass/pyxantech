@@ -164,7 +164,7 @@ class ZoneStatus(object):
     def retype_bools(self, keys):
         for key in keys:
             if key in self.dict:
-                self.dict[key] = (self.dict[key] == '1')
+                self.dict[key] = ((self.dict[key] == '1') or (self.dict[key] == '01'))
 
     def retype_ints(self, keys):
         for key in keys:
