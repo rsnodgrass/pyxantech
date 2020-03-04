@@ -16,30 +16,32 @@ This was originally created by Egor Tsinko for use with [Home-Assistant](http://
 For Monoprice and Dayton Audio 6-zone amplifiers:
 
 ```python
-from pymonoprice import get_amp_controller, MONOPRICE6
+from pyxantech import get_amp_controller, MONOPRICE6
 
+zone = 11 # (11 = amp 1/destination 1)
 amp = get_amp_controller(MONOPRICE6, '/dev/ttyUSB0')
 
-# Turn off zone #12 (amplifier 1 / zone 1)
-amp.set_power(12, False)
+# Turn off zone 
+amp.set_power(zone, False)
 
-# Mute zone #11
-amp.set_mute(11, True)
+# Mute zone
+amp.set_mute(zone, True)
 
-# Set volume for zone #13
-amp.set_volume(13, 15)
+# Set volume for zone
+amp.set_volume(zone, 15)
 
-# Set source 1 for zone #14 
-amp.set_source(14, 1)
+# Set source 1 for zone
+amp.set_source(zone, 1)
 ```
 
 For Xantech 8-zone amplifiers:
 
 ```python
-from pymonoprice import get_amp_controller, XANTECH8
+from pyxantech import get_amp_controller, XANTECH8
 
+zone = 12
 amp = get_amp_controller(XANTECH8, '/dev/ttyUSB0')
-amp.set_source(12, 3)
+amp.set_source(zone, 3) # select source 3
 ```
 
 See also [example.py](example.py) for a more complete example.
@@ -50,7 +52,7 @@ With the `asyncio` flavor, all methods of the controller objects are coroutines:
 
 ```python
 import asyncio
-from pymonoprice import get_async_amp_controller, MONOPRICE6
+from pyxantech import get_async_amp_controller, MONOPRICE6
 
 async def main(loop):
     amp = await get_async_amp_controller(MONOPRICE6, '/dev/ttyUSB0', loop)
