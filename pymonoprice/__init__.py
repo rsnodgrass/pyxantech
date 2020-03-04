@@ -153,26 +153,24 @@ def _get_config(amp_type: str, key: str):
 # FIXME: populate based on dictionary, not positional
 class ZoneStatus(object):
     def __init__(self, status: dict):
-#                 zone: int,
-#                 pa: bool,
-#                 power: bool,
-#                 mute: bool,
-#                 volume: int,  # 0 - 38
-#                 treble: int,  # 0 -> -7,  14-> +7
-#                 bass: int,  # 0 -> -7,  14-> +7
-#                 balance: int,  # 00 - left, 10 - center, 20 right
-#                 source: int):
+#       volume   # 0 - 38
+#       treble   # 0 -> -7,  14-> +7
+#       bass     # 0 -> -7,  14-> +7
+#       balance  # 0 - left, 10 - center, 20 right
         self.dict = status
+        self.retype_bools(['pa', 'power', 'mute'])
+        self.retype_ints(['zone', 'volume', 'treble', 'bass', 'balance', 'source'])
 
-        self.zone = status['zone']
-#        self.pa = bool(status['pa'])
-        self.power = bool(status['power'])
-        self.mute = bool(status['mute'])
-        self.volume = status['volume']
-        self.treble = status['treble']
-        self.bass = status['bass']
-        self.balance = status['balance']
-        self.source = status['source']
+    def retype_bools(self, keys):
+        for key in keys:
+            if key in self.dict:
+                self.dict[key] = bool(self.dict[key])
+
+    def retype_ints(self, keys):
+        for key in keys:
+            if key in self.dict:
+                self.dict[key] = int(self.dict[key])
+
 
     @classmethod
     def from_string(cls, amp_type, string: str):
@@ -186,7 +184,6 @@ class ZoneStatus(object):
             return None
 
         return ZoneStatus(match.groupdict())
-#        return ZoneStatus(*[int(m) for m in match.groups()])
 
 # FIXME: for Xantech the zones can be 11..18, 21..28, 31..38; perhaps split this as;
 #   zone_status(self, zone: int, amp_num: int = 1)  with default amp_num
