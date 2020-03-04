@@ -1,15 +1,15 @@
-# Python RS232 API for Monoprice/Xantech/Dayton Audio multi-zone amps
+# Python RS232 API for Xantech/Monoprice multi-zone amps
 
-Library for communicating via RS232 serial to Monoprice, Xantech and Dayton Audio multi-zone amps.
+Library for RS232 serial communication to Xantech, Monoprice and Dayton Audio multi-zone amps.
 This supports any serial protocol for communicating with the amps, including DB9/DB15 RS232 ports,
 USB serial ports, and possibly the RS232-over-IP interface for more recent Xantech amps. See below
 for exactly which amplifier models are supported.
 
-This was originally created by Egor Tsinko for use with [Home-Assistant](http://home-assistant.io).
+The Monoprice version was originally created by Egor Tsinko for use with [Home-Assistant](http://home-assistant.io).
 
-## Status
-
-[![Build Status](https://travis-ci.org/etsinko/pyxantech.svg?branch=master)](https://travis-ci.org/etsinko/pyxantech)[![Coverage Status](https://coveralls.io/repos/github/etsinko/pyxantech/badge.svg)](https://coveralls.io/github/etsinko/pyxantech)
+![beta_badge](https://img.shields.io/badge/maturity-Beta-yellow.png)
+[![MIT license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
+[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=WREP29UDAMB6G)
 
 ## Usage
 
