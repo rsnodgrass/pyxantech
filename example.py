@@ -5,7 +5,7 @@ import time
 
 from pyxantech import get_amp_controller, XANTECH8
 
-parser = argparse.ArgumentParser(description='Anthem RS232 client example')
+parser = argparse.ArgumentParser(description='Xantech RS232 client example script')
 parser.add_argument('--tty', help='/dev/tty to use (e.g. /dev/tty.usbserial-A501SGSZ)', required=True)
 parser.add_argument('--baud',type=int,default=9600,help='baud rate (9600, 14400, 19200, 38400, 57600, 115200)')
 args = parser.parse_args()
