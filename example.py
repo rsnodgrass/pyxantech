@@ -3,7 +3,7 @@
 import argparse                                                                                             
 import time
 
-from pymonoprice import get_amp_controller, XANTECH8
+from pyxantech import get_amp_controller, XANTECH8
 
 parser = argparse.ArgumentParser(description='Anthem RS232 client example')
 parser.add_argument('--tty', help='/dev/tty to use (e.g. /dev/tty.usbserial-A501SGSZ)', required=True)

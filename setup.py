@@ -35,7 +35,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-setup(name='pymonoprice',
+setup(name='pyxantech',
       version=VERSION,
       description='Python RS232 API for Monoprice/Xantech/Dayton Audio multi-zone amps',
       url='https://github.com/rsnodgrass/pymonoprice',
@@ -44,7 +44,7 @@ setup(name='pymonoprice',
       author_email='etsinko@gmail.com',
       license='MIT',
       install_requires=['pyserial>=3.4','pyserial-asyncio>=0.4'],
-      packages=['pymonoprice'],
+      packages=['pyxantech'],
       classifiers=['Development Status :: 4 - Beta',
                    'License :: OSI Approved :: MIT License',
                    'Programming Language :: Python :: 3' ],
