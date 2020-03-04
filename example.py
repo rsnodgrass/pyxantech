@@ -25,7 +25,7 @@ for zone in range(1, 8):
 #    amp.set_power(zone, True)
     amp.set_source(zone, 1)
     amp.set_mute(zone, False)
-    print(amp.zone_status(zone).dict)
+    print(f"Zone {zone} status: {amp.zone_status(zone)}")
 
 exit()
 

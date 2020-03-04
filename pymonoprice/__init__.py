@@ -512,7 +512,7 @@ async def get_async_amp_controller(amp_type, port_url, config_override, loop):
         @locked_coro
         async def zone_status(self, zone: int):
             # Ignore first 6 bytes as they will contain 3 byte command and 3 bytes of EOL
-            string = await self._protocol.send(_zone_status_cmd(self._amp_type, zone), skip=6)
+            string = await self._protocol.send(_zone_status_cmd(self._amp_type, zone))
             return ZoneStatus.from_string(string).dict
 
         @locked_coro
