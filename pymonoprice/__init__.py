@@ -291,9 +291,6 @@ def _command(amp_type: str, format_code: str, args = {}):
     return command.format(**args).encode('ascii')
 
 def _zone_status_cmd(amp_type, zone: int) -> bytes:
-    print(amp_type)
-    print(zone)
-    print(_get_config(amp_type, 'zones'))
     assert zone in _get_config(amp_type, 'zones')
     return _command(amp_type, 'zone_status', args = { 'zone': zone })
 
@@ -388,8 +385,8 @@ def get_amp_controller(amp_type: str, port_url, config):
             self._port.reset_output_buffer()
             self._port.reset_input_buffer()
 
-            print('Sending "%s"', request)
-            LOG.debug('Sending "%s"', request)
+            print('Sending: %s', request)
+            LOG.debug('Sending: %s', request)
 
             # send
             self._port.write(request)
@@ -398,17 +395,12 @@ def get_amp_controller(amp_type: str, port_url, config):
             eol = _get_config(self._amp_type, 'protocol_eol')
             len_eol = len(eol)
 
-            print("Reading...")
-
             # receive
             result = bytearray()
             while True:
                 c = self._port.read(1)
-                print(c)
                 if not c:
                     ret = bytes(result)
-                    print('Result "%s"', result)
-                    print("Result 2: ", ret.decode('ascii'))
                     LOG.info(result)
                     raise serial.SerialTimeoutException(
                         'Connection timed out! Last received bytes {}'.format([hex(a) for a in result]))
@@ -418,6 +410,7 @@ def get_amp_controller(amp_type: str, port_url, config):
 
             ret = bytes(result)
             LOG.debug('Received "%s"', ret)
+            print(f"Received: {ret}")
             return ret.decode('ascii')
 
         @synchronized

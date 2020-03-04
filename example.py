@@ -27,7 +27,8 @@ amp = get_amp_controller(XANTECH8, args.tty, config)
 #amp.set_power(zone, True)
 #amp.set_mute(zone, True)
 
-print(amp.zone_status(zone))
+for zone in range(1, 8):
+    print(amp.zone_status(zone).dict)
 
 exit()
 
