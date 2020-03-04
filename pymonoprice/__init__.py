@@ -105,8 +105,8 @@ RS232_RESPONSES = {
     },
 
     XANTECH8: {
-        'zone_status':    "#(?P<zone>\d+)ZS PR(?P<power>[01]) SS(?P<source>[01]) VO(?P<volume>\d+}) MU(?P<mute>[01]) TR(?P<treble>\d+) BS(?P<bass>\d+) BA(?P<balance>\d+) LS(?P<linked>[01]) PS(?P<paged>[01]})\+",
-                          #   #1ZS PR0 SS1 VO0 MU1 TR7 BS7 BA32 LS0 PS0+
+        'zone_status':    "#(?P<zone>\d+)ZS PR(?P<power>[01]) SS(?P<source>\d+) VO(?P<volume>\d+) MU(?P<mute>[01]) TR(?P<treble>\d+) BS(?P<bass>\d+) BA(?P<balance>\d+) LS(?P<linked>[01]) PS(?P<paged>[01])\+",
+                          # Example:  #1ZS PR0 SS1 VO0 MU1 TR7 BS7 BA32 LS0 PS0+
         'power_status':   "\?(?P<zone>\d+)PR(?P<power[01])\+",
         'source_status':  "\?(?P<zone>\d+)SS(?P<source>[1-8])\+",
         'volume_status':  "\?(?P<zone>\d+)VO(?P<volume>\d+)\+",
@@ -150,26 +150,29 @@ def _get_config(amp_type: str, key: str):
     LOG.error("Invalid amp type '%s' config key '%s'; returning None", amp_type, key)
     return None
 
+# FIXME: populate based on dictionary, not positional
 class ZoneStatus(object):
-    def __init__(self,
-                 zone: int,
-                 pa: bool,
-                 power: bool,
-                 mute: bool,
-                 volume: int,  # 0 - 38
-                 treble: int,  # 0 -> -7,  14-> +7
-                 bass: int,  # 0 -> -7,  14-> +7
-                 balance: int,  # 00 - left, 10 - center, 20 right
-                 source: int):
-        self.zone = zone
-        self.pa = bool(pa)
-        self.power = bool(power)
-        self.mute = bool(mute)
-        self.volume = volume
-        self.treble = treble
-        self.bass = bass
-        self.balance = balance
-        self.source = source
+    def __init__(self, status: dict):
+#                 zone: int,
+#                 pa: bool,
+#                 power: bool,
+#                 mute: bool,
+#                 volume: int,  # 0 - 38
+#                 treble: int,  # 0 -> -7,  14-> +7
+#                 bass: int,  # 0 -> -7,  14-> +7
+#                 balance: int,  # 00 - left, 10 - center, 20 right
+#                 source: int):
+        self.dict = status
+
+        self.zone = status['zone']
+#        self.pa = bool(status['pa'])
+        self.power = bool(status['power'])
+        self.mute = bool(status['mute'])
+        self.volume = status['volume']
+        self.treble = status['treble']
+        self.bass = status['bass']
+        self.balance = status['balance']
+        self.source = status['source']
 
     @classmethod
     def from_string(cls, amp_type, string: str):
@@ -177,14 +180,13 @@ class ZoneStatus(object):
             return None
 
         pattern = RS232_RESPONSES[amp_type].get('zone_status')
-#        pattern = _get_config(amp_type, 'zone_pattern')
-        print(pattern)
-        print(string)
         match = re.search(pattern, string)
         if not match:
             LOG.debug("Could not pattern match zone status '%s' with '%s'", string, pattern)
             return None
-        return ZoneStatus(*[int(m) for m in match.groups()])
+
+        return ZoneStatus(match.groupdict())
+#        return ZoneStatus(*[int(m) for m in match.groups()])
 
 # FIXME: for Xantech the zones can be 11..18, 21..28, 31..38; perhaps split this as;
 #   zone_status(self, zone: int, amp_num: int = 1)  with default amp_num
