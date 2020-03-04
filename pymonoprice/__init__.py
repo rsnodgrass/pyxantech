@@ -158,7 +158,7 @@ class ZoneStatus(object):
 #       bass     # 0 -> -7,  14-> +7
 #       balance  # 0 - left, 10 - center, 20 right
         self.dict = status
-        self.retype_bools(['pa', 'power', 'mute'])
+        self.retype_bools(['power', 'mute', 'paged', 'linked', 'pa'])
         self.retype_ints(['zone', 'volume', 'treble', 'bass', 'balance', 'source'])
 
     def retype_bools(self, keys):
@@ -385,8 +385,8 @@ def get_amp_controller(amp_type: str, port_url, config):
             self._port.reset_output_buffer()
             self._port.reset_input_buffer()
 
-            print('Sending: %s', request)
-            LOG.debug('Sending: %s', request)
+            print(f"Sending: {request}")
+            LOG.debug(f"Sending: {request}")
 
             # send
             self._port.write(request)
