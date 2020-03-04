@@ -6,7 +6,7 @@ from pymonoprice import get_amp_controller, XANTECH8
 
 parser = argparse.ArgumentParser(description='Anthem RS232 client example')
 parser.add_argument('--tty', help='/dev/tty to use (e.g. /dev/tty.usbserial-A501SGSZ)', required=True)
-parser.add_argument('--baud',type=int,default=9600,help='baud rate')
+parser.add_argument('--baud',type=int,default=9600,help='baud rate (9600, 14400, 19200, 38400, 57600, 115200)')
 args = parser.parse_args()
 
 config = {                          
@@ -15,9 +15,15 @@ config = {
     }
 }
 
+zone = 1
 amp = get_amp_controller(XANTECH8, args.tty, config)
 
 amp.all_off()
+
+#amp.set_power(zone, True)
+#amp.set_mute(zone, True)
+
+print(amp.zone_status(zone))
 
 exit()
 

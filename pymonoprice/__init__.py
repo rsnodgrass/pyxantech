@@ -50,10 +50,10 @@ RS232_COMMANDS = {
     },
 
     XANTECH8: {
-        'set_power':     '!{zone}PR{onoff}+',
-        'power_on':      '!{zone}PR1+',
-        'power_off':     '!{zone}PR0+',
-        'all_zones_off': '!A0+',
+        'set_power':     "!{zone}PR{onoff}+",
+        'power_on':      "!{zone}PR1+",
+        'power_off':     "!{zone}PR0+",
+        'all_zones_off': '!AO+',
 
         'set_mute':      '!{zone}MU{on_off}+',
         'mute_on':       '!{zone}MU1+',
@@ -135,7 +135,8 @@ AMP_TYPE_CONFIG ={
         'command_eol':     '', # '+'
         'max_amps':        3,
         'sources':         [ 1, 2, 3, 4, 5, 6, 7, 8 ],
-        'zones':           [ 11, 12, 13, 14, 15, 16, 17, 18,   # main amp 1    (e.g. 15 = amp 1, zone 5)
+        'zones':           [ 1, 2, 3, 4, 5, 6, 7, 8,
+                             11, 12, 13, 14, 15, 16, 17, 18,   # main amp 1    (e.g. 15 = amp 1, zone 5)
                              21, 22, 23, 24, 25, 26, 27, 28,   # linked amp 2  (e.g. 23 = amp 2, zone 3)
                              31, 32, 33, 34, 35, 36, 37, 38 ]  # linked amp 3
     }
@@ -286,6 +287,9 @@ def _command(amp_type: str, format_code: str, args = {}):
     return command.format(**args).encode('ascii')
 
 def _zone_status_cmd(amp_type, zone: int) -> bytes:
+    print(amp_type)
+    print(zone)
+    print(_get_config(amp_type, 'zones'))
     assert zone in _get_config(amp_type, 'zones')
     return _command(amp_type, 'zone_status', args = { 'zone': zone })
 
@@ -293,19 +297,19 @@ def _set_power_cmd(amp_type, zone: int, power: bool) -> bytes:
     assert zone in _get_config(amp_type, 'zones')
     if power:
         LOG.info("Powering on {amp_type} zone {zone}")
-        return _command(amp_type, 'power_on')
+        return _command(amp_type, 'power_on', { 'zone': zone })
     else:
         LOG.info("Powering off {amp_type} zone {zone}")
-        return _command(amp_type, 'power_off')
+        return _command(amp_type, 'power_off', { 'zone': zone })
 
 def _set_mute_cmd(amp_type, zone: int, mute: bool) -> bytes:
     assert zone in _get_config(amp_type, 'zones')
     if mute:
         LOG.info("Muting {amp_type} zone {zone}")
-        return _command(amp_type, 'mute_on')
+        return _command(amp_type, 'mute_on', { 'zone': zone })
     else:
         LOG.info("Turning off mute {amp_type} zone {zone}")
-        return _command(amp_type, 'mute_off')
+        return _command(amp_type, 'mute_off', { 'zone': zone })
     
 def _set_volume_cmd(amp_type, zone: int, volume: int) -> bytes:
     assert zone in _get_config(amp_type, 'zones')
@@ -376,12 +380,12 @@ def get_amp_controller(amp_type: str, port_url, config):
             :param skip: number of bytes to skip for end of transmission decoding
             :return: ascii string returned by xantech
             """
-            print('Sending "%s"', request)
-            LOG.debug('Sending "%s"', request)
-
             # clear
             self._port.reset_output_buffer()
             self._port.reset_input_buffer()
+
+            print('Sending "%s"', request)
+            LOG.debug('Sending "%s"', request)
 
             # send
             self._port.write(request)
@@ -390,10 +394,13 @@ def get_amp_controller(amp_type: str, port_url, config):
             eol = _get_config(self._amp_type, 'protocol_eol')
             len_eol = len(eol)
 
+            print("Reading...")
+
             # receive
             result = bytearray()
             while True:
                 c = self._port.read(1)
+                print(c)
                 if not c:
                     ret = bytes(result)
                     print('Result "%s"', result)
