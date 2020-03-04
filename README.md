@@ -9,7 +9,6 @@ The Monoprice version was originally created by Egor Tsinko for use with [Home-A
 
 ![beta_badge](https://img.shields.io/badge/maturity-Beta-yellow.png)
 [![MIT license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
-[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=WREP29UDAMB6G)
 
 ## Usage
 
