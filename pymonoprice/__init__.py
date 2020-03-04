@@ -132,8 +132,8 @@ AMP_TYPE_CONFIG ={
     # NOTE: Xantech MRC88 seems to indicate zones are 1..8, or 1..16 if expanded; perhaps this scheme for multi-amps changed
     XANTECH8: {
         'rs232':           DEFAULT_SERIAL_CONFIG,
-        'protocol_eol':    b'+', # '+'
-        'command_eol':     '', # '+'
+        'protocol_eol':    b'\r', # replies: \r
+        'command_eol':     '', # sending: '+'
         'max_amps':        3,
         'sources':         [ 1, 2, 3, 4, 5, 6, 7, 8 ],
         'zones':           [ 1, 2, 3, 4, 5, 6, 7, 8,
