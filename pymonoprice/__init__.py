@@ -158,7 +158,6 @@ class ZoneStatus(object):
 #       bass     # 0 -> -7,  14-> +7
 #       balance  # 0 - left, 10 - center, 20 right
         self.dict = status
-        print(status)
         self.retype_bools(['power', 'mute', 'paged', 'linked', 'pa'])
         self.retype_ints(['zone', 'volume', 'treble', 'bass', 'balance', 'source'])
 
@@ -386,8 +385,8 @@ def get_amp_controller(amp_type: str, port_url, config):
             self._port.reset_output_buffer()
             self._port.reset_input_buffer()
 
-            print(f"Sending: {request}")
-            LOG.debug(f"Sending: {request}")
+            print(f"Sending:  {request}")
+            LOG.debug(f"Sending:  {request}")
 
             # send
             self._port.write(request)
@@ -534,15 +533,18 @@ async def get_async_amp_controller(amp_type, port_url, config_override, loop):
         async def all_off(self):
             self._protocol.send(_command(amp_type, 'all_zones_off'))
 
-#        @locked_coro
-#        async def restore_zone(self, status: ZoneStatus):
-#            await self._protocol.send(_set_power_cmd(self._amp_type, status.zone, status.power))
-#            await self._protocol.send(_set_mute_cmd(self._amp_type, status.zone, status.mute))
-#            await self._protocol.send(_set_volume_cmd(self._amp_type, status.zone, status.volume))
-#            await self._protocol.send(_set_treble_cmd(self._amp_type, status.zone, status.treble))
-#            await self._protocol.send(_set_bass_cmd(self._amp_type, status.zone, status.bass))
-#            await self._protocol.send(_set_balance_cmd(self._amp_type, status.zone, status.balance))
-#            await self._protocol.send(_set_source_cmd(self._amp_type, status.zone, status.source))
+        @locked_coro
+        async def restore_zone(self, status: dict):
+            zone = status['zone']
+            amp_type = self._amp_type
+
+            await self._protocol.send(_set_source_cmd(amp_type, zone, status['source']))
+            await self._protocol.send(_set_power_cmd(amp_type, zone, status['power']))
+            await self._protocol.send(_set_volume_cmd(amp_type, zone, status['volume']))
+            await self._protocol.send(_set_mute_cmd(amp_type, zone, status['mute']))
+            await self._protocol.send(_set_treble_cmd(amp_type, zone, status['treble']))
+            await self._protocol.send(_set_bass_cmd(amp_type, zone, status['bass']))
+            await self._protocol.send(_set_balance_cmd(amp_type, zone, status['balance']))
 
 
     protocol = get_rs232_async_protocol(port_url, config.get('rs232'), config, loop)
