@@ -417,7 +417,7 @@ def get_amp_controller(amp_type: str, port_url, config):
         def zone_status(self, zone: int):
             # Ignore first 6 bytes as they will contain 3 byte command and 3 bytes of EOL
             response = self._send_request(_zone_status_cmd(self._amp_type, zone), skip=6)
-            return ZoneStatus.from_string(self._amp_type, response)
+            return ZoneStatus.from_string(self._amp_type, response).dict
 
         @synchronized
         def set_power(self, zone: int, power: bool):
@@ -450,6 +450,20 @@ def get_amp_controller(amp_type: str, port_url, config):
         @synchronized
         def all_off(self):
             self._send_request( _command(amp_type, 'all_zones_off') )
+
+        @synchronized
+        async def restore_zone(self, status: dict):
+            zone = status['zone']
+            amp_type = self._amp_type
+
+            self._send_request(_set_source_cmd(amp_type, zone, status['source']))
+            self._send_request(_set_power_cmd(amp_type, zone, status['power']))
+            self._send_request(_set_volume_cmd(amp_type, zone, status['volume']))
+            self._send_request(_set_mute_cmd(amp_type, zone, status['mute']))
+            self._send_request(_set_treble_cmd(amp_type, zone, status['treble']))
+            self._send_request(_set_bass_cmd(amp_type, zone, status['bass']))
+            self._send_request(_set_balance_cmd(amp_type, zone, status['balance']))
+
 
     return AmpControlSync(amp_type, port_url, config)
 
@@ -499,7 +513,7 @@ async def get_async_amp_controller(amp_type, port_url, config_override, loop):
         async def zone_status(self, zone: int):
             # Ignore first 6 bytes as they will contain 3 byte command and 3 bytes of EOL
             string = await self._protocol.send(_zone_status_cmd(self._amp_type, zone), skip=6)
-            return ZoneStatus.from_string(string)
+            return ZoneStatus.from_string(string).dict
 
         @locked_coro
         async def set_power(self, zone: int, power: bool):

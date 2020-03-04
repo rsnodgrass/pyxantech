@@ -36,4 +36,4 @@ zone_status = amp.zone_status(zone)
 #amp.set_balance(zone, 3)
 
 # Restore zone #11 to it's original state
-#amp.restore_zone(zone_status)
+amp.restore_zone(zone_status.dict)
