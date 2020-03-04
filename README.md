@@ -40,6 +40,7 @@ from pyxantech import get_amp_controller, XANTECH8
 
 zone = 12
 amp = get_amp_controller(XANTECH8, '/dev/ttyUSB0')
+
 amp.set_source(zone, 3) # select source 3
 ```
 
