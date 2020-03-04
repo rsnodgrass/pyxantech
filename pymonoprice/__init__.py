@@ -64,7 +64,7 @@ RS232_COMMANDS = {
         'volume_up':     '!{zone}VI+',
         'volume_down':   '!{zone}VD+',
 
-        'source_select': '!{zone}SS{source}+',      # source (no leading zeros)
+        'set_source':    '!{zone}SS{source}+',      # source (no leading zeros)
 
         'set_bass':      '!{zone}BS{level:02}+',     # level: 0-14
         'bass_up':       '!{zone}BI+',
@@ -101,11 +101,12 @@ RS232_COMMANDS = {
 
 RS232_RESPONSES = {
     MONOPRICE6: {
-        'zone_status':    "#>(?P<zone>\d\d)(?P<power>[01]{2})(?P<power>[01]{2})(?P<mute[01]{2})(?P<do_not_disturb[01])(?P<volume>\d\d)(?P<treble>\d\d)(?P<bass>\d\d)(?P<balance>\d\d)(?P<source>\d\d)(?P<keypad>\d\d)",
+        'zone_status':    "#>(?P<zone>\d\d)(?P<power>[01]{2})(?P<source>[01]{2})(?P<mute[01]{2})(?P<do_not_disturb[01])(?P<volume>\d\d)(?P<treble>\d\d)(?P<bass>\d\d)(?P<balance>\d\d)(?P<source>\d\d)(?P<keypad>\d\d)",
     },
 
     XANTECH8: {
-        'zone_status':    "#>(?P<zone>\d\d)(?P<power>[01]{2})(?P<power>[01]{2})(?P<mute[01]{2})(?P<do_not_disturb[01])(?P<volume>\d\d)(?P<treble>\d\d)(?P<bass>\d\d)(?P<balance>\d\d)(?P<source>\d\d)(?P<keypad>\d\d)",
+        'zone_status':    "#(?P<zone>\d+)ZS PR(?P<power>[01]) SS(?P<source>[01]) VO(?P<volume>\d+}) MU(?P<mute>[01]) TR(?P<treble>\d+) BS(?P<bass>\d+) BA(?P<balance>\d+) LS(?P<linked>[01]) PS(?P<paged>[01]})\+",
+                          #   #1ZS PR0 SS1 VO0 MU1 TR7 BS7 BA32 LS0 PS0+
         'power_status':   "\?(?P<zone>\d+)PR(?P<power[01])\+",
         'source_status':  "\?(?P<zone>\d+)SS(?P<source>[1-8])\+",
         'volume_status':  "\?(?P<zone>\d+)VO(?P<volume>\d+)\+",
@@ -174,7 +175,11 @@ class ZoneStatus(object):
     def from_string(cls, amp_type, string: str):
         if not string:
             return None
-        pattern = _get_config(amp_type, 'zone_pattern')
+
+        pattern = RS232_RESPONSES[amp_type].get('zone_status')
+#        pattern = _get_config(amp_type, 'zone_pattern')
+        print(pattern)
+        print(string)
         match = re.search(pattern, string)
         if not match:
             LOG.debug("Could not pattern match zone status '%s' with '%s'", string, pattern)

@@ -1,6 +1,7 @@
 #!/usr/local/bin/python3
 
 import argparse                                                                                             
+import time
 
 from pymonoprice import get_amp_controller, XANTECH8
 
@@ -18,7 +19,10 @@ config = {
 zone = 1
 amp = get_amp_controller(XANTECH8, args.tty, config)
 
-amp.all_off()
+#amp.all_off()
+#amp.set_source(zone, 1)
+
+#time.sleep(1)
 
 #amp.set_power(zone, True)
 #amp.set_mute(zone, True)
