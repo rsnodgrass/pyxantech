@@ -546,7 +546,7 @@ async def get_async_amp_controller(amp_type, port_url, config_override, loop):
 
         @locked_coro
         async def all_off(self):
-            self._protocol.send(_command(amp_type, 'all_zones_off'))
+            await self._protocol.send(_command(amp_type, 'all_zones_off'))
 
         @locked_coro
         async def restore_zone(self, status: dict):
