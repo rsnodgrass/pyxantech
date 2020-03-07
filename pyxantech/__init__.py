@@ -45,39 +45,39 @@ RS232_COMMANDS = {
         'mute_on':       '<{zone}MU01',
         'mute_off':      '<{zone}MU00',
 
-        'set_volume':    '<{zone}VO{level:02}',     # level: 0-38
-        'set_treble':    '<{zone}TR{level:02}',     # level: 0-14
-        'set_bass':      '<{zone}BS{level:02}',     # level: 0-14
-        'set_balance':   '<{zone}BL{level:02}',     # level: 0-20
-        'set_source':    '<{zone}CH{channel:02}'    # level: 0-6
+        'set_volume':    '<{zone}VO{volume:02}',   # volume: 0-38
+        'set_treble':    '<{zone}TR{treble}:02}',  # treble: 0-14
+        'set_bass':      '<{zone}BS{bass:02}',     # bass: 0-14
+        'set_balance':   '<{zone}BL{balance:02}',  # balance: 0-20
+        'set_source':    '<{zone}CH{source:02}'    # source: 0-6
     },
 
     XANTECH8: {
-        'set_power':     "!{zone}PR{onoff}+",
+        'set_power':     "!{zone}PR{power}+",
         'power_on':      "!{zone}PR1+",
         'power_off':     "!{zone}PR0+",
         'all_zones_off': '!AO+',
 
-        'set_mute':      '!{zone}MU{on_off}+',
+        'set_mute':      '!{zone}MU{mute}+',
         'mute_on':       '!{zone}MU1+',
         'mute_off':      '!{zone}MU0+',
         'mute_toggle':   '!{zone}MT+',
 
-        'set_volume':    '!{zone}VO{level:02}+',    # level: 0-38
+        'set_volume':    '!{zone}VO{volume:02}+',    # volume: 0-38
         'volume_up':     '!{zone}VI+',
         'volume_down':   '!{zone}VD+',
 
         'set_source':    '!{zone}SS{source}+',      # source (no leading zeros)
 
-        'set_bass':      '!{zone}BS{level:02}+',     # level: 0-14
+        'set_bass':      '!{zone}BS{bass:02}+',     # bass: 0-14
         'bass_up':       '!{zone}BI+',
         'bass_down':     '!{zone}BD+',
 
-        'set_balance':   '!{zone}BL{level:02}+',     # level: 0-20
+        'set_balance':   '!{zone}BL{balance:02}+',     # balance: 0-20
         'balance_left':  '!{zone}BL+',
         'balance_right': '!{zone}BR+',
 
-        'set_treble':    '!{zone}TR{level:02}+',     # level: 0-14
+        'set_treble':    '!{zone}TR{treble:02}+',     # treble: 0-14
         'treble_up':     '!{zone}TI+',
         'treble_down':   '!{zone}TD+',
 
@@ -97,8 +97,8 @@ RS232_COMMANDS = {
         'balance_status': '?{zone}BA+',
 
         # FIXME: these aren't documented, do they work?
-        'set_activity_updates': '!ZA{on_off}+',      # on_off: 1 = on; 0 = off
-        'set_status_updates':   '!ZP{on_off}+',      # on_off: 1 = on; 0 = off
+        'set_activity_updates': '!ZA{activity_updates}+',      # on_off: 1 = on; 0 = off
+        'set_status_updates':   '!ZP{status_updates}+',      # on_off: 1 = on; 0 = off
     }
 }
 
@@ -456,7 +456,7 @@ def get_amp_controller(amp_type: str, port_url, config):
             self._send_request( _command(amp_type, 'all_zones_off') )
 
         @synchronized
-        async def restore_zone(self, status: dict):
+        def restore_zone(self, status: dict):
             zone = status['zone']
             amp_type = self._amp_type
 

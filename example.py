@@ -31,6 +31,7 @@ for zone in range(1, 9):
     print(f"Zone {zone} status: {zone_status[zone]}")
 
 amp.all_off()
+exit
 
 for zone in range(1, 9):
     amp.set_power(zone, True)
