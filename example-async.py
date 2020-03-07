@@ -10,7 +10,7 @@ import serial
 
 from pyxantech import get_async_amp_controller, XANTECH8, MONOPRICE6
 
-parser = argparse.ArgumentParser(description='Xantech RS232 client example script')
+parser = argparse.ArgumentParser(description='Xantech RS232 client example (asynchronous)')
 parser.add_argument('--tty', help='/dev/tty to use (e.g. /dev/tty.usbserial-A501SGSZ)', required=True)
 parser.add_argument('--model', default=XANTECH8, help=f"model (e.g. {XANTECH8, MONOPRICE6})" )
 parser.add_argument('--baud', type=int, default=9600, help='baud rate (9600, 14400, 19200, 38400, 57600, 115200)')

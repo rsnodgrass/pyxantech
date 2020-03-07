@@ -1,15 +1,17 @@
 #!/usr/local/bin/python3
 #
 # Running:
+#   ./example-async.py -h
 #   ./example.py --tty /dev/tty.usbserial-A501SGSZ
 
 import argparse                                                                                             
 import time
 
-from pyxantech import get_amp_controller, XANTECH8
+from pyxantech import get_amp_controller, XANTECH8, MONOPRICE6
 
-parser = argparse.ArgumentParser(description='Xantech RS232 client example script')
+parser = argparse.ArgumentParser(description='Xantech RS232 client example')
 parser.add_argument('--tty', help='/dev/tty to use (e.g. /dev/tty.usbserial-A501SGSZ)', required=True)
+parser.add_argument('--model', default=XANTECH8, help=f"model (e.g. {XANTECH8, MONOPRICE6})" )
 parser.add_argument('--baud',type=int,default=9600,help='baud rate (9600, 14400, 19200, 38400, 57600, 115200)')
 args = parser.parse_args()
 
@@ -20,7 +22,7 @@ config = {
 }
 
 zone = 1
-amp = get_amp_controller(XANTECH8, args.tty, config)
+amp = get_amp_controller(args.model, args.tty, config)
 
 amp.all_off()
 
