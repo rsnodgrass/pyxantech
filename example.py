@@ -21,13 +21,28 @@ config = {
     }
 }
 
+def knight_rider(amp, number_of_times):
+    for _ in range (1, number_of_times + 1):
+        for zone in range(1, 9):
+            amp.set_power(zone, True)
+            amp.set_power(zone, False)
+
+        for zone in range(-7, -1):
+            amp.set_power(-1 * zone, True)
+            amp.set_power(-1 * zone, False)
+
+
 zone = 1
 amp = get_amp_controller(args.model, args.tty, config)
 
 amp.all_off()
 
+knight_rider(amp, 2)
+
 for zone in range(1, 8):
-#    amp.set_power(zone, True)
+    amp.set_power(zone, True)
+    time.sleep(0.25)
+
     amp.set_source(zone, 1)
     amp.set_mute(zone, False)
     print(f"Zone {zone} status: {amp.zone_status(zone)}")
@@ -42,3 +57,5 @@ zone_status = amp.zone_status(zone)
 
 # Restore zone #11 to it's original state
 amp.restore_zone(zone_status.dict)
+
+
