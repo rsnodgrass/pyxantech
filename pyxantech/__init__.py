@@ -1,10 +1,8 @@
-#  FIXME:
-#    - for simplifying, should we provide a save_zone_status(zone) and restore_zone_status(zone)
-
 import asyncio
 import functools
 import logging
 import re
+import time
 import serial
 from functools import wraps
 from threading import RLock
@@ -28,8 +26,8 @@ DEFAULT_SERIAL_CONFIG = {
     'bytesize':      serial.EIGHTBITS,
     'parity':        serial.PARITY_NONE,
     'stopbits':      serial.STOPBITS_ONE,
-    'timeout':       1.0,
-    'write_timeout': 1.0
+    'timeout':       2.0,
+    'write_timeout': 2.0
 }
 
 # technically zone = {amp_number}{zone_num_within_amp_1-6} (e.g. 11 = amp number 1, zone 1)
@@ -129,7 +127,9 @@ AMP_TYPE_CONFIG ={
         'sources':         [ 1, 2, 3, 4, 5, 6 ],
         'zones':           [ 11, 12, 13, 14, 15, 16,           # main amp 1    (e.g. 15 = amp 1, zone 5)
                              21, 22, 23, 24, 25, 26,           # linked amp 2  (e.g. 23 = amp 2, zone 3)
-                             31, 32, 33, 34, 35, 36 ]          # linked amp 3
+                             31, 32, 33, 34, 35, 36 ],         # linked amp 3
+        'restore_zone':    [ 'set_power', 'set_source', 'set_volume', 'set_mute', 'set_bass', 'set_balance', 'set_treble' ],
+        'restore_success': "OK\r"
     },
 
     # NOTE: Xantech MRC88 seems to indicate zones are 1..8, or 1..16 if expanded; perhaps this scheme for multi-amps changed
@@ -142,7 +142,9 @@ AMP_TYPE_CONFIG ={
         'zones':           [ 1, 2, 3, 4, 5, 6, 7, 8,
                              11, 12, 13, 14, 15, 16, 17, 18,   # main amp 1    (e.g. 15 = amp 1, zone 5)
                              21, 22, 23, 24, 25, 26, 27, 28,   # linked amp 2  (e.g. 23 = amp 2, zone 3)
-                             31, 32, 33, 34, 35, 36, 37, 38 ]  # linked amp 3
+                             31, 32, 33, 34, 35, 36, 37, 38 ],  # linked amp 3
+        'restore_zone':    [ 'set_power', 'set_source', 'set_volume', 'set_mute', 'set_bass', 'set_balance', 'set_treble' ],
+        'restore_success': "OK\r"
     }
 }
 
@@ -419,8 +421,7 @@ def get_amp_controller(amp_type: str, port_url, config):
 
         @synchronized
         def zone_status(self, zone: int):
-            # Ignore first 6 bytes as they will contain 3 byte command and 3 bytes of EOL
-            response = self._send_request(_zone_status_cmd(self._amp_type, zone), skip=6)
+            response = self._send_request(_zone_status_cmd(self._amp_type, zone))
             return ZoneStatus.from_string(self._amp_type, response).dict
 
         @synchronized
@@ -459,15 +460,15 @@ def get_amp_controller(amp_type: str, port_url, config):
         def restore_zone(self, status: dict):
             zone = status['zone']
             amp_type = self._amp_type
+            success = AMP_TYPE_CONFIG[amp_type].get('restore_success')
+            #LOG.debug(f"Restoring amp {amp_type} zone {zone} from {status}")
 
-            self._send_request(_set_source_cmd(amp_type, zone, status['source']))
-            self._send_request(_set_power_cmd(amp_type, zone, status['power']))
-            self._send_request(_set_volume_cmd(amp_type, zone, status['volume']))
-            self._send_request(_set_mute_cmd(amp_type, zone, status['mute']))
-            self._send_request(_set_treble_cmd(amp_type, zone, status['treble']))
-            self._send_request(_set_bass_cmd(amp_type, zone, status['bass']))
-            self._send_request(_set_balance_cmd(amp_type, zone, status['balance']))
-
+            # send all the commands necessary to restore the various status settings to the amp
+            restore_commands = AMP_TYPE_CONFIG[amp_type].get('restore_zone')
+            for command in restore_commands:
+                result = self._send_request( _command(amp_type, command, status) )
+                if result != success:
+                    LOG.warning(f"Failed restoring zone {zone} command {command}")
 
     return AmpControlSync(amp_type, port_url, config)
 

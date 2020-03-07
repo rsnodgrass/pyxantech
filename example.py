@@ -33,10 +33,10 @@ for zone in range(1, 9):
 amp.all_off()
 exit
 
-for zone in range(1, 9):
-    amp.set_power(zone, True)
-    amp.set_mute(zone, False)
-    print(f"Zone {zone} status: {amp.zone_status(zone)}")
+#for zone in range(1, 9):
+#    amp.set_power(zone, True)
+#    amp.set_mute(zone, False)
+#    print(f"Zone {zone} status: {amp.zone_status(zone)}")
 
 source = 1
 amp.set_source(1, source)
