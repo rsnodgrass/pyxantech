@@ -23,6 +23,8 @@ MAX_BASS = 14
 MAX_TREBLE = 14
 MAX_VOLUME = 38
 
+BAUD_RATES = [ 9600, 19200, 38400, 57600, 115200 ]
+
 DEFAULT_SERIAL_CONFIG = {
     'baudrate':      9600,
     'bytesize':      serial.EIGHTBITS,
