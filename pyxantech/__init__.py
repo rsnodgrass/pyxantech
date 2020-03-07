@@ -1,3 +1,6 @@
+#  FIXME:
+#    - for simplifying, should we provide a save_zone_status(zone) and restore_zone_status(zone)
+
 import asyncio
 import functools
 import logging

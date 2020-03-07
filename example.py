@@ -21,6 +21,33 @@ config = {
     }
 }
 
+zone = 1
+amp = get_amp_controller(args.model, args.tty, config)
+
+# save the status for all zones before modifying
+zone_status = {}
+for zone in range(1, 9):
+    zone_status[zone] = amp.zone_status(zone) # save current status for all zones
+    print(f"Zone {zone} status: {zone_status[zone]}")
+
+amp.all_off()
+
+for zone in range(1, 9):
+    amp.set_power(zone, True)
+    amp.set_mute(zone, False)
+    print(f"Zone {zone} status: {amp.zone_status(zone)}")
+
+source = 1
+amp.set_source(1, source)
+
+# restore zones back to their original states
+for zone in range(1, 9):
+    amp.restore_zone( zone_status[zone ])
+
+
+
+
+
 def knight_rider(amp, number_of_times):
     for _ in range (1, number_of_times + 1):
         for zone in range(1, 9):
@@ -30,32 +57,4 @@ def knight_rider(amp, number_of_times):
         for zone in range(-7, -1):
             amp.set_power(-1 * zone, True)
             amp.set_power(-1 * zone, False)
-
-
-zone = 1
-amp = get_amp_controller(args.model, args.tty, config)
-
-amp.all_off()
-
-knight_rider(amp, 2)
-
-for zone in range(1, 8):
-    amp.set_power(zone, True)
-    time.sleep(0.25)
-
-    amp.set_source(zone, 1)
-    amp.set_mute(zone, False)
-    print(f"Zone {zone} status: {amp.zone_status(zone)}")
-
-exit()
-
-# Valid zones are 11-16 for main xantech amplifier
-zone_status = amp.zone_status(zone)
-
-# Set balance for zone #11
-#amp.set_balance(zone, 3)
-
-# Restore zone #11 to it's original state
-amp.restore_zone(zone_status.dict)
-
-
+# knight_rider(amp, 2)
