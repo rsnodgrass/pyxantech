@@ -556,14 +556,15 @@ async def get_async_amp_controller(amp_type, port_url, config_override, loop):
         async def restore_zone(self, status: dict):
             zone = status['zone']
             amp_type = self._amp_type
+            success = AMP_TYPE_CONFIG[amp_type].get('restore_success')
+            #LOG.debug(f"Restoring amp {amp_type} zone {zone} from {status}")
 
-            await self._protocol.send(_set_source_cmd(amp_type, zone, status['source']))
-            await self._protocol.send(_set_power_cmd(amp_type, zone, status['power']))
-            await self._protocol.send(_set_volume_cmd(amp_type, zone, status['volume']))
-            await self._protocol.send(_set_mute_cmd(amp_type, zone, status['mute']))
-            await self._protocol.send(_set_treble_cmd(amp_type, zone, status['treble']))
-            await self._protocol.send(_set_bass_cmd(amp_type, zone, status['bass']))
-            await self._protocol.send(_set_balance_cmd(amp_type, zone, status['balance']))
+            # send all the commands necessary to restore the various status settings to the amp
+            restore_commands = AMP_TYPE_CONFIG[amp_type].get('restore_zone')
+            for command in restore_commands:
+                result = await self._protocol._send( _command(amp_type, command, status) )
+                if result != success:
+                    LOG.warning(f"Failed restoring zone {zone} command {command}")
 
 
     protocol = await get_rs232_async_protocol(port_url, config.get('rs232'), config, loop)
