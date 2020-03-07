@@ -463,12 +463,15 @@ def get_amp_controller(amp_type: str, port_url, config):
             success = AMP_TYPE_CONFIG[amp_type].get('restore_success')
             #LOG.debug(f"Restoring amp {amp_type} zone {zone} from {status}")
 
+            # FIXME: fetch current status first and only call those that changed
+
             # send all the commands necessary to restore the various status settings to the amp
             restore_commands = AMP_TYPE_CONFIG[amp_type].get('restore_zone')
             for command in restore_commands:
                 result = self._send_request( _command(amp_type, command, status) )
                 if result != success:
                     LOG.warning(f"Failed restoring zone {zone} command {command}")
+                time.sleep(0.1) # pause 100 ms
 
     return AmpControlSync(amp_type, port_url, config)
 
@@ -565,7 +568,7 @@ async def get_async_amp_controller(amp_type, port_url, config_override, loop):
                 result = await self._protocol._send( _command(amp_type, command, status) )
                 if result != success:
                     LOG.warning(f"Failed restoring zone {zone} command {command}")
-
+                await asyncio.sleep(0.1) # pause 100 ms
 
     protocol = await get_rs232_async_protocol(port_url, config.get('rs232'), config, loop)
     return AmpControlAsync(protocol_type, protocol)
