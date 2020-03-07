@@ -1,4 +1,7 @@
 #!/usr/local/bin/python3
+#
+# Running:
+#   ./example.py --tty /dev/tty.usbserial-A501SGSZ
 
 import argparse                                                                                             
 import time

@@ -13,7 +13,7 @@ LOG = logging.getLogger(__name__)
 MONOPRICE6 = 'monoprice6'   # Monoprice 6-zone amplifier
 DAYTON6    = 'monoprice6'   # Dayton Audio 6-zone amplifiers are idential to Monoprice
 XANTECH8   = 'xantech8'     # Xantech 8-zone amplifier
-SUPPORTED_AMP_TYPES= [ MONOPRICE6, XANTECH8 ]
+SUPPORTED_AMP_TYPES = [ MONOPRICE6, XANTECH8 ]
 
 MAX_BALANCE = 20
 MAX_BASS = 14
@@ -399,6 +399,7 @@ def get_amp_controller(amp_type: str, port_url, config):
             result = bytearray()
             while True:
                 c = self._port.read(1)
+                print(c)
                 if not c:
                     ret = bytes(result)
                     LOG.info(result)
@@ -561,5 +562,5 @@ async def get_async_amp_controller(amp_type, port_url, config_override, loop):
             await self._protocol.send(_set_balance_cmd(amp_type, zone, status['balance']))
 
 
-    protocol = get_rs232_async_protocol(port_url, config.get('rs232'), config, loop)
+    protocol = await get_rs232_async_protocol(port_url, config.get('rs232'), config, loop)
     return AmpControlAsync(protocol_type, protocol)
