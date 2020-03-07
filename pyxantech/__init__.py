@@ -4,6 +4,7 @@ import logging
 import re
 import time
 import serial
+
 from functools import wraps
 from threading import RLock
 
@@ -14,8 +15,10 @@ LOG = logging.getLogger(__name__)
 MONOPRICE6 = 'monoprice6'   # Monoprice 6-zone amplifier
 DAYTON6    = 'monoprice6'   # Dayton Audio 6-zone amplifiers are idential to Monoprice
 XANTECH8   = 'xantech8'     # Xantech 8-zone amplifier
+ZPR68      = 'zpr68'        # Xantech ZPR68 (*NOT IMPLEMENTED*)
 SUPPORTED_AMP_TYPES = [ MONOPRICE6, XANTECH8 ]
 
+# NOTE: these ranges are different for each amp type
 MAX_BALANCE = 20
 MAX_BASS = 14
 MAX_TREBLE = 14
@@ -97,6 +100,35 @@ RS232_COMMANDS = {
         # FIXME: these aren't documented, do they work?
         'set_activity_updates': '!ZA{activity_updates}+',      # on_off: 1 = on; 0 = off
         'set_status_updates':   '!ZP{status_updates}+',      # on_off: 1 = on; 0 = off
+    },
+
+    ZPR68: {
+        'power_status':     '?{zone:02}C=', # Y or N
+        'power_on':         '!{zone:02}:CY+', 
+        'power_off':        '!{zone:02}:CN+',
+        'all_zones_off':    '!00CN+',
+
+        'volume_status':    '?{zone:02}V=',
+        'set_volume':       '!{zone:02}V{volume:02}+',
+        'volume_up':        '!{zone:02}LU+',
+        'volume_down':      '!{zone:02}LD+',
+
+        'mute_status':      '?{zone:02}M=', # Y or N
+        'mute_on':          '!{zone:02}QY+',
+        'mute_off':         '!{zone:02}QN+',
+        'mute_all_on':      '!00QY+',
+        'mute_all_off':     '!00QN+',
+
+        'source_status':    '?{zone:02}I=',
+        'set_source':       '!{zone:02}I{source}+',
+        'set_source_all':   '!00I{source}+',
+
+        'zone_status':      'Z{zone:02}',
+
+        'set_treble':       '!{zone:02}T{treble:02}+',
+
+        'treble_status':    '?{zone:02}T=',
+        'bass_status':      '?{zone:02}B=',
     }
 }
 
@@ -145,6 +177,12 @@ AMP_TYPE_CONFIG ={
                              31, 32, 33, 34, 35, 36, 37, 38 ],  # linked amp 3
         'restore_zone':    [ 'set_power', 'set_source', 'set_volume', 'set_mute', 'set_bass', 'set_balance', 'set_treble' ],
         'restore_success': "OK\r"
+    },
+
+    ZPR68: {
+        'rs232':           DEFAULT_SERIAL_CONFIG,
+        'protocol_eol':    b'\r', # replies: \r
+        'command_eol':     '', # sending: '='
     }
 }
 
