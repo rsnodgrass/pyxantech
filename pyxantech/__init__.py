@@ -12,8 +12,7 @@ from .protocol import get_rs232_async_protocol
 
 LOG = logging.getLogger(__name__)
 
-MONOPRICE6 = 'monoprice6'   # Monoprice 6-zone amplifier
-DAYTON6    = 'monoprice6'   # Dayton Audio 6-zone amplifiers are idential to Monoprice
+MONOPRICE6 = 'monoprice6'   # Monoprice 6-zone amplifier (plus Dayton Audio 6-zone amplifiers are idential to Monoprice)
 XANTECH8   = 'xantech8'     # Xantech 8-zone amplifier
 ZPR68      = 'zpr68'        # Xantech ZPR68 (*NOT IMPLEMENTED*)
 SUPPORTED_AMP_TYPES = [ MONOPRICE6, XANTECH8 ]
