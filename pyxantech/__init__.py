@@ -341,49 +341,49 @@ def _zone_status_cmd(amp_type, zone: int) -> bytes:
 def _set_power_cmd(amp_type, zone: int, power: bool) -> bytes:
     assert zone in _get_config(amp_type, 'zones')
     if power:
-        LOG.info("Powering on {amp_type} zone {zone}")
+        LOG.info(f"Powering on {amp_type} zone {zone}")
         return _command(amp_type, 'power_on', { 'zone': zone })
     else:
-        LOG.info("Powering off {amp_type} zone {zone}")
+        LOG.info(f"Powering off {amp_type} zone {zone}")
         return _command(amp_type, 'power_off', { 'zone': zone })
 
 def _set_mute_cmd(amp_type, zone: int, mute: bool) -> bytes:
     assert zone in _get_config(amp_type, 'zones')
     if mute:
-        LOG.info("Muting {amp_type} zone {zone}")
+        LOG.info(f"Muting {amp_type} zone {zone}")
         return _command(amp_type, 'mute_on', { 'zone': zone })
     else:
-        LOG.info("Turning off mute {amp_type} zone {zone}")
+        LOG.info(f"Turning off mute {amp_type} zone {zone}")
         return _command(amp_type, 'mute_off', { 'zone': zone })
     
 def _set_volume_cmd(amp_type, zone: int, volume: int) -> bytes:
     assert zone in _get_config(amp_type, 'zones')
     volume = int(max(0, min(volume, MAX_VOLUME)))
-    LOG.info("Setting volume {amp_type} zone {zone} to {volume}")
+    LOG.info(f"Setting volume {amp_type} zone {zone} to {volume}")
     return _command(amp_type, 'set_volume', args = { 'zone': zone, 'volume': volume })
 
 def _set_treble_cmd(amp_type, zone: int, treble: int) -> bytes:
     assert zone in _get_config(amp_type, 'zones')
     treble = int(max(0, min(treble, MAX_TREBLE)))
-    LOG.info("Setting treble {amp_type} zone {zone} to {treble}")
+    LOG.info(f"Setting treble {amp_type} zone {zone} to {treble}")
     return _command(amp_type, 'set_treble', args = { 'zone': zone, 'treble': treble })
 
 def _set_bass_cmd(amp_type, zone: int, bass: int) -> bytes:
     assert zone in _get_config(amp_type, 'zones')
     bass = int(max(0, min(bass, MAX_BASS)))
-    LOG.info("Setting bass {amp_type} zone {zone} to {bass}")
+    LOG.info(f"Setting bass {amp_type} zone {zone} to {bass}")
     return _command(amp_type, 'set_bass', args = { 'zone': zone, 'bass': bass })
 
 def _set_balance_cmd(amp_type, zone: int, balance: int) -> bytes:
     assert zone in _get_config(amp_type, 'zones')
     balance = max(0, min(balance, MAX_BALANCE))
-    LOG.info("Setting balance {amp_type} zone {zone} to {balance}")
+    LOG.info(f"Setting balance {amp_type} zone {zone} to {balance}")
     return _command(amp_type, 'set_balance', args = { 'zone': zone, 'balance': balance })
 
 def _set_source_cmd(amp_type, zone: int, source: int) -> bytes:
     assert zone in _get_config(amp_type, 'zones')
     assert source in _get_config(amp_type, 'sources')
-    LOG.info("Setting source {amp_type} zone {zone} to {source}")
+    LOG.info(f"Setting source {amp_type} zone {zone} to {source}")
     return _command(amp_type, 'set_source', args = { 'zone': zone, 'source': source })
 
 def get_amp_controller(amp_type: str, port_url, config):
@@ -455,7 +455,7 @@ def get_amp_controller(amp_type: str, port_url, config):
 
             ret = bytes(result)
             LOG.debug('Received "%s"', ret)
-            print(f"Received: {ret}")
+#            print(f"Received: {ret}")
             return ret.decode('ascii')
 
         @synchronized
