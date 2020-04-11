@@ -5,6 +5,8 @@ This supports any serial protocol for communicating with the amps, including DB9
 USB serial ports, and possibly the RS232-over-IP interface for more recent Xantech amps. See below
 for exactly which amplifier models are supported.
 
+*GOAL: To eventually merge this with pymonoprice and get rid of a separate implementation.*
+
 The Monoprice version was originally created by Egor Tsinko for use with [Home-Assistant](http://home-assistant.io).
 
 ![beta_badge](https://img.shields.io/badge/maturity-Beta-yellow.png)
