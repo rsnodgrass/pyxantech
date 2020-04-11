@@ -96,6 +96,6 @@ loop.run_until_complete(main(loop))
 Sites with active community engagement around the Xantech, Monoprice, and Daytona AUdio
 multi-zone amplifiers:
 
-* (https://www.avsforum.com/forum/36-home-v-distribution/1506842-any-experience-monoprice-6-zone-home-audio-multizone-controller-23.html)
-* (http://cocoontech.com/forums/topic/25893-monoprice-multi-zone-audio/)
-* (https://community.home-assistant.io/t/monoprice-whole-home-audio-controller-10761-success/19734/67)
+* [AVS Forum: Monoprice 6](https://www.avsforum.com/forum/36-home-v-distribution/1506842-any-experience-monoprice-6-zone-home-audio-multizone-controller-23.html)
+* http://cocoontech.com/forums/topic/25893-monoprice-multi-zone-audio/
+* [Home Assistant: Monoprice6 ]: (https://community.home-assistant.io/t/monoprice-whole-home-audio-controller-10761-success/19734/67)
