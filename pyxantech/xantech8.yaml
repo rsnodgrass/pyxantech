@@ -3,6 +3,16 @@ xantech8:
   num_zones: 8
   num_sources: 8
 
+  rs232:
+    protocol: xantech8
+    serial_defaults:
+      baudrate: 9600
+      bytesize: 8
+      parity: 'N'
+      stopbits: 1
+      timeout: 1.0
+      write_timeout: 1.0
+
   hardware_volume_steps: 38
 
   # NOTE: this was actually Monoprice's zone pattern
