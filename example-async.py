@@ -30,16 +30,14 @@ parser.add_argument('--model', default=XANTECH8, help=f"model (e.g. {XANTECH8}, 
 parser.add_argument('--baud', type=int, default=9600, help='baud rate (9600, 14400, 19200, 38400, 57600, 115200)')
 args = parser.parse_args()
 
-config = {                          
-    'rs232': {
-        'baudrate': args.baud
-    }
+serial_config = {
+    'baudrate': args.baud
 }
 
 async def main():
     zone = 1
 
-    amp = await get_async_amp_controller(XANTECH8, args.tty, config, asyncio.get_event_loop())
+    amp = await get_async_amp_controller(XANTECH8, args.tty, asyncio.get_event_loop(), serial_config_overrides=serial_config)
     await amp.all_off()
 
 #    print(f"Xantech amp version = {await amp.sendCommand('version')}")
