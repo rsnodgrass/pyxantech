@@ -34,6 +34,10 @@ DEFAULT_SERIAL_CONFIG = {
     'write_timeout': 2.0
 }
 
+CONF_SERIAL_CONFIG='rs232'
+
+# FIXME: move this all to yaml configuration files (like the Anthem AV integration)
+
 # technically zone = {amp_number}{zone_num_within_amp_1-6} (e.g. 11 = amp number 1, zone 1)
 RS232_COMMANDS = {
     MONOPRICE6: {
@@ -215,7 +219,6 @@ class ZoneStatus(object):
             if key in self.dict:
                 self.dict[key] = int(self.dict[key])
 
-
     @classmethod
     def from_string(cls, amp_type, string: str):
         if not string:
@@ -386,10 +389,11 @@ def _set_source_cmd(amp_type, zone: int, source: int) -> bytes:
     LOG.info(f"Setting source {amp_type} zone {zone} to {source}")
     return _command(amp_type, 'set_source', args = { 'zone': zone, 'source': source })
 
-def get_amp_controller(amp_type: str, port_url, config):
+def get_amp_controller(amp_type: str, port_url, serial_config_overrides={}):
     """
     Return synchronous version of amplifier control interface
     :param port_url: serial port, i.e. '/dev/ttyUSB0'
+    :param serial_config_overrides: dictionary of serial port configuration overrides (e.g. baudrate)
     :return: synchronous implementation of amplifier control interface
     """
 
@@ -409,15 +413,18 @@ def get_amp_controller(amp_type: str, port_url, config):
 
 
     class AmpControlSync(AmpControlBase):
-        def __init__(self, amp_type, port_url, config):
+        def __init__(self, amp_type, port_url, serial_config_overrides):
             self._amp_type = amp_type
-            self._config = config
+            config = AMP_TYPE_CONFIG[amp_type]
 
-            serial_init_config = DEFAULT_SERIAL_CONFIG
-            serial_init_config.update(config.get("rs232"))
-            print(serial_init_config)
+            # allow overriding the default serial port configuration, in case the user has changed
+            # settings on their amplifier (e.g. increased the default baudrate)
+            serial_config = config.get('rs232')
+            if serial_config_overrides:
+                LOG.debug(f"Overiding serial port config for {port_url}: {serial_config_overrides}")
+                serial_config.update(serial_config_overrides)
 
-            self._port = serial.serial_for_url(port_url, **serial_init_config)
+            self._port = serial.serial_for_url(port_url, **serial_config)
 
         def _send_request(self, request: bytes, skip=0):
             """
@@ -512,7 +519,7 @@ def get_amp_controller(amp_type: str, port_url, config):
                     LOG.warning(f"Failed restoring zone {zone} command {command}")
                 time.sleep(0.1) # pause 100 ms
 
-    return AmpControlSync(amp_type, port_url, config)
+    return AmpControlSync(amp_type, port_url, serial_config_overrides)
 
 
 # backwards compatible API
@@ -523,9 +530,9 @@ async def get_async_monoprice(port_url, loop):
     :param port_url: serial port, i.e. '/dev/ttyUSB0'
     :return: asynchronous implementation of amplifier control interface
     """
-    return get_async_amp_controller(MONOPRICE6, port_url, DEFAULT_SERIAL_CONFIG, loop)
+    return get_async_amp_controller(MONOPRICE6, port_url, loop)
 
-async def get_async_amp_controller(amp_type, port_url, config_override, loop):
+async def get_async_amp_controller(amp_type, port_url, loop, serial_config_overrides={}):
     """
     Return asynchronous version of amplifier control interface
     :param port_url: serial port, i.e. '/dev/ttyUSB0'
@@ -538,8 +545,6 @@ async def get_async_amp_controller(amp_type, port_url, config_override, loop):
         return None
 
     config = AMP_TYPE_CONFIG[amp_type]
-    config.update(config_override)
-
     protocol_type = config.get('protocol')
 
     lock = asyncio.Lock()
@@ -552,7 +557,8 @@ async def get_async_amp_controller(amp_type, port_url, config_override, loop):
         return wrapper
 
     class AmpControlAsync(AmpControlBase):
-        def __init__(self, amp_type, protocol):
+        def __init__(self, config, amp_type, protocol):
+            self._config = config
             self._amp_type = amp_type
             self._protocol = protocol
 
@@ -598,16 +604,24 @@ async def get_async_amp_controller(amp_type, port_url, config_override, loop):
         async def restore_zone(self, status: dict):
             zone = status['zone']
             amp_type = self._amp_type
-            success = AMP_TYPE_CONFIG[amp_type].get('restore_success')
+            success = self._config.get('restore_success')
             #LOG.debug(f"Restoring amp {amp_type} zone {zone} from {status}")
 
             # send all the commands necessary to restore the various status settings to the amp
-            restore_commands = AMP_TYPE_CONFIG[amp_type].get('restore_zone')
+            restore_commands = self._config.get('restore_zone')
             for command in restore_commands:
                 result = await self._protocol._send( _command(amp_type, command, status) )
                 if result != success:
                     LOG.warning(f"Failed restoring zone {zone} command {command}")
                 await asyncio.sleep(0.1) # pause 100 ms
 
-    protocol = await get_rs232_async_protocol(port_url, config.get('rs232'), config, loop)
-    return AmpControlAsync(protocol_type, protocol)
+    # allow overriding the default serial port configuration, in case the user has changed
+    # settings on their amplifier (e.g. increased the default baudrate)
+
+    serial_config = config.get('rs232')
+    if serial_config_overrides:
+        LOG.debug(f"Overiding serial port config for {port_url}: {serial_config_overrides}")
+        serial_config.update(serial_config_overrides)
+
+    protocol = await get_rs232_async_protocol(port_url, serial_config, config, loop)
+    return AmpControlAsync(config, protocol_type, protocol)

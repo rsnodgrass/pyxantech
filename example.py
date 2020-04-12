@@ -15,14 +15,12 @@ parser.add_argument('--model', default=XANTECH8, help=f"model (e.g. {XANTECH8}, 
 parser.add_argument('--baud',type=int,default=9600,help='baud rate (9600, 14400, 19200, 38400, 57600, 115200)')
 args = parser.parse_args()
 
-config = {                          
-    'rs232': {
-        'baudrate': args.baud
-    }
+serial_config = {
+    'baudrate': args.baud
 }
 
 zone = 1
-amp = get_amp_controller(args.model, args.tty, config)
+amp = get_amp_controller(args.model, args.tty, serial_config_overrides=serial_config)
 
 # save the status for all zones before modifying
 zone_status = {}

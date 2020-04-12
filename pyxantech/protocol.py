@@ -10,19 +10,6 @@ LOG = logging.getLogger(__name__)
 
 CONF_EOL = 'eol'
 
-DEFAULT_SERIAL_CONFIG = {
-    'baudrate':      9600,
-    'bytesize':      serial.EIGHTBITS,
-    'parity':        serial.PARITY_NONE,
-    'stopbits':      serial.STOPBITS_ONE,
-    'timeout':       1.0,
-    'write_timeout': 1.0
-}
-
-DEFAULT_PROTOCOL_CONFIG = {
-    CONF_EOL: "\n"
-}
-
 async def get_rs232_async_protocol(serial_port_url, serial_config, protocol_config, loop):
     import serial_asyncio
 
@@ -31,10 +18,10 @@ async def get_rs232_async_protocol(serial_port_url, serial_config, protocol_conf
             super().__init__()
 
             self._serial_port_url = serial_port_url
-            self._config = protocol_config
+            self._protocol_config = protocol_config
             self._loop = loop
 
-            self._timeout = self._config.get('timeout')
+            self._timeout = self._protocol_config.get('timeout')
 
             self._lock = asyncio.Lock()
             self._transport = None
@@ -56,7 +43,7 @@ async def get_rs232_async_protocol(serial_port_url, serial_config, protocol_conf
             await self._connected.wait()
             result = bytearray()
 
-            eol = self._config.get(CONF_EOL)
+            eol = self._protocol_config.get(CONF_EOL)
             if eol == None:
                 eol = '\n'
             len_eol = len(eol)
