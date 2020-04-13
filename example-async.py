@@ -50,8 +50,9 @@ async def main():
         await asyncio.sleep(0.5)
         await amp.set_source(zone, 1)
         await amp.set_mute(zone, False)
-        
-        print(f"Zone {zone} status: {amp.zone_status(zone)}")
+
+        status = await amp.zone_status(zone)
+        print(f"Zone {zone} status: {status}")
 
     exit()
 

@@ -30,8 +30,8 @@ DEFAULT_SERIAL_CONFIG = {
     'bytesize':      serial.EIGHTBITS,
     'parity':        serial.PARITY_NONE,
     'stopbits':      serial.STOPBITS_ONE,
-    'timeout':       2.0,
-    'write_timeout': 2.0
+    'timeout':       1.0,
+    'write_timeout': 1.0
 }
 
 CONF_SERIAL_CONFIG='rs232'
@@ -158,8 +158,10 @@ RS232_RESPONSES = {
 AMP_TYPE_CONFIG ={
     MONOPRICE6: {
         'rs232':           DEFAULT_SERIAL_CONFIG,
-        'protocol_eol':    b'\r\n#',
-        'command_eol':     "\r",
+        'protocol': {
+            'eol': b'\r\n#',
+            'command_eol': "\r"
+        },
         'max_amps':        3,
         'sources':         [ 1, 2, 3, 4, 5, 6 ],
         'zones':           [ 11, 12, 13, 14, 15, 16,           # main amp 1    (e.g. 15 = amp 1, zone 5)
@@ -172,8 +174,10 @@ AMP_TYPE_CONFIG ={
     # NOTE: Xantech MRC88 seems to indicate zones are 1..8, or 1..16 if expanded; perhaps this scheme for multi-amps changed
     XANTECH8: {
         'rs232':           DEFAULT_SERIAL_CONFIG,
-        'protocol_eol':    b'\r', # replies: \r
-        'command_eol':     '', # sending: '+'
+        'protocol': {
+            'eol': b'\r',     # replies: \r
+            'command_eol': '' # sending: '+'
+        },
         'max_amps':        3,
         'sources':         [ 1, 2, 3, 4, 5, 6, 7, 8 ],
         'zones':           [ 1, 2, 3, 4, 5, 6, 7, 8,
@@ -186,8 +190,10 @@ AMP_TYPE_CONFIG ={
 
     ZPR68: {
         'rs232':           DEFAULT_SERIAL_CONFIG,
-        'protocol_eol':    b'\r', # replies: \r
-        'command_eol':     '', # sending: '='
+        'protocol': {
+            'eol': b'\r',     # replies: \r
+            'command_eol': '' # sending: '='
+        }
     }
 }
 
@@ -220,7 +226,7 @@ class ZoneStatus(object):
                 self.dict[key] = int(self.dict[key])
 
     @classmethod
-    def from_string(cls, amp_type, string: str):
+    def from_string(cls, amp_type: str, string: str):
         if not string:
             return None
 
@@ -333,7 +339,8 @@ def _pattern_to_dictionary(pattern: str, text: str) -> dict:
 
 
 def _command(amp_type: str, format_code: str, args = {}):
-    eol = _get_config(amp_type, 'command_eol')
+    protocol_config = _get_config(amp_type, 'protocol')
+    eol = protocol_config.get('command_eol')
     command = RS232_COMMANDS[amp_type].get(format_code) + eol
     return command.format(**args).encode('ascii')
 
@@ -443,7 +450,8 @@ def get_amp_controller(amp_type: str, port_url, serial_config_overrides={}):
             self._port.write(request)
             self._port.flush()
 
-            eol = _get_config(self._amp_type, 'protocol_eol')
+            protocol_config = _get_config(self._amp_type, 'protocol')
+            eol = protocol_config.get('eol')
             len_eol = len(eol)
 
             # receive
@@ -564,9 +572,11 @@ async def get_async_amp_controller(amp_type, port_url, loop, serial_config_overr
 
         @locked_coro
         async def zone_status(self, zone: int):
-            # Ignore first 6 bytes as they will contain 3 byte command and 3 bytes of EOL
-            string = await self._protocol.send(_zone_status_cmd(self._amp_type, zone))
-            return ZoneStatus.from_string(string).dict
+            cmd = _zone_status_cmd(self._amp_type, zone)
+            LOG.info(f"Calling command {cmd}")
+            string = await self._protocol.send(cmd)
+            LOG.info(f"For command {cmd} received {string}")
+            return ZoneStatus.from_string(self._amp_type, string).dict
 
         @locked_coro
         async def set_power(self, zone: int, power: bool):
@@ -617,7 +627,6 @@ async def get_async_amp_controller(amp_type, port_url, loop, serial_config_overr
 
     # allow overriding the default serial port configuration, in case the user has changed
     # settings on their amplifier (e.g. increased the default baudrate)
-
     serial_config = config.get('rs232')
     if serial_config_overrides:
         LOG.debug(f"Overiding serial port config for {port_url}: {serial_config_overrides}")
