@@ -19,7 +19,6 @@ xantech8:
   protocol:
     zone_pattern: '#>(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)'
     protocol_eol: '\r\n#'
-    serial_timeout: 2
  
   zone_details_supported:
     PO: true  # power (Xantech)

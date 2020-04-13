@@ -545,7 +545,7 @@ async def get_async_amp_controller(amp_type, port_url, loop, serial_config_overr
         return None
 
     config = AMP_TYPE_CONFIG[amp_type]
-    protocol_type = config.get('protocol')
+    protocol_config = config.get('protocol')
 
     lock = asyncio.Lock()
 
@@ -598,7 +598,7 @@ async def get_async_amp_controller(amp_type, port_url, loop, serial_config_overr
 
         @locked_coro
         async def all_off(self):
-            await self._protocol.send(_command(amp_type, 'all_zones_off'))
+            await self._protocol.send(_command(self._amp_type, 'all_zones_off'))
 
         @locked_coro
         async def restore_zone(self, status: dict):
@@ -623,5 +623,5 @@ async def get_async_amp_controller(amp_type, port_url, loop, serial_config_overr
         LOG.debug(f"Overiding serial port config for {port_url}: {serial_config_overrides}")
         serial_config.update(serial_config_overrides)
 
-    protocol = await get_rs232_async_protocol(port_url, serial_config, config, loop)
-    return AmpControlAsync(config, protocol_type, protocol)
+    protocol = await get_rs232_async_protocol(port_url, serial_config, protocol_config, loop)
+    return AmpControlAsync(config, amp_type, protocol)
