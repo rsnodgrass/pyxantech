@@ -17,10 +17,10 @@ The Monoprice version was originally created by Egor Tsinko for use with [Home-A
 For Monoprice and Dayton Audio 6-zone amplifiers:
 
 ```python
-from pyxantech import get_amp_controller, MONOPRICE6
+from pyxantech import get_amp_controller
 
 zone = 11 # (11 = amp 1/destination 1)
-amp = get_amp_controller(MONOPRICE6, '/dev/ttyUSB0')
+amp = get_amp_controller('monoprice6', '/dev/ttyUSB0')
 
 # Turn off zone 
 amp.set_power(zone, False)
@@ -38,10 +38,10 @@ amp.set_source(zone, 1)
 For Xantech 8-zone amplifiers:
 
 ```python
-from pyxantech import get_amp_controller, XANTECH8
+from pyxantech import get_amp_controller
 
 zone = 12
-amp = get_amp_controller(XANTECH8, '/dev/ttyUSB0')
+amp = get_amp_controller('xantech8', '/dev/ttyUSB0')
 
 amp.set_source(zone, 3) # select source 3
 ```
@@ -54,10 +54,10 @@ With the `asyncio` flavor, all methods of the controller objects are coroutines:
 
 ```python
 import asyncio
-from pyxantech import get_async_amp_controller, MONOPRICE6
+from pyxantech import async_get_amp_controller
 
 async def main(loop):
-    amp = await get_async_amp_controller(MONOPRICE6, '/dev/ttyUSB0', loop)
+    amp = await async)get_amp_controller('monoprice6', '/dev/ttyUSB0', loop)
     zone_status = await amp.zone_status(11)
     if zone_status.power:
         await amp.set_power(zone_status.zone, False)
