@@ -4,7 +4,6 @@
   command_eol:  '' # sending: '+'
   protocol_eol: '\r'
   eol:          '\r' # replies: \r
-  min_time_between_commands: 0.1
 
   commands:
     zone_status:   '?{zone}ZD+'

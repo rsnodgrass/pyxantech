@@ -19,6 +19,7 @@
     stopbits: 1
     timeout: 1.0
     write_timeout: 1.0
+    min_time_between_commands: 0.4
 
   hardware_volume_steps: 38
  

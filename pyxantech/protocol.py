@@ -26,14 +26,15 @@ async def async_get_rs232_protocol(serial_port_url, serial_config, protocol_conf
         return wrapper
 
     class RS232ControlProtocol(asyncio.Protocol):
-        def __init__(self, serial_port_url, protocol_config, loop):
+        def __init__(self, serial_port_url, serial_config, protocol_config, loop):
             super().__init__()
 
             self._serial_port_url = serial_port_url
-            self._config = protocol_config
+            self._serial_config = serial_config
+            self._protocol_config = protocol_config
             self._loop = loop
 
-            self._timeout = self._config.get('timeout')
+            self._timeout = serial_config.get('timeout')
             if self._timeout is None:
                 self._timeout = 1.0 # default to 1 second if None
             LOG.info(f"Timeout set to {self._timeout}")
@@ -60,8 +61,8 @@ async def async_get_rs232_protocol(serial_port_url, serial_config, protocol_conf
 #        @locked_coro
         async def send(self, request: bytes, wait_for_reply=True, skip=0):
             data = bytearray()
-            eol = self._config[CONF_EOL].encode('ascii')
-            min_time_between_commands = self._config[CONF_THROTTLE_RATE]
+            eol = self._protocol_config[CONF_EOL].encode('ascii')
+            min_time_between_commands = self._serial_config[CONF_THROTTLE_RATE]
 
             await self._connected.wait()
 
@@ -105,6 +106,7 @@ async def async_get_rs232_protocol(serial_port_url, serial_config, protocol_conf
 #                        LOG.debug("Partial receive %s", bytes(data).decode('ascii'))
                         if eol in data:
                             # only return the first line
+                            LOG.debug(f"Received: %s (eol={eol")", bytes(data).decode('ascii'))
                             result_lines = data.split(eol)
                             if len(result_lines) > 1:
                                 LOG.debug("Multiple response lines, ignore all but the first: %s", result_lines)
@@ -116,7 +118,7 @@ async def async_get_rs232_protocol(serial_port_url, serial_config, protocol_conf
                     LOG.error("Timeout receiving response for '%s': received='%s'", request, data)
                     raise
 
-    factory = functools.partial(RS232ControlProtocol, serial_port_url, protocol_config, loop)
+    factory = functools.partial(RS232ControlProtocol, serial_port_url, serial_config, protocol_config, loop)
     LOG.debug(f"Creating RS232 connection to {serial_port_url}: {serial_config}")
     _, protocol = await create_serial_connection(loop, factory, serial_port_url, **serial_config)
     return protocol
