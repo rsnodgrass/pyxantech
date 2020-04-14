@@ -23,7 +23,7 @@ SUPPORTED_AMP_TYPES = DEVICE_CONFIG.keys()
 CONF_SERIAL_CONFIG='rs232'
 
 def get_device_config(amp_type, key):
-    return get_with_log(amp_type, DEVICE_CONFIG[amp_type], KeyboardInterrupt)
+    return get_with_log(amp_type, DEVICE_CONFIG[amp_type], key)
 
 def get_protocol_config(amp_type, key):
     protocol = get_device_config(amp_type, 'protocol')
@@ -232,7 +232,7 @@ def get_amp_controller(amp_type: str, port_url, serial_config_overrides={}):
 
             # allow overriding the default serial port configuration, in case the user has changed
             # settings on their amplifier (e.g. increased the default baudrate)
-            serial_config = config.get(CONF_SERIAL_CONFIG)
+            serial_config = get_device_config(amp_type. CONF_SERIAL_CONFIG)
             if serial_config_overrides:
                 LOG.debug(f"Overiding serial port config for {port_url}: {serial_config_overrides}")
                 serial_config.update(serial_config_overrides)
@@ -357,11 +357,6 @@ async def async_get_amp_controller(amp_type, port_url, loop, serial_config_overr
         LOG.error("Unsupported amplifier type '%s'", amp_type)
         return None
 
-    serial_config = get_device_config(amp_type, CONF_SERIAL_CONFIG)
-    protocol = get_device_config(amp_type, 'protocol')
-    LOG.warning(f"Using {protocol} for {amp_type}")
-    protocol_config = PROTOCOL_CONFIG[protocol]
-
     lock = asyncio.Lock()
 
     def locked_coro(coro):
@@ -430,9 +425,12 @@ async def async_get_amp_controller(amp_type, port_url, loop, serial_config_overr
                     LOG.warning(f"Failed restoring zone {zone} command {command}")
                 await asyncio.sleep(0.1) # pause 100 ms
 
+    protocol = get_device_config(amp_type, 'protocol')
+    protocol_config = PROTOCOL_CONFIG[protocol]
+
     # allow overriding the default serial port configuration, in case the user has changed
     # settings on their amplifier (e.g. increased the default baudrate)
-    serial_config = serial_config.get(CONF_SERIAL_CONFIG)
+    serial_config = get_device_config(amp_type, CONF_SERIAL_CONFIG)
     if serial_config_overrides:
         LOG.debug(f"Overiding serial port config for {port_url}: {serial_config_overrides}")
         serial_config.update(serial_config_overrides)
