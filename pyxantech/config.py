@@ -71,7 +71,6 @@ def _precompile_response_patterns():
 #        LOG.debug(f"Precompile patterns for {protocol_type}")
         for name, pattern in config['responses'].items():
 #           LOG.debug(f"Precompiling pattern {name}")
-            LOG.warning(f"Compiling {protocol_type} {name}")
             patterns[name] = re.compile(pattern)
         precompiled[protocol_type] = patterns
     return precompiled

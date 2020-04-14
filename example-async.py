@@ -37,7 +37,7 @@ serial_config = {
 async def main():
     zone = 1
 
-    amp = await async_get_amp_controller(XANTECH8, args.tty, asyncio.get_event_loop(), serial_config_overrides=serial_config)
+    amp = await async_get_amp_controller(args.model, args.tty, asyncio.get_event_loop(), serial_config_overrides=serial_config)
     await amp.all_off()
 
 #    print(f"Xantech amp version = {await amp.sendCommand('version')}")

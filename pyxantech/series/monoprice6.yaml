@@ -9,7 +9,7 @@
   max_treble: 14
   max_volume: 38
 
-  protocol: xantech
+  protocol: monoprice
 
   rs232:
     baudrate: 9600
