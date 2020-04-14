@@ -11,7 +11,7 @@ LOG = logging.getLogger(__name__)
 CONF_EOL = 'command_eol'
 CONF_THROTTLE_RATE = 'min_time_between_commands'
 
-async def async_get_rs232_protocol(serial_port_url, serial_config, protocol_config, loop):
+async def async_get_rs232_protocol(serial_port_url, config, serial_config, protocol_config, loop):
 
     lock = asyncio.Lock()
 
@@ -26,10 +26,11 @@ async def async_get_rs232_protocol(serial_port_url, serial_config, protocol_conf
         return wrapper
 
     class RS232ControlProtocol(asyncio.Protocol):
-        def __init__(self, serial_port_url, serial_config, protocol_config, loop):
+        def __init__(self, serial_port_url, config, serial_config, protocol_config, loop):
             super().__init__()
 
             self._serial_port_url = serial_port_url
+            self._config = config
             self._serial_config = serial_config
             self._protocol_config = protocol_config
             self._loop = loop
@@ -106,7 +107,7 @@ async def async_get_rs232_protocol(serial_port_url, serial_config, protocol_conf
 #                        LOG.debug("Partial receive %s", bytes(data).decode('ascii'))
                         if eol in data:
                             # only return the first line
-                            LOG.debug(f"Received: %s (eol={eol")", bytes(data).decode('ascii'))
+                            LOG.debug(f"Received: %s (eol={eol})", bytes(data).decode('ascii'))
                             result_lines = data.split(eol)
                             if len(result_lines) > 1:
                                 LOG.debug("Multiple response lines, ignore all but the first: %s", result_lines)
@@ -118,7 +119,7 @@ async def async_get_rs232_protocol(serial_port_url, serial_config, protocol_conf
                     LOG.error("Timeout receiving response for '%s': received='%s'", request, data)
                     raise
 
-    factory = functools.partial(RS232ControlProtocol, serial_port_url, serial_config, protocol_config, loop)
+    factory = functools.partial(RS232ControlProtocol, serial_port_url, config, serial_config, protocol_config, loop)
     LOG.debug(f"Creating RS232 connection to {serial_port_url}: {serial_config}")
     _, protocol = await create_serial_connection(loop, factory, serial_port_url, **serial_config)
     return protocol
