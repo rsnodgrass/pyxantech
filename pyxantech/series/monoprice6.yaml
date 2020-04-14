@@ -1,4 +1,4 @@
-monoprice6:
+- series: monoprice6
   name: "Monoprice 6-Zone Amp"
   num_zones: 6
   num_sources: 6
@@ -9,34 +9,18 @@ monoprice6:
   max_treble: 14
   max_volume: 38
 
+  protocol: xantech
+
   rs232:
-    protocol: xantech
-    serial_defaults:
-      baudrate: 9600
-      bytesize: 8
-      parity: 'N'
-      stopbits: 1
-      timeout: 1.0
-      write_timeout: 1.0
+    baudrate: 9600
+    bytesize: 8
+    parity: 'N'
+    stopbits: 1
+    timeout: 1.0
+    write_timeout: 1.0
 
   hardware_volume_steps: 38
  
-  zone_details_supported:
-    PO: true  # power (Xantech)
-    PR: false # power (Monoprice/Dayton Audio)
-    SS: true  # source select (Xantech)
-    CH: false # source channel (Monoprice/Dayton Audio)
-    VO: true  # volume
-    MU: true  # mute
-    TR: true  # treble
-    BS: true  # bass
-    BA: true  # balance
-    LS: true  # linked keypad
-    PS: true  # paged (Xantech)
-    DT: false # do-not-disturb (Monoprice/Dayton Audio)
-    PA: false # public-address-12v-control (Monoprice/Dayton Audio)
-    IS: false # input line 1 or bus 0 (Monoprice/Dayton Audio)
-
   sources:
     1: "Source 1"
     2: "Source 2"

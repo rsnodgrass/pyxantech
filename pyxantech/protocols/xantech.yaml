@@ -1,35 +1,18 @@
-xantech:
+- protocol: xantech
   name: "Xantech 8-Zone Amp Protocol"
 
   # NOTE: this was actually Monoprice's zone pattern
-  protocol:
-    zone_pattern: '#>(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)'
-    protocol_eol: '\r\n#'
-    eol:          '\r\n#' # replies: \r
-    command_eol:  '' # sending: '+'
-    min_time_between_commands: 0.1
-
-  zone_details_supported:
-    PO: true  # power (Xantech)
-    PR: false # power (Monoprice/Dayton Audio)
-    SS: true  # source select (Xantech)
-    CH: false # source channel (Monoprice/Dayton Audio)
-    VO: true  # volume
-    MU: true  # mute
-    TR: true  # treble
-    BS: true  # bass
-    BA: true  # balance
-    LS: true  # linked keypad
-    PS: true  # paged (Xantech)
-    DT: false # do-not-disturb (Monoprice/Dayton Audio)
-    PA: false # public-address-12v-control (Monoprice/Dayton Audio)
-    IS: false # input line 1 or bus 0 (Monoprice/Dayton Audio)
+  zone_pattern: '#>(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)'
+  protocol_eol: '\r\n#'
+  eol:          '\r\n#' # replies: \r
+  command_eol:  '' # sending: '+'
+  min_time_between_commands: 0.1
 
   commands:
     zone_status:   '?{zone}ZD+'
     zone_details:  '?{zone}ZD+'
 
-    power_status:   '?{zone}PR+'
+    power_status:  '?{zone}PR+'
     set_power:     "!{zone}PR{power}+"
     power_on:      '!{zone}PR1+'
     power_off:     '!{zone}PR0+'
@@ -76,7 +59,7 @@ xantech:
   responses:
     zone_status:    '#(?P<zone>\d+)ZS PR(?P<power>[01]) SS(?P<source>\d+) VO(?P<volume>\d+) MU(?P<mute>[01]) TR(?P<treble>\d+) BS(?P<bass>\d+) BA(?P<balance>\d+) LS(?P<linked>[01]) PS(?P<paged>[01])\+'
                     # Example:  #1ZS PR0 SS1 VO0 MU1 TR7 BS7 BA32 LS0 PS0+
-    power_status:   '\?(?P<zone>\d+)PR(?P<power[01])\+'
+    power_status:   '\?(?P<zone>\d+)PR(?P<power>[01])\+'
     source_status:  '\?(?P<zone>\d+)SS(?P<source>[1-8])\+'
     volume_status:  '\?(?P<zone>\d+)VO(?P<volume>\d+)\+'
     mute_status:    '\?(?P<zone>\d+)MU(?P<mute>[01])\+'
@@ -87,3 +70,19 @@ xantech:
   extras:
     restore_zone:    [ 'set_power', 'set_source', 'set_volume', 'set_mute', 'set_bass', 'set_balance', 'set_treble' ]
     restore_success: 'OK\r'
+
+  zone_details_supported:
+    PO: true  # power (Xantech)
+    PR: false # power (Monoprice/Dayton Audio)
+    SS: true  # source select (Xantech)
+    CH: false # source channel (Monoprice/Dayton Audio)
+    VO: true  # volume
+    MU: true  # mute
+    TR: true  # treble
+    BS: true  # bass
+    BA: true  # balance
+    LS: true  # linked keypad
+    PS: true  # paged (Xantech)
+    DT: false # do-not-disturb (Monoprice/Dayton Audio)
+    PA: false # public-address-12v-control (Monoprice/Dayton Audio)
+    IS: false # input line 1 or bus 0 (Monoprice/Dayton Audio)

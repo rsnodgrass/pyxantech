@@ -1,12 +1,11 @@
-zpr68:
+- protocol: zpr68
   name: "Monoprice ZPR68 Protocol"
 
-  protocol:
-    zone_pattern: '#>(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)'
-    protocol_eol: '\r\n#'
-    eol:          '\r'      # replies: \r
-    command_eol:  '' # sending: '='
-    min_time_between_commands: 0.1
+  zone_pattern: '#>(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)'
+  protocol_eol: '\r\n#'
+  eol:          '\r'      # replies: \r
+  command_eol:  '' # sending: '='
+  min_time_between_commands: 0.1
 
   commands:
     power_status:     '?{zone:02}C=' # Y or N
@@ -37,4 +36,4 @@ zpr68:
     bass_status:      '?{zone:02}B='
 
   responses:
-  
+    ok: 'OK'

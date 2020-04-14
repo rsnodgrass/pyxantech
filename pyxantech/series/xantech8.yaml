@@ -1,4 +1,4 @@
-xantech8:
+- series: xantech8
   name: "Xantech 8-Zone Audio"
   description: "Example models: MRAUDIO4X4, BXAUDIO4x4, MRC44, MRC44CTL"
   num_zones: 8
@@ -10,34 +10,18 @@ xantech8:
   max_treble: 14
   max_volume: 38
 
+  protocol: xantech8
+
   rs232:
-    protocol: xantech8
-    serial_defaults:
-      baudrate: 9600
-      bytesize: 8
-      parity: 'N'
-      stopbits: 1
-      timeout: 1.0
-      write_timeout: 1.0
+    baudrate: 9600
+    bytesize: 8
+    parity: 'N'
+    stopbits: 1
+    timeout: 1.0
+    write_timeout: 1.0
 
   hardware_volume_steps: 38
  
-  zone_details_supported:
-    PO: true  # power (Xantech)
-    PR: false # power (Monoprice/Dayton Audio)
-    SS: true  # source select (Xantech)
-    CH: false # source channel (Monoprice/Dayton Audio)
-    VO: true  # volume
-    MU: true  # mute
-    TR: true  # treble
-    BS: true  # bass
-    BA: true  # balance
-    LS: true  # linked keypad
-    PS: true  # paged (Xantech)
-    DT: false # do-not-disturb (Monoprice/Dayton Audio)
-    PA: false # public-address-12v-control (Monoprice/Dayton Audio)
-    IS: false # input line 1 or bus 0 (Monoprice/Dayton Audio)
-
   sources:
     1: "Source 1"
     2: "Source 2"

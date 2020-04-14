@@ -357,8 +357,8 @@ async def async_get_amp_controller(amp_type, port_url, loop, serial_config_overr
         LOG.error("Unsupported amplifier type '%s'", amp_type)
         return None
 
-    serial_config = DEVICE_CONFIG[amp_type].get('rs232')
-    protocol = get_with_log(amp_type, DEVICE_CONFIG, 'protocol')
+    serial_config = DEVICE_CONFIG[amp_type].get(CONF_SERIAL_CONFIG)
+    protocol = get_device_config(amp_type, 'protocol')
     protocol_config = PROTOCOL_CONFIG[protocol]
 
     lock = asyncio.Lock()

@@ -26,14 +26,14 @@ def _load_config_dir(directory):
     config_tree = {}
 
     for filename in os.listdir(directory):
-        try:
+#        try:
           if filename.endswith('.yaml'):
                 series = filename.split('.yaml')[0]
                 config = _load_config(os.path.join(directory, filename))
                 if config:
                     config_tree[series] = config
-        except Exception as e:
-            LOG.warning(f"Failed parsing {filename}; ignoring that configuration file")
+#        except Exception as e:
+#            LOG.warning(f"Failed parsing {filename}; ignoring that configuration file: {e}")
 
     return config_tree
 
@@ -71,6 +71,7 @@ def _precompile_response_patterns():
 #        LOG.debug(f"Precompile patterns for {protocol_type}")
         for name, pattern in config['responses'].items():
 #           LOG.debug(f"Precompiling pattern {name}")
+            LOG.warning(f"Compiling {protocol_type} {name}")
             patterns[name] = re.compile(pattern)
         precompiled[protocol_type] = patterns
     return precompiled
