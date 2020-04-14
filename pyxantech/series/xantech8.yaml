@@ -1,0 +1,118 @@
+xantech8:
+  name: "Xantech 8-Zone Audio"
+  num_zones: 8
+  num_sources: 8
+
+  rs232:
+    protocol: xantech8
+    serial_defaults:
+      baudrate: 9600
+      bytesize: 8
+      parity: 'N'
+      stopbits: 1
+      timeout: 1.0
+      write_timeout: 1.0
+
+  hardware_volume_steps: 38
+ 
+  zone_details_supported:
+    PO: true  # power (Xantech)
+    PR: false # power (Monoprice/Dayton Audio)
+    SS: true  # source select (Xantech)
+    CH: false # source channel (Monoprice/Dayton Audio)
+    VO: true  # volume
+    MU: true  # mute
+    TR: true  # treble
+    BS: true  # bass
+    BA: true  # balance
+    LS: true  # linked keypad
+    PS: true  # paged (Xantech)
+    DT: false # do-not-disturb (Monoprice/Dayton Audio)
+    PA: false # public-address-12v-control (Monoprice/Dayton Audio)
+    IS: false # input line 1 or bus 0 (Monoprice/Dayton Audio)
+
+  default_sources:
+    1: "Source 1"
+    2: "Source 2"
+    3: "Source 3"
+    4: "Source 4"
+    5: "Source 5"
+    6: "Source 6"
+    7: "Source 7"
+    8: "Source 8"
+      
+  default_zones:
+    1: "Zone 1"
+    2: "Zone 2"
+    3: "Zone 3"
+    4: "Zone 4"
+    5: "Zone 5"
+    6: "Zone 6"
+    7: "Zone 7"
+    8: "Zone 8"
+
+  bass_level:
+    unit: "dB"
+    steps:
+      14: "+14"
+      13: "+12"
+      12: "+10"
+      11: "+8"
+      10: "+6"
+      9: "+4"
+      8: "+2"
+      7: "0"
+      6: "-2"
+      5: "-4"
+      4: "-6"
+      3: "-8"
+      2: "-10"
+      1: "-12"
+      0: "-14"
+
+  treble_level:
+    unit: "dB"
+    steps:
+      14: "+14"
+      13: "+12"
+      12: "+10"
+      11: "+8"
+      10: "+6"
+      9: "+4"
+      8: "+2"
+      7:  "0"
+      6: "-2"
+      5: "-4"
+      4: "-6"
+      3: "-8"
+      2: "-10"
+      1: "-12"
+      0: "-14"
+
+  balance_attenuation:
+    unit: "dB"
+    steps:
+      63: { "left": None,  "right": 0      }  # None = Mute
+      62: { "left": -37.5, "right": 0      }
+      #...
+      34: { "left": -2.5,  "right": 0      }
+      33: { "left": -1.25, "right": 0      }
+      32: { "left": 0,     "right": 0      }
+      32: { "left": 0,     "right": 0      }
+      31: { "left": 0,     "right": 0      }
+      30: { "left": 0,     "right": -1.25  }
+      29: { "left": 0,     "right": -2.5   }
+      #...
+      2:  { "left": 0,     "right": -36.25 }
+      1:  { "left": 0,     "right": -37.5  }
+      0:  { "left": 0,     "right": None   }  # None = Mute
+
+  volume_level:
+    units: "dB"
+    steps:
+      38: 0
+      37: -1.25
+      #...
+      2:  -71.25
+      1:  -75.00
+      0:  -78.75
