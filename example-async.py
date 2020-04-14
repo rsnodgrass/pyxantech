@@ -11,7 +11,7 @@ import serial
 import logging
 import sys
 
-from pyxantech import async_get_amp_controller, XANTECH8, MONOPRICE6
+from pyxantech import async_get_amp_controller
 
 ####----------------------------------------
 LOG = logging.getLogger()
@@ -26,7 +26,7 @@ LOG.addHandler(handler)
 
 parser = argparse.ArgumentParser(description='Xantech RS232 client example (asynchronous)')
 parser.add_argument('--tty', help='/dev/tty to use (e.g. /dev/tty.usbserial-A501SGSZ)', required=True)
-parser.add_argument('--model', default=XANTECH8, help=f"model (e.g. {XANTECH8}, {MONOPRICE6})" )
+parser.add_argument('--model', default='xantech8', help=f"model (e.g. xantech8, monoprice6)" )
 parser.add_argument('--baud', type=int, default=9600, help='baud rate (9600, 14400, 19200, 38400, 57600, 115200)')
 args = parser.parse_args()
 
