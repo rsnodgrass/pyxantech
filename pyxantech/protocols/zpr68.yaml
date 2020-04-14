@@ -1,29 +1,34 @@
+zpr68:
+  name: "Monoprice ZPR68 Protocol"
 
+  protocol:
+    zone_pattern: '#>(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)'
+    protocol_eol: '\r\n#'
+ 
+  commands:
+    power_status:     '?{zone:02}C=' # Y or N
+    power_on:         '!{zone:02}:CY+'
+    power_off:        '!{zone:02}:CN+'
+    all_zones_off:    '!00CN+'
 
+    volume_status:    '?{zone:02}V='
+    set_volume:       '!{zone:02}V{volume:02}+'
+    volume_up:        '!{zone:02}LU+'
+    volume_down:      '!{zone:02}LD+'
 
-        'power_status':     '?{zone:02}C=', # Y or N
-        'power_on':         '!{zone:02}:CY+', 
-        'power_off':        '!{zone:02}:CN+',
-        'all_zones_off':    '!00CN+',
+    mute_status:      '?{zone:02}M=' # Y or N
+    mute_on:          '!{zone:02}QY+'
+    mute_off:         '!{zone:02}QN+'
+    mute_all_on:      '!00QY+'
+    mute_all_off:     '!00QN+'
 
-        'volume_status':    '?{zone:02}V=',
-        'set_volume':       '!{zone:02}V{volume:02}+',
-        'volume_up':        '!{zone:02}LU+',
-        'volume_down':      '!{zone:02}LD+',
+    source_status:    '?{zone:02}I='
+    set_source:       '!{zone:02}I{source}+'
+    set_source_all:   '!00I{source}+'
 
-        'mute_status':      '?{zone:02}M=', # Y or N
-        'mute_on':          '!{zone:02}QY+',
-        'mute_off':         '!{zone:02}QN+',
-        'mute_all_on':      '!00QY+',
-        'mute_all_off':     '!00QN+',
+    zone_status:      'Z{zone:02}'
 
-        'source_status':    '?{zone:02}I=',
-        'set_source':       '!{zone:02}I{source}+',
-        'set_source_all':   '!00I{source}+',
+    set_treble:       '!{zone:02}T{treble:02}+'
 
-        'zone_status':      'Z{zone:02}',
-
-        'set_treble':       '!{zone:02}T{treble:02}+',
-
-        'treble_status':    '?{zone:02}T=',
-        'bass_status':      '?{zone:02}B=',
+    treble_status:    '?{zone:02}T='
+    bass_status:      '?{zone:02}B='

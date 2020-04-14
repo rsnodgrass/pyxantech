@@ -5,6 +5,8 @@ xantech:
   protocol:
     zone_pattern: '#>(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)'
     protocol_eol: '\r\n#'
+    eol:          '\r\n#' # replies: \r
+    command_eol:  '' # sending: '+'
  
   zone_details_supported:
     PO: true  # power (Xantech)

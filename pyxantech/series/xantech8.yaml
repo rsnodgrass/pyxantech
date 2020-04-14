@@ -1,7 +1,9 @@
 xantech8:
   name: "Xantech 8-Zone Audio"
+  description: "Example models: MRAUDIO4X4, BXAUDIO4x4, MRC44, MRC44CTL"
   num_zones: 8
   num_sources: 8
+  max_amps: 3
 
   rs232:
     protocol: xantech8
@@ -31,7 +33,7 @@ xantech8:
     PA: false # public-address-12v-control (Monoprice/Dayton Audio)
     IS: false # input line 1 or bus 0 (Monoprice/Dayton Audio)
 
-  default_sources:
+  sources:
     1: "Source 1"
     2: "Source 2"
     3: "Source 3"
@@ -41,7 +43,7 @@ xantech8:
     7: "Source 7"
     8: "Source 8"
       
-  default_zones:
+  zones:
     1: "Zone 1"
     2: "Zone 2"
     3: "Zone 3"
@@ -50,6 +52,33 @@ xantech8:
     6: "Zone 6"
     7: "Zone 7"
     8: "Zone 8"
+
+  # FIXME: some Xantech use 1-8, others the two-digit form, probably should split into two xantech series
+  alternative_zones:
+    11: "Zone 1"    # main amp 1    (e.g. 15 = amp 1, zone 5)
+    12: "Zone 2"
+    13: "Zone 3"
+    14: "Zone 4"
+    15: "Zone 5"
+    16: "Zone 6"
+    17: "Zone 7"
+    18: "Zone 8"
+    21: "Amp 2, Zone 1"   # amp 2         (e.g. 21 = amp 2, zone 1)
+    22: "Amp 2, Zone 2"
+    23: "Amp 2, Zone 3"
+    24: "Amp 2, Zone 4"
+    25: "Amp 2, Zone 5"
+    26: "Amp 2, Zone 6"
+    27: "Amp 2, Zone 7"
+    28: "Amp 2, Zone 8"
+    31: "Amp 3, Zone 2"   # amp 3         (e.g. 35 = amp 4, zone 5)
+    32: "Amp 3, Zone 2"
+    33: "Amp 3, Zone 3"
+    34: "Amp 3, Zone 4"
+    35: "Amp 3, Zone 5"
+    36: "Amp 3, Zone 6"
+    37: "Amp 3, Zone 7"
+    38: "Amp 3, Zone 8"
 
   bass_level:
     unit: "dB"

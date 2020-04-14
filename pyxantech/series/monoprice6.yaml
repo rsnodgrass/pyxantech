@@ -2,6 +2,7 @@ monoprice6:
   name: "Monoprice 6-Zone Amp"
   num_zones: 6
   num_sources: 6
+  max_amps: 3
 
   rs232:
     protocol: xantech
@@ -31,18 +32,30 @@ monoprice6:
     PA: false # public-address-12v-control (Monoprice/Dayton Audio)
     IS: false # input line 1 or bus 0 (Monoprice/Dayton Audio)
 
-  default_sources:
+  sources:
     1: "Source 1"
     2: "Source 2"
     3: "Source 3"
     4: "Source 4"
     5: "Source 5"
     6: "Source 6"
-      
-  default_zones:
-    1: "Zone 1"
-    2: "Zone 2"
-    3: "Zone 3"
-    4: "Zone 4"
-    5: "Zone 5"
-    6: "Zone 6"
+ 
+  zones:
+    11: "Zone 1"          # main amp 1    (e.g. 15 = amp 1, zone 5)
+    12: "Zone 2"
+    13: "Zone 3"
+    14: "Zone 4"
+    15: "Zone 5"
+    16: "Zone 6"
+    21: "Amp 2, Zone 1"   # amp 2         (e.g. 21 = amp 2, zone 1)
+    22: "Amp 2, Zone 2"
+    23: "Amp 2, Zone 3"
+    24: "Amp 2, Zone 4"
+    25: "Amp 2, Zone 5"
+    26: "Amp 2, Zone 6"
+    31: "Amp 3, Zone 1"   # amp 3         (e.g. 32 = amp 3, zone 2)
+    32: "Amp 3, Zone 2"
+    33: "Amp 3, Zone 3"
+    34: "Amp 3, Zone 4"
+    35: "Amp 3, Zone 5"
+    36: "Amp 3, Zone 6"
