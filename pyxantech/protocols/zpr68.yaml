@@ -1,10 +1,9 @@
 - protocol: zpr68
   name: "Monoprice ZPR68 Protocol"
 
-  zone_pattern: '#>(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)'
+  command_eol:  '' # sending: '='
   protocol_eol: '\r\n#'
   eol:          '\r'      # replies: \r
-  command_eol:  '' # sending: '='
   min_time_between_commands: 0.1
 
   commands:

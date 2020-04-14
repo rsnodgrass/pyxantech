@@ -1,11 +1,9 @@
 - protocol: xantech
   name: "Xantech 8-Zone Amp Protocol"
 
-  # NOTE: this was actually Monoprice's zone pattern
-  zone_pattern: '#>(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)'
-  protocol_eol: '\r\n#'
-  eol:          '\r\n#' # replies: \r
   command_eol:  '' # sending: '+'
+  protocol_eol: '\r'
+  eol:          '\r' # replies: \r
   min_time_between_commands: 0.1
 
   commands:
