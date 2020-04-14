@@ -70,20 +70,20 @@ xantech:
     disable_activity_updates: '!ZA0+'
     enable_status_updates:    '!ZP1+'
     disable_status_updates:   '!ZP0+'
-    set_activity_updates: '!ZA{activity_updates}+',  # activity_updates:  1 = on; 0 = off
-    set_status_updates:   '!ZP{status_updates}+',    # status_updates:     1 = on; 0 = off
+    set_activity_updates: '!ZA{activity_updates}+'  # activity_updates:  1 = on; 0 = off
+    set_status_updates:   '!ZP{status_updates}+'   # status_updates:     1 = on; 0 = off
 
   responses:
-    zone_status:    "#(?P<zone>\d+)ZS PR(?P<power>[01]) SS(?P<source>\d+) VO(?P<volume>\d+) MU(?P<mute>[01]) TR(?P<treble>\d+) BS(?P<bass>\d+) BA(?P<balance>\d+) LS(?P<linked>[01]) PS(?P<paged>[01])\+"
+    zone_status:    '#(?P<zone>\d+)ZS PR(?P<power>[01]) SS(?P<source>\d+) VO(?P<volume>\d+) MU(?P<mute>[01]) TR(?P<treble>\d+) BS(?P<bass>\d+) BA(?P<balance>\d+) LS(?P<linked>[01]) PS(?P<paged>[01])\+'
                     # Example:  #1ZS PR0 SS1 VO0 MU1 TR7 BS7 BA32 LS0 PS0+
-    power_status:   "\?(?P<zone>\d+)PR(?P<power[01])\+"
-    source_status:  "\?(?P<zone>\d+)SS(?P<source>[1-8])\+"
-    volume_status:  "\?(?P<zone>\d+)VO(?P<volume>\d+)\+"
-    mute_status:    "\?(?P<zone>\d+)MU(?P<mute>[01])\+"
-    treble_status:  "\?(?P<zone>\d+)TR(?P<treble>\d+)\+"
-    bass_status:    "\?(?P<zone>\d+)BS(?P<bass>\d+)\+"
-    balance_status: "\?(?P<zone>\d+)BA(?P<balance>\d+)\+"
+    power_status:   '\?(?P<zone>\d+)PR(?P<power[01])\+'
+    source_status:  '\?(?P<zone>\d+)SS(?P<source>[1-8])\+'
+    volume_status:  '\?(?P<zone>\d+)VO(?P<volume>\d+)\+'
+    mute_status:    '\?(?P<zone>\d+)MU(?P<mute>[01])\+'
+    treble_status:  '\?(?P<zone>\d+)TR(?P<treble>\d+)\+'
+    bass_status:    '\?(?P<zone>\d+)BS(?P<bass>\d+)\+'
+    balance_status: '\?(?P<zone>\d+)BA(?P<balance>\d+)\+'
 
-  extras;
+  extras:
     restore_zone:    [ 'set_power', 'set_source', 'set_volume', 'set_mute', 'set_bass', 'set_balance', 'set_treble' ]
-    restore_success: "OK\r"
+    restore_success: 'OK\r'

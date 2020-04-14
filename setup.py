@@ -3,7 +3,7 @@
 import os
 import sys
 
-VERSION = '0.4.6'
+VERSION = '0.5.1'
 
 try:
     from setuptools import setup
@@ -48,4 +48,5 @@ setup(name='pyxantech',
       classifiers=['Development Status :: 4 - Beta',
                    'License :: OSI Approved :: MIT License',
                    'Programming Language :: Python :: 3' ],
+      include_package_data=True,
       zip_safe=True)

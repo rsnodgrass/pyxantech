@@ -33,7 +33,7 @@ def _load_config_dir(directory):
                 if config:
                     config_tree[series] = config
         except Exception as e:
-            LOG.warning(f"Failed parsing {filename}; ignoring that configuratio file")
+            LOG.warning(f"Failed parsing {filename}; ignoring that configuration file")
 
     return config_tree
 
