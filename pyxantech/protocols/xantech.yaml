@@ -7,7 +7,8 @@ xantech:
     protocol_eol: '\r\n#'
     eol:          '\r\n#' # replies: \r
     command_eol:  '' # sending: '+'
- 
+    min_time_between_commands: 0.1
+
   zone_details_supported:
     PO: true  # power (Xantech)
     PR: false # power (Monoprice/Dayton Audio)

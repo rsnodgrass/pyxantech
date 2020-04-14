@@ -11,7 +11,7 @@ from functools import wraps
 from threading import RLock
 
 from .config import (DEVICE_CONFIG, PROTOCOL_CONFIG, RS232_RESPONSE_PATTERNS, get_with_log, pattern_to_dictionary)
-from .protocol import get_rs232_async_protocol
+from .protocol import async_get_rs232_protocol
 
 LOG = logging.getLogger(__name__)
 
@@ -343,9 +343,9 @@ async def get_async_monoprice(port_url, loop):
     :param port_url: serial port, i.e. '/dev/ttyUSB0'
     :return: asynchronous implementation of amplifier control interface
     """
-    return get_async_amp_controller(MONOPRICE6, port_url, loop)
+    return async_get_amp_controller(MONOPRICE6, port_url, loop)
 
-async def get_async_amp_controller(amp_type, port_url, loop, serial_config_overrides={}):
+async def async_get_amp_controller(amp_type, port_url, loop, serial_config_overrides={}):
     """
     Return asynchronous version of amplifier control interface
     :param port_url: serial port, i.e. '/dev/ttyUSB0'
@@ -436,5 +436,5 @@ async def get_async_amp_controller(amp_type, port_url, loop, serial_config_overr
         LOG.debug(f"Overiding serial port config for {port_url}: {serial_config_overrides}")
         serial_config.update(serial_config_overrides)
 
-    protocol = await get_rs232_async_protocol(port_url, serial_config, protocol_config, loop)
+    protocol = await async_get_rs232_protocol(port_url, serial_config, protocol_config, loop)
     return AmpControlAsync(amp_type, serial_config, protocol)

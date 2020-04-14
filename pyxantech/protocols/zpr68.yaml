@@ -6,6 +6,7 @@ zpr68:
     protocol_eol: '\r\n#'
     eol:          '\r'      # replies: \r
     command_eol:  '' # sending: '='
+    min_time_between_commands: 0.1
 
   commands:
     power_status:     '?{zone:02}C=' # Y or N

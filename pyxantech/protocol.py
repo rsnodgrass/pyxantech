@@ -11,7 +11,7 @@ LOG = logging.getLogger(__name__)
 CONF_EOL = 'command_eol'
 CONF_THROTTLE_RATE = 'min_time_between_commands'
 
-async def get_async_rs232_protocol(serial_port_url, serial_config, protocol_config, loop):
+async def async_get_rs232_protocol(serial_port_url, serial_config, protocol_config, loop):
 
     lock = asyncio.Lock()
 
@@ -78,7 +78,7 @@ async def get_async_rs232_protocol(serial_port_url, serial_config, protocol_conf
 
                 if delta_since_last_send < 0:
                     delay = -1 * delta_since_last_send
-                    LOG.debug(f"Sleeping {delay} seconds until sending another RS232 request as {self._name} is powering up")
+                    LOG.debug(f"Sleeping {delay} seconds until sending another RS232 request as device is powering up")
                     await asyncio.sleep(delay)
 
                 elif delta_since_last_send < min_time_between_commands:
