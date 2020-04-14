@@ -16,7 +16,7 @@ from .protocol import async_get_rs232_protocol
 LOG = logging.getLogger(__name__)
 
 MONOPRICE6 = "monoprice6" # hardcoded for backwards compatibility
-BAUD_RATES = [ 9600, 19200, 38400, 57600, 115200 ]
+BAUD_RATES = [ 9600, 14400, 19200, 38400, 57600, 115200 ]
 
 SUPPORTED_AMP_TYPES = DEVICE_CONFIG.keys()
 
