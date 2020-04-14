@@ -3,6 +3,11 @@ monoprice6:
   num_zones: 6
   num_sources: 6
   max_amps: 3
+  
+  max_balance: 20
+  max_bass: 14
+  max_treble: 14
+  max_volume: 38
 
   rs232:
     protocol: xantech
@@ -40,6 +45,7 @@ monoprice6:
     5: "Source 5"
     6: "Source 6"
  
+  # technically zone = {amp_number}{zone_num_within_amp_1-6} (e.g. 11 = amp number 1, zone 1)
   zones:
     11: "Zone 1"          # main amp 1    (e.g. 15 = amp 1, zone 5)
     12: "Zone 2"

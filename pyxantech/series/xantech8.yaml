@@ -5,6 +5,11 @@ xantech8:
   num_sources: 8
   max_amps: 3
 
+  max_balance: 20
+  max_bass: 14
+  max_treble: 14
+  max_volume: 38
+
   rs232:
     protocol: xantech8
     serial_defaults:
@@ -54,6 +59,7 @@ xantech8:
     8: "Zone 8"
 
   # FIXME: some Xantech use 1-8, others the two-digit form, probably should split into two xantech series
+  # technically zone = {amp_number}{zone_num_within_amp_1-6} (e.g. 11 = amp number 1, zone 1)
   alternative_zones:
     11: "Zone 1"    # main amp 1    (e.g. 15 = amp 1, zone 5)
     12: "Zone 2"

@@ -82,3 +82,7 @@ xantech:
     treble_status:  "\?(?P<zone>\d+)TR(?P<treble>\d+)\+"
     bass_status:    "\?(?P<zone>\d+)BS(?P<bass>\d+)\+"
     balance_status: "\?(?P<zone>\d+)BA(?P<balance>\d+)\+"
+
+  extras;
+    restore_zone:    [ 'set_power', 'set_source', 'set_volume', 'set_mute', 'set_bass', 'set_balance', 'set_treble' ]
+    restore_success: "OK\r"
