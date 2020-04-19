@@ -232,7 +232,7 @@ def get_amp_controller(amp_type: str, port_url, serial_config_overrides={}):
 
             # allow overriding the default serial port configuration, in case the user has changed
             # settings on their amplifier (e.g. increased the default baudrate)
-            serial_config = get_device_config(amp_type. CONF_SERIAL_CONFIG)
+            serial_config = get_device_config(amp_type, CONF_SERIAL_CONFIG)
             if serial_config_overrides:
                 LOG.debug(f"Overiding serial port config for {port_url}: {serial_config_overrides}")
                 serial_config.update(serial_config_overrides)
