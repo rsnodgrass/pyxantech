@@ -64,9 +64,6 @@ async def async_get_rs232_protocol(serial_port_url, config, serial_config, proto
 
 #        @locked_coro
         async def send(self, request: bytes, wait_for_reply=True, skip=0):
-            data = bytearray()
-            min_time_between_commands = self._config[CONF_MIN_TIME_BETWEEN_COMMANDS]
-
             await self._connected.wait()
 
             # only one write/read at a time
@@ -78,6 +75,7 @@ async def async_get_rs232_protocol(serial_port_url, config, serial_config, proto
                     self._q.get_nowait()
 
                 # throttle the number of RS232 sends per second to avoid causing timeouts
+                min_time_between_commands = self._config[CONF_MIN_TIME_BETWEEN_COMMANDS]
                 delta_since_last_send = time.time() - self._last_send
 
                 if delta_since_last_send < 0:
@@ -98,8 +96,9 @@ async def async_get_rs232_protocol(serial_port_url, config, serial_config, proto
                     return
 
                 # read the response
+                data = bytearray()
+                response_eol = self._protocol_config[CONF_RESPONSE_EOL].encode('ascii') 
                 try:
-                    response_eol = self._protocol_config[CONF_RESPONSE_EOL].encode('ascii')
                     while True:
                         data += await asyncio.wait_for(self._q.get(), self._timeout, loop=self._loop)
 #                        LOG.debug("Partial receive %s", bytes(data).decode('ascii'))
@@ -114,7 +113,7 @@ async def async_get_rs232_protocol(serial_port_url, config, serial_config, proto
 #                            LOG.debug('Received "%s"', result)
                             return result
                 except asyncio.TimeoutError:
-                    LOG.error("Timeout receiving response for '%s': received='%s'", request, data)
+                    LOG.error(f"Timeout receiving response for '%s': received='%s' ({self._timeout} s; eol={response_eol})", request, data)
                     raise
 
     factory = functools.partial(RS232ControlProtocol, serial_port_url, config, serial_config, protocol_config, loop)
