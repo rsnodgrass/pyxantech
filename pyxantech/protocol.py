@@ -106,6 +106,8 @@ async def async_get_rs232_protocol(serial_port_url, config, serial_config, proto
                             # only return the first line
                             LOG.debug(f"Received: %s (eol={response_eol})", bytes(data).decode('ascii'))
                             result_lines = data.split(response_eol)
+                            result_lines.remove(b'') # strip out any blank lines
+
                             if len(result_lines) > 1:
                                 LOG.debug("Multiple response lines, ignore all but the first: %s", result_lines)
 
