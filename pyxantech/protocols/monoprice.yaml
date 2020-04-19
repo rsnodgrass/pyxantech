@@ -2,9 +2,8 @@
   name: "Monoprice 6-Zone Amp Protocol"
   description: "Example models: Monoprice MPR-SG6Z, Monoprice 10761, Dayton Audio DAX66"
 
-  command_eol:  '\r'
-  protocol_eol: '\r\n#'
-  eol:          '\r'
+  command_eol: '\r'
+  multi_command_separator: '#'
 
   commands:
     zone_status:   '?{zone}'
@@ -22,6 +21,8 @@
     set_bass:      '<{zone}BS{bass:02}'     # bass: 0-14
     set_balance:   '<{zone}BL{balance:02}'  # balance: 0-20
     set_source:    '<{zone}CH{source:02}'   # source: 0-6
+
+  response_eol: \r'
 
   responses:
     zone_status: '#>(?P<zone>\d\d)(?P<power>[01]{2})(?P<source>[01]{2})(?P<mute>[01]{2})(?P<do_not_disturb>[01])(?P<volume>\d\d)(?P<treble>\d\d)(?P<bass>\d\d)(?P<balance>\d\d)(?P<unknown>\d\d)(?P<keypad>\d\d)'

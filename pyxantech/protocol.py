@@ -8,8 +8,9 @@ from serial_asyncio import create_serial_connection
 
 LOG = logging.getLogger(__name__)
 
-CONF_EOL = 'command_eol'
-CONF_THROTTLE_RATE = 'min_time_between_commands'
+CONF_COMMAND_EOL='command_eol'
+CONF_RESPONSE_EOL = 'response_eol'
+CONF_MIN_TIME_BETWEEN_COMMANDS = 'min_time_between_commands'
 
 async def async_get_rs232_protocol(serial_port_url, config, serial_config, protocol_config, loop):
 
@@ -62,8 +63,7 @@ async def async_get_rs232_protocol(serial_port_url, config, serial_config, proto
 #        @locked_coro
         async def send(self, request: bytes, wait_for_reply=True, skip=0):
             data = bytearray()
-            eol = self._protocol_config[CONF_EOL].encode('ascii')
-            min_time_between_commands = self._serial_config[CONF_THROTTLE_RATE]
+            min_time_between_commands = self._config[CONF_MIN_TIME_BETWEEN_COMMANDS]
 
             await self._connected.wait()
 
@@ -92,23 +92,19 @@ async def async_get_rs232_protocol(serial_port_url, config, serial_config, proto
                 self._last_send = time.time()
                 self._transport.write(request)
 
-                # special case for power on, since the Anthem units can't accept more RS232 requests
-                # for many seconds after initial powering up
-                if request in [ "P1P1\n", "P2P1\n", "P1P3\n" ]:
-                    self._last_send = time.time() + self._config['delay_after_power_on']
-
                 if not wait_for_reply:
                     return
 
                 # read the response
                 try:
+                    response_eol = self._protocol_config[CONF_RESPONSE_EOL].encode('ascii')
                     while True:
                         data += await asyncio.wait_for(self._q.get(), self._timeout, loop=self._loop)
 #                        LOG.debug("Partial receive %s", bytes(data).decode('ascii'))
-                        if eol in data:
+                        if response_eol in data:
                             # only return the first line
-                            LOG.debug(f"Received: %s (eol={eol})", bytes(data).decode('ascii'))
-                            result_lines = data.split(eol)
+                            LOG.debug(f"Received: %s (eol={response_eol})", bytes(data).decode('ascii'))
+                            result_lines = data.split(response_eol)
                             if len(result_lines) > 1:
                                 LOG.debug("Multiple response lines, ignore all but the first: %s", result_lines)
 
@@ -120,6 +116,6 @@ async def async_get_rs232_protocol(serial_port_url, config, serial_config, proto
                     raise
 
     factory = functools.partial(RS232ControlProtocol, serial_port_url, config, serial_config, protocol_config, loop)
-    LOG.debug(f"Creating RS232 connection to {serial_port_url}: {serial_config}")
+    LOG.info(f"Creating RS232 connection to {serial_port_url}: {serial_config}")
     _, protocol = await create_serial_connection(loop, factory, serial_port_url, **serial_config)
     return protocol

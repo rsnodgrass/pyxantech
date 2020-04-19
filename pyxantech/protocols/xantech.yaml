@@ -1,9 +1,8 @@
 - protocol: xantech
   name: "Xantech 8-Zone Amp Protocol"
 
-  command_eol:  '' # sending: '+'
-  protocol_eol: '\r'
-  eol:          '\r' # replies: \r
+  command_eol: '\r'
+  multi_command_separator: '+'
 
   commands:
     zone_status:   '?{zone}ZD+'
@@ -52,6 +51,8 @@
     disable_status_updates:   '!ZP0+'
     set_activity_updates: '!ZA{activity_updates}+'  # activity_updates:  1 = on; 0 = off
     set_status_updates:   '!ZP{status_updates}+'   # status_updates:     1 = on; 0 = off
+
+  response_eol: '#'
 
   responses:
     zone_status:    '#(?P<zone>\d+)ZS PR(?P<power>[01]) SS(?P<source>\d+) VO(?P<volume>\d+) MU(?P<mute>[01]) TR(?P<treble>\d+) BS(?P<bass>\d+) BA(?P<balance>\d+) LS(?P<linked>[01]) PS(?P<paged>[01])\+'

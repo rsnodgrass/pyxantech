@@ -1,9 +1,8 @@
 - protocol: zpr68
   name: "Monoprice ZPR68 Protocol"
 
-  command_eol:  '' # sending: '='
-  protocol_eol: '\r\n#'
-  eol:          '\r'      # replies: \r
+  command_eol: '='
+  multi_command_separator: '='
 
   commands:
     power_status:     '?{zone:02}C=' # Y or N
@@ -32,6 +31,8 @@
 
     treble_status:    '?{zone:02}T='
     bass_status:      '?{zone:02}B='
+
+  response_eol: '\r'
 
   responses:
     ok: 'OK'
