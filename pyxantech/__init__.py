@@ -11,7 +11,7 @@ from functools import wraps
 from threading import RLock
 
 from .config import (DEVICE_CONFIG, PROTOCOL_CONFIG, RS232_RESPONSE_PATTERNS, get_with_log, pattern_to_dictionary)
-from .protocol import async_get_rs232_protocol, CONF_RESPONSE_EOL, CONF_COMMAND_EOL
+from .protocol import async_get_rs232_protocol, CONF_RESPONSE_EOL, CONF_COMMAND_EOL, CONF_COMMAND_SEPARATOR
 
 LOG = logging.getLogger(__name__)
 
@@ -141,9 +141,12 @@ class AmpControlBase(object):
     
 
 def _command(amp_type: str, format_code: str, args = {}):
-    command_eol = get_protocol_config(amp_type, CONF_COMMAND_EOL)
+    cmd_eol = get_protocol_config(amp_type, CONF_COMMAND_EOL)
+    cmd_separator = get_protocol_config(amp_type, CONF_COMMAND_SEPARATOR)
+
     rs232_commands = get_protocol_config(amp_type, 'commands')
-    command = rs232_commands.get(format_code) + command_eol
+    command = rs232_commands.get(format_code) + cmd_separator + cmd_eol
+
     return command.format(**args).encode('ascii')
 
 def _zone_status_cmd(amp_type, zone: int) -> bytes:

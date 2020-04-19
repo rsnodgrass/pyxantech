@@ -3,7 +3,7 @@
   description: "Example models: Monoprice MPR-SG6Z, Monoprice 10761, Dayton Audio DAX66"
 
   command_eol: '\r'
-  multi_command_separator: '#'
+  command_separator: '#'
 
   commands:
     zone_status:   '?{zone}'

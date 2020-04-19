@@ -10,6 +10,8 @@ LOG = logging.getLogger(__name__)
 
 CONF_COMMAND_EOL='command_eol'
 CONF_RESPONSE_EOL = 'response_eol'
+CONF_COMMAND_SEPARATOR = 'command_separator'
+
 CONF_MIN_TIME_BETWEEN_COMMANDS = 'min_time_between_commands'
 
 async def async_get_rs232_protocol(serial_port_url, config, serial_config, protocol_config, loop):
