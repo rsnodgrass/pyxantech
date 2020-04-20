@@ -68,12 +68,6 @@ async def async_get_rs232_protocol(serial_port_url, config, serial_config, proto
 
             # only one write/read at a time
             with (await self._lock):
-                # clear all buffers of any data waiting to be read before sending the request
-                self._transport.serial.reset_output_buffer()
-                self._transport.serial.reset_input_buffer()
-                while not self._q.empty():
-                    self._q.get_nowait()
-
                 # throttle the number of RS232 sends per second to avoid causing timeouts
                 min_time_between_commands = self._config[CONF_MIN_TIME_BETWEEN_COMMANDS]
                 delta_since_last_send = time.time() - self._last_send
@@ -86,6 +80,12 @@ async def async_get_rs232_protocol(serial_port_url, config, serial_config, proto
                 elif delta_since_last_send < min_time_between_commands:
                     delay = min(max(0, min_time_between_commands - delta_since_last_send), min_time_between_commands)
                     await asyncio.sleep(delay)
+
+                # clear all buffers of any data waiting to be read before sending the request
+                self._transport.serial.reset_output_buffer()
+                self._transport.serial.reset_input_buffer()
+                while not self._q.empty():
+                    self._q.get_nowait()
 
                 # send the request
                 LOG.debug("Sending RS232 data %s", request)
@@ -106,7 +106,9 @@ async def async_get_rs232_protocol(serial_port_url, config, serial_config, proto
                             # only return the first line
                             LOG.debug(f"Received: %s (eol={response_eol})", bytes(data).decode('ascii'))
                             result_lines = data.split(response_eol)
-                            result_lines.remove(b'') # strip out any blank lines
+
+                            # strip out any blank lines
+                            result_lines = [value for value in result_lines if value != b'']
 
                             if len(result_lines) > 1:
                                 LOG.debug("Multiple response lines, ignore all but the first: %s", result_lines)

@@ -55,7 +55,8 @@ class ZoneStatus(object):
         if not string:
             return None
 
-        pattern = RS232_RESPONSE_PATTERNS[amp_type].get('zone_status')
+        protocol_type = get_device_config(amp_type, 'protocol')
+        pattern = RS232_RESPONSE_PATTERNS[protocol_type].get('zone_status')
         match = re.search(pattern, string)
         if not match:
             LOG.debug("Could not pattern match zone status '%s' with '%s'", string, pattern)
@@ -284,7 +285,12 @@ def get_amp_controller(amp_type: str, port_url, serial_config_overrides={}):
         @synchronized
         def zone_status(self, zone: int):
             response = self._send_request(_zone_status_cmd(self._amp_type, zone))
-            return ZoneStatus.from_string(self._amp_type, response).dict
+            status = ZoneStatus.from_string(self._amp_type, response)
+            LOG.debug("Status: %s (string: %s)", status, response)
+            if status:
+                return status.dict
+            else:
+                return None
 
         @synchronized
         def set_power(self, zone: int, power: bool):
@@ -377,9 +383,17 @@ async def async_get_amp_controller(amp_type, port_url, loop, serial_config_overr
 
         @locked_coro
         async def zone_status(self, zone: int):
+            # FIXME: this has nothing to do with amp_type?  protocol!
+
             cmd = _zone_status_cmd(self._amp_type, zone)
             status_string = await self._protocol.send(cmd)
-            return ZoneStatus.from_string(self._amp_type, status_string).dict
+
+            status = ZoneStatus.from_string(self._amp_type, status_string)
+            LOG.debug("Status: %s (string: %s)", status, status_string)
+            if status:
+                return status.dict
+            else:
+                return None
 
         @locked_coro
         async def set_power(self, zone: int, power: bool):
