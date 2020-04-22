@@ -1,5 +1,5 @@
 - protocol: zpr68
-  name: "Monoprice ZPR68 Protocol"
+  name: "Xantech ZPR68 Protocol"
 
   command_eol: "\r"
   command_separator: "="
