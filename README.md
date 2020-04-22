@@ -74,8 +74,8 @@ loop.run_until_complete(main(loop))
 |              | MX88a / MX88ai           | **8** | YES        | xantech8   | audio only; ai = Ethernet support (MRIP) |
 |              | MRC88 / MRC88m           | 6+2   | YES        | xantech8   | audio + video; zones 7-8 are preamp outputs only |
 |              | MX88 / MX88vi            | **8** | YES        | xantech8   | audio + video; vi = Ethernet support (MRIP) |
-|              | MRAUDIO4X4 / BXAUDIO4x4  | 4     | *NO*       | xantech4   | audio only; uses ZPR68 protocol which needs to be edited (pyxantech/protocols/zpr68.yaml) |
-|              | MRC44 / MRC44CTL         | 4     | *NO*       | xantech4   | audio + video; uses ZPR68 protocol which needs to be edited (pyxantech/protocols/zpr68.yaml) |
+|              | MRAUDIO4X4 / BXAUDIO4x4  | 4     | *NO*       | xantech4   | audio only; uses [ZPR68 protocol which needs to be edited](pyxantech/protocols/zpr68.yaml) |
+|              | MRC44 / MRC44CTL         | 4     | *NO*       | xantech4   | audio + video; uses [ZPR68 protocol which needs to be edited](pyxantech/protocols/zpr68.yaml) |
 |              | CM8X8 / CM8X8DR          | 8     | *UNTESTED* | xantech8   |  commercial rack mount matrix controller (BNC) |
 | Monoprice    | MPR-SG6Z / 10761         | 6     | *UNTESTED* | monoprice6 | audio only |
 | Dayton Audio | DAX66                    | 6     | *UNTESTED* | monoprice6 | audio only |
