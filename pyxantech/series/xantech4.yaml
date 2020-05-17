@@ -1,0 +1,33 @@
+- series: xantech4
+  name: "Xantech 4-Zone Audio"
+  description: "Example models: MRAUDIO4X4, BXAUDIO4x4, MRC44, MRC44CTL"
+  num_zones: 4
+  num_sources: 4
+
+  max_balance: 20
+  max_bass: 14
+  max_treble: 14
+  max_volume: 38
+
+  protocol: zpr68
+  min_time_between_commands: 0.4
+
+  rs232:
+    baudrate: 9600
+    bytesize: 8
+    parity: 'N'
+    stopbits: 1
+    timeout: 1.0
+    write_timeout: 1.0
+
+  sources:
+    1: "Source 1"
+    2: "Source 2"
+    3: "Source 3"
+    4: "Source 4"
+      
+  zones:
+    1: "Zone 1"
+    2: "Zone 2"
+    3: "Zone 3"
+    4: "Zone 4"
