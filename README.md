@@ -77,6 +77,7 @@ loop.run_until_complete(main(loop))
 |              | MRAUDIO4X4 / BXAUDIO4x4  | 4     | *NO*       | xantech4   | audio only; uses [ZPR68 protocol which needs to be edited](pyxantech/protocols/zpr68.yaml) |
 |              | MRC44 / MRC44CTL         | 4     | *NO*       | xantech4   | audio + video; uses [ZPR68 protocol which needs to be edited](pyxantech/protocols/zpr68.yaml) |
 |              | CM8X8 / CM8X8DR          | 8     | *UNTESTED* | xantech8   |  commercial rack mount matrix controller (BNC) |
+|              | ZPR68-10                 | 6     | *UNTESTED* | zpr68-10   | 6-zone output; 8 source inputs | 
 | Monoprice    | MPR-SG6Z / 10761         | 6     | *UNTESTED* | monoprice6 | audio only |
 | Dayton Audio | DAX66                    | 6     | *UNTESTED* | monoprice6 | audio only |
 

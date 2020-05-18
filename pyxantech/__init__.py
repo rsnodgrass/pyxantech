@@ -452,5 +452,7 @@ async def async_get_amp_controller(amp_type, port_url, loop, serial_config_overr
         LOG.debug(f"Overiding serial port config for {port_url}: {serial_config_overrides}")
         serial_config.update(serial_config_overrides)
 
+
+    LOG.debug(f"Loading amp {amp_type}/{protocol}: {serial_config}, {protocol_config}")
     protocol = await async_get_rs232_protocol(port_url, DEVICE_CONFIG[amp_type], serial_config, protocol_config, loop)
     return AmpControlAsync(amp_type, serial_config, protocol)

@@ -11,7 +11,7 @@
     all_zones_off:    '!00CN'
 
     volume_status:    '?{zone:02}V'
-    set_volume:       '!{zone:02}V{volume:02}'
+    set_volume:       '!{zone:02}V{volume:02}'  # 00=-80dB; 40=0dB
     volume_up:        '!{zone:02}LU'
     volume_down:      '!{zone:02}LD'
 
@@ -27,10 +27,11 @@
 
     zone_status:      'Z{zone:02}'
 
-    set_treble:       '!{zone:02}T{treble:02}'
-
     treble_status:    '?{zone:02}T'
+    set_treble:       '!{zone:02}T{treble:02}' # 12=+12dB; 06=0 (flat); 00=-12 dB
+
     bass_status:      '?{zone:02}B'
+    set_treble:       '!{zone:02}B{bass:02}'   # 12=+12dB; 06=0 (flat); 00=-12 dB
 
   response_eol: "\r"
 

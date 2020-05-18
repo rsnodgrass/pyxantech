@@ -1,0 +1,35 @@
+# see https://www.xantech.com/sites/xantech.com/files/_/files/app_advisories/7_a_v02n01.pdf
+
+- series: zpr68-10
+  name: "Xantech ZPR68 6-zone Audio"
+  description: "6-zone/8-source matrix audio"
+  num_zones: 6
+  num_sources: 8
+
+  max_balance: 20
+  max_bass: 14
+  max_treble: 14
+  max_volume: 38
+
+  protocol: zpr68
+  min_time_between_commands: 0.4
+
+  rs232:
+    baudrate: 9600
+    bytesize: 8
+    parity: 'N'
+    stopbits: 1
+    timeout: 1.0
+    write_timeout: 1.0
+
+  sources:
+    1: "Source 1"
+    2: "Source 2"
+    3: "Source 3"
+    4: "Source 4"
+      
+  zones:
+    1: "Zone 1"
+    2: "Zone 2"
+    3: "Zone 3"
+    4: "Zone 4"
