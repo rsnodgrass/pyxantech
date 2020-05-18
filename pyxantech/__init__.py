@@ -307,8 +307,8 @@ def get_amp_controller(amp_type: str, port_url, serial_config_overrides={}):
         @synchronized
         def zone_status(self, zone: int):
             # if there is a list of zone status commands, execute that (some don't have a single command for status)
-            if get_protocol_config(amp_type, 'zone_status_commands'):
-                return self._zone_status_manual(zone)
+            #if get_protocol_config(amp_type, 'zone_status_commands'):
+            #    return self._zone_status_manual(zone)
 
             response = self._send_request(_zone_status_cmd(self._amp_type, zone))
             status = ZoneStatus.from_string(self._amp_type, response)
@@ -433,8 +433,8 @@ async def async_get_amp_controller(amp_type, port_url, loop, serial_config_overr
             # FIXME: this has nothing to do with amp_type?  protocol!     
        
             # if there is a list of zone status commands, execute that (some don't have a single command for status)
-            if get_protocol_config(amp_type, 'zone_status_commands'):
-                return await self._zone_status_manual(zone)
+            #if get_protocol_config(amp_type, 'zone_status_commands'):
+            #    return await self._zone_status_manual(zone)
 
             cmd = _zone_status_cmd(self._amp_type, zone)
             status_string = await self._protocol.send(cmd)

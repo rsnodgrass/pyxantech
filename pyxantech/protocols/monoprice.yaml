@@ -25,7 +25,7 @@
   response_eol: "\r"
 
   responses:
-    zone_status: '#>(?P<zone>\d\d)(?P<power>[01]{2})(?P<source>[01]{2})(?P<mute>[01]{2})(?P<do_not_disturb>[01])(?P<volume>\d\d)(?P<treble>\d\d)(?P<bass>\d\d)(?P<balance>\d\d)(?P<unknown>\d\d)(?P<keypad>\d\d)'
+    zone_status: '#>(?P<zone>\d\d)(?P<power>[01]{2})(?P<source>\d\d)(?P<mute>[01]{2})(?P<do_not_disturb>[01])(?P<volume>\d\d)(?P<treble>\d\d)(?P<bass>\d\d)(?P<balance>\d\d)(?P<unknown>\d\d)(?P<keypad>\d\d)'
 
   extra:
     restore_zone:    [ 'set_power', 'set_source', 'set_volume', 'set_mute', 'set_bass', 'set_balance', 'set_treble' ]
