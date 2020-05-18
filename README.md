@@ -68,18 +68,18 @@ loop.run_until_complete(main(loop))
 
 ## Supported Multi-Zone Amps
 
-| Manufacturer | Model(s)                 | Zones | Supported  | Series     | Notes |
-| ------------ | ------------------------ |:-----:|:----------:|:----------:| ----- |
-| Xantech      | MRAUDIO8X8 / MRAUDIO8X8m | 6+2   | YES        | xantech8   | audio only; zones 7-8 are preamp outputs only |
-|              | MX88a / MX88ai           | **8** | YES        | xantech8   | audio only; ai = Ethernet support (MRIP) |
-|              | MRC88 / MRC88m           | 6+2   | YES        | xantech8   | audio + video; zones 7-8 are preamp outputs only |
-|              | MX88 / MX88vi            | **8** | YES        | xantech8   | audio + video; vi = Ethernet support (MRIP) |
-|              | CM8X8 / CM8X8DR          | 8     | *UNTESTED* | xantech8   | commercial rack mount matrix controller (BNC) |
-|              | ZPR68-10                 | 6     | *UNTESTED* | zpr68-10   | 6-zone output; 8 source inputs | 
-|              | MRAUDIO4X4 / BXAUDIO4x4  | 4     | *NO*       | xantech4   | audio only; only supports IR control |
-|              | MRC44 / MRC44CTL         | 4     | *NO*       | xantech4   | audio + video; only supprots IR control |
-| Monoprice    | MPR-SG6Z / 10761         | 6     | *UNTESTED* | monoprice6 | audio only |
-| Dayton Audio | DAX66                    | 6     | *UNTESTED* | monoprice6 | audio only |
+| Manufacturer | Model(s)                 | Zones | Supported  |   Series   | Notes                                            |
+| ------------ | ------------------------ | :---: | :--------: | :--------: | ------------------------------------------------ |
+| Xantech      | MRAUDIO8X8 / MRAUDIO8X8m |  6+2  |    YES     |  xantech8  | audio only; zones 7-8 are preamp outputs only    |
+|              | MX88a / MX88ai           | **8** |    YES     |  xantech8  | audio only; ai = Ethernet support (MRIP)         |
+|              | MRC88 / MRC88m           |  6+2  |    YES     |  xantech8  | audio + video; zones 7-8 are preamp outputs only |
+|              | MX88 / MX88vi            | **8** |    YES     |  xantech8  | audio + video; vi = Ethernet support (MRIP)      |
+|              | CM8X8 / CM8X8DR          |   8   | *UNTESTED* |  xantech8  | commercial rack mount matrix controller (BNC)    |
+|              | ZPR68-10                 |   6   | *UNTESTED* |  zpr68-10  | 6-zone output; 8 source inputs                   |
+|              | MRAUDIO4X4 / BXAUDIO4x4  |   4   |    *NO*    |    N/A     | audio only; only supports IR control             |
+|              | MRC44 / MRC44CTL         |   4   |    *NO*    |    N/A     | audio + video; only supprots IR control          |
+| Monoprice    | MPR-SG6Z / 10761         |   6   | *UNTESTED* | monoprice6 | audio only                                       |
+| Dayton Audio | DAX66                    |   6   | *UNTESTED* | monoprice6 | audio only                                       |
 
 * The [Monoprice MPR-SG6Z](https://www.monoprice.com/product?p_id=10761) and
   [Dayton Audio DAX66](https://www.parts-express.com/dayton-audio-dax66-6-source-6-room-distributed-whole-house-audio-system-with-keypads-25-wpc--300-585)
