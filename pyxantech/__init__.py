@@ -300,7 +300,7 @@ def get_amp_controller(amp_type: str, port_url, serial_config_overrides={}):
                     status.copy(match.groupdict())
                 else:
                     LOG.warning("Could not pattern match zone status '%s' with '%s'", result, pattern)
-                await asyncio.sleep(0.1) # pause 100 ms
+                time.sleep(0.1) # pause 100 ms
 
             return status
 
