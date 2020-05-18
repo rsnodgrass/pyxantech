@@ -12,6 +12,7 @@
 
     volume_status:    '?{zone:02}V='
     set_volume:       '!{zone:02}V{volume:02}+'  # 00=-80dB; 40=0dB
+    set_volume_all:   '!00V{volume:02}+'
     volume_up:        '!{zone:02}LU+'
     volume_down:      '!{zone:02}LD+'
 
