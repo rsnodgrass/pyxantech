@@ -32,7 +32,7 @@
     bass_status:      '?{zone:02}B='
     set_treble:       '!{zone:02}B{bass:02}+'   # 12=+12dB; 06=0 (flat); 00=-12 dB
 
-  zone_status: [ 'power_status', 'volume_status', 'source_status', 'mute_status', 'treble_status', 'bass_status' ]
+  zone_status_commands: [ 'power_status', 'volume_status', 'source_status', 'mute_status', 'treble_status', 'bass_status' ]
 
   response_eol: "\r"
 

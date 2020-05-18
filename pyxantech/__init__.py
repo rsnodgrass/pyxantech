@@ -282,8 +282,34 @@ def get_amp_controller(amp_type: str, port_url, serial_config_overrides={}):
 #            print(f"Received: {ret}")
             return ret.decode('ascii')
 
+
+        @synchronized
+        def _zone_status_manual(self, zone: int):
+            status = {}
+            responses = get_protocol_config(self._amp_type, 'responses')
+
+            # send all the commands necessary to restore the various status settings to the amp
+            for command in get_protocol_config(amp_type, 'zone_status_commands'):
+                pattern = responses[command]
+                result = self._send_request( _zone_status_cmd(self._amp_type, command) )
+
+                # parse the result into status dictionary
+                LOG.info(f"Received zone stats {result}, matching to {pattern}")
+                match = re.search(pattern, result)
+                if match:
+                    status.copy(match.groupdict())
+                else:
+                    LOG.warning("Could not pattern match zone status '%s' with '%s'", result, pattern)
+                await asyncio.sleep(0.1) # pause 100 ms
+
+            return status
+
         @synchronized
         def zone_status(self, zone: int):
+            # if there is a list of zone status commands, execute that (some don't have a single command for status)
+            if get_protocol_config(amp_type, 'zone_status_commands'):
+                return self._zone_status_manual(zone)
+
             response = self._send_request(_zone_status_cmd(self._amp_type, zone))
             status = ZoneStatus.from_string(self._amp_type, response)
             LOG.debug("Status: %s (string: %s)", status, response)
@@ -382,8 +408,33 @@ async def async_get_amp_controller(amp_type, port_url, loop, serial_config_overr
             self._protocol = protocol
 
         @locked_coro
+        async def _zone_status_manual(self, zone: int):
+            status = {}
+            responses = get_protocol_config(amp_type, 'responses')
+
+            # send all the commands necessary to restore the various status settings to the amp
+            for command in get_protocol_config(amp_type, 'zone_status_commands'):
+                pattern = responses[command]
+                result = await self._protocol._send( _command(amp_type, command) )
+
+                # parse the result into status dictionary
+                LOG.info(f"Received zone stats {result}, matching to {pattern}")
+                match = re.search(pattern, result)
+                if match:
+                    status.copy(match.groupdict())
+                else:
+                    LOG.warning("Could not pattern match zone status '%s' with '%s'", result, pattern)
+                await asyncio.sleep(0.1) # pause 100 ms
+
+            return status
+
+        @locked_coro
         async def zone_status(self, zone: int):
-            # FIXME: this has nothing to do with amp_type?  protocol!
+            # FIXME: this has nothing to do with amp_type?  protocol!     
+       
+            # if there is a list of zone status commands, execute that (some don't have a single command for status)
+            if get_protocol_config(amp_type, 'zone_status_commands'):
+                return await self._zone_status_manual(zone)
 
             cmd = _zone_status_cmd(self._amp_type, zone)
             status_string = await self._protocol.send(cmd)
