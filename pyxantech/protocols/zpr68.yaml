@@ -2,36 +2,34 @@
   name: "Xantech ZPR68 Protocol"
 
   command_eol: "\r"
-  command_separator: "="
+  command_separator: ""
 
   commands:
-    power_status:     '?{zone:02}C' # Y or N
-    power_on:         '!{zone:02}:CY'
-    power_off:        '!{zone:02}:CN'
-    all_zones_off:    '!00CN'
+    power_status:     '?{zone:02}C=' # Y or N
+    power_on:         '!{zone:02}CY+'
+    power_off:        '!{zone:02}CN+'
+    all_zones_off:    '!00CN+'
 
-    volume_status:    '?{zone:02}V'
-    set_volume:       '!{zone:02}V{volume:02}'  # 00=-80dB; 40=0dB
-    volume_up:        '!{zone:02}LU'
-    volume_down:      '!{zone:02}LD'
+    volume_status:    '?{zone:02}V='
+    set_volume:       '!{zone:02}V{volume:02}+'  # 00=-80dB; 40=0dB
+    volume_up:        '!{zone:02}LU+'
+    volume_down:      '!{zone:02}LD+'
 
-    mute_status:      '?{zone:02}M' # Y or N
-    mute_on:          '!{zone:02}QY'
-    mute_off:         '!{zone:02}QN'
-    mute_all_on:      '!00QY'
-    mute_all_off:     '!00QN'
+    mute_status:      '?{zone:02}M=' # Y or N
+    mute_on:          '!{zone:02}QY+'
+    mute_off:         '!{zone:02}QN+'
+    mute_all_on:      '!00QY+'
+    mute_all_off:     '!00QN+'
 
-    source_status:    '?{zone:02}I'
-    set_source:       '!{zone:02}I{source}'
-    set_source_all:   '!00I{source}'
+    source_status:    '?{zone:02}I='
+    set_source:       '!{zone:02}I{source}+'
+    set_source_all:   '!00I{source}+'
 
-    zone_status:      'Z{zone:02}'
+    treble_status:    '?{zone:02}T='
+    set_treble:       '!{zone:02}T{treble:02}+' # 12=+12dB; 06=0 (flat); 00=-12 dB
 
-    treble_status:    '?{zone:02}T'
-    set_treble:       '!{zone:02}T{treble:02}' # 12=+12dB; 06=0 (flat); 00=-12 dB
-
-    bass_status:      '?{zone:02}B'
-    set_treble:       '!{zone:02}B{bass:02}'   # 12=+12dB; 06=0 (flat); 00=-12 dB
+    bass_status:      '?{zone:02}B='
+    set_treble:       '!{zone:02}B{bass:02}+'   # 12=+12dB; 06=0 (flat); 00=-12 dB
 
   response_eol: "\r"
 
