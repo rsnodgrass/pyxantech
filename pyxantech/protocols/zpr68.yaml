@@ -32,14 +32,17 @@
     bass_status:      '?{zone:02}B='
     set_treble:       '!{zone:02}B{bass:02}+'   # 12=+12dB; 06=0 (flat); 00=-12 dB
 
+  zone_status: [ 'power_status', 'volume_status', 'source_status', 'mute_status', 'treble_status', 'bass_status' ]
+
   response_eol: "\r"
 
   responses:
     ok:               'OK'
     error:            '-'
-    power_status:     '\?(?P<zone>\d+)P(?P<mute>[YN])\+'
+    power_status:     '\?(?P<zone>\d+)P(?P<power>[YN])\+'
     volume_status:    '\?(?P<zone>\d+)V(?P<volume>\d+)\+'
     mute_status:      '\?(?P<zone>\d+)M(?P<mute>[YN])\+'
+    source_status:    '\?(?P<zone>\d+)I(?P<source>\d+)\+'
     treble_status:    '\?(?P<zone>\d+)T(?P<treble>\d+)\+'
     bass_status:      '\?(?P<zone>\d+)B(?P<bass>\d+)\+'
 
