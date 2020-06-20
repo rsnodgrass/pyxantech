@@ -10,6 +10,7 @@ for exactly which amplifier models are supported.
 The Monoprice version was originally created by Egor Tsinko for use with [Home-Assistant](http://home-assistant.io).
 
 ![beta_badge](https://img.shields.io/badge/maturity-Beta-yellow.png)
+[![PyPi](https://img.shields.io/pypi/v/pyxantech.svg)](https://pypi.python.org/pypi/pyxantech)
 [![MIT license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
 
 ## Usage
