@@ -117,7 +117,7 @@ async def async_get_rs232_protocol(serial_port_url, config, serial_config, proto
 #                            LOG.debug('Received "%s"', result)
                             return result
                 except asyncio.TimeoutError:
-                    LOG.warning(f"Timeout receiving response for '%s': received='%s' ({self._timeout} s; eol={response_eol})", request, data)
+                    LOG.info(f"Timeout receiving response for '%s': received='%s' ({self._timeout} s; eol={response_eol})", request, data)
                     raise
 
     factory = functools.partial(RS232ControlProtocol, serial_port_url, config, serial_config, protocol_config, loop)
