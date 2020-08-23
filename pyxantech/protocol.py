@@ -119,13 +119,12 @@ async def async_get_rs232_protocol(serial_port_url, config, serial_config, proto
                             result = result_lines[0].decode('ascii')
 #                            LOG.debug('Received "%s"', result)
                             return result
-                except asyncio.TimeoutError:
 
-            except Exception as e:                                                                                                   
-                # log up to two times within a 5 minute period to avoid saturating the logs
-                @limits(calls=2, period=FIVE_MINUTES)
-                def log_timeout():
-                    LOG.info(f"Timeout for request '%s': received='%s' ({self._timeout} s; eol={response_eol})", request, data)
+                except asyncio.TimeoutError:
+                    # log up to two times within a 5 minute period to avoid saturating the logs
+                    @limits(calls=2, period=FIVE_MINUTES)
+                    def log_timeout():
+                        LOG.info(f"Timeout for request '%s': received='%s' ({self._timeout} s; eol={response_eol})", request, data)
                     log_timeout()
                     raise
 
