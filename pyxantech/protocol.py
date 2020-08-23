@@ -5,6 +5,7 @@ import asyncio
 import functools
 import serial
 from serial_asyncio import create_serial_connection
+from ratelimit import limits
 
 LOG = logging.getLogger(__name__)
 
@@ -13,6 +14,8 @@ CONF_RESPONSE_EOL = 'response_eol'
 CONF_COMMAND_SEPARATOR = 'command_separator'
 
 CONF_MIN_TIME_BETWEEN_COMMANDS = 'min_time_between_commands'
+
+FIVE_MINUTES = 300
 
 async def async_get_rs232_protocol(serial_port_url, config, serial_config, protocol_config, loop):
 
@@ -117,7 +120,13 @@ async def async_get_rs232_protocol(serial_port_url, config, serial_config, proto
 #                            LOG.debug('Received "%s"', result)
                             return result
                 except asyncio.TimeoutError:
-                    LOG.info(f"Timeout receiving response for '%s': received='%s' ({self._timeout} s; eol={response_eol})", request, data)
+
+            except Exception as e:                                                                                                   
+                # log up to two times within a 5 minute period to avoid saturating the logs
+                @limits(calls=2, period=FIVE_MINUTES)
+                def log_timeout():
+                    LOG.info(f"Timeout for request '%s': received='%s' ({self._timeout} s; eol={response_eol})", request, data)
+                    log_timeout()
                     raise
 
     factory = functools.partial(RS232ControlProtocol, serial_port_url, config, serial_config, protocol_config, loop)
