@@ -1,0 +1,37 @@
+- series: sonance6
+  name: "Sonance 6-Zone Audio"
+  description: "Example models: C4630 SE"
+  num_zones: 6
+  num_sources: 4
+
+  max_balance: 10
+  max_bass: 8
+  max_treble: 8
+  max_volume: 60
+
+  protocol: sonance6
+  min_time_between_commands: 0.4
+
+  rs232:
+    baudrate: 19200
+    bytesize: 8
+    parity: 'N'
+    stopbits: 1
+    timeout: 1.0
+    write_timeout: 1.0
+
+  hardware_volume_steps: 60
+ 
+  sources:
+    1: "Source 1"
+    2: "Source 2"
+    3: "Source 3"
+    4: "Source 4"
+      
+  zones:
+    1: "Zone 1"
+    2: "Zone 2"
+    3: "Zone 3"
+    4: "Zone 4"
+    5: "Zone 5"
+    6: "Zone 6"
