@@ -1,0 +1,64 @@
+- protocol: sonance6
+  name: "Sonance 6-Zone Amp Protocol"
+
+  command_eol: "\r"
+  command_separator: ""
+#  command_separator: ":"
+
+  commands:
+    zone_status:   ':Z{zone}?'
+#    zone_details:  '?{zone}ZD'
+
+    power_status:  ':Z{zone}?'
+    set_power:     ":Z{zone}{power}"
+    power_on:      ':Z{zone}1'
+    power_off:     ':Z{zone}0'
+    all_zones_off: ':Z0'
+    all_zones_on:  ':Z1'
+
+    mute_status:   ':M{zone}?'
+    set_mute:      ':M{zone}{mute}'
+    mute_on:       ':M{zone}M1'
+    mute_off:      ':M{zone}M0'
+
+    volume_status: ':V{zone}?'
+    set_volume:    ':V{zone}{volume:02}'   # volume: 0-60
+    volume_up:     ':V{zone}++'
+    volume_down:   ':V{zone}--'
+
+    source_status: ':S{zone}?'
+    set_source:    ':S{zone}{source}'
+    source_select: ':S{zone}{source}'
+
+    balance_status: ':B{zone}?'
+#    set_balance:   ':B{zone}{balance:02}'  # balance: -10 to 10
+    balance_left:  ':B{zone}--'
+    balance_right: ':B{zone}++'
+
+    bass_status:   ':L{zone}?'
+#    set_bass:      ':L{zone}{bass:02}'     # bass: 0-14
+    bass_up:       ':L{zone}++'
+    bass_down:     ':L{zone}--'
+
+    treble_status: ':H{zone}?'
+#    set_treble:    '!{zone}TR{treble:02}'   # treble: 0-14
+    treble_up:     '!{zone}++'
+    treble_down:   '!{zone}--'
+
+    button_1_press:      ':P{zone}11'
+
+  response_eol: "\r"
+  response_separator: ""
+
+  responses:
+    power_status:   '+Z(?P<zone>\d+)(?P<power>[01])'
+    source_status:  '+S(?P<zone>\d+)(?P<source>[1-4])'
+    volume_status:  '+V(?P<zone>\d+)(?P<volume>\d+)'
+    mute_status:    '+M(?P<zone>\d+)(?P<mute>[01])'
+    treble_status:  '+H(?P<zone>\d+)TR(?P<treble>\d+)'
+    bass_status:    '+L(?P<zone>\d+)BS(?P<bass>\d+)'
+    balance_status: '+B(?P<zone>\d+)BA(?P<balance>\d+)'
+
+  extras:
+    restore_zone:    [ 'set_power', 'set_source', 'set_volume', 'set_mute', 'set_bass', 'set_balance', 'set_treble' ]
+    restore_success: 'OK\r'
