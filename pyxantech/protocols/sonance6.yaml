@@ -7,7 +7,6 @@
 
   commands:
     zone_status:   ':Z{zone}?'
-#    zone_details:  '?{zone}ZD'
 
     power_status:  ':Z{zone}?'
     set_power:     ":Z{zone}{power}"
