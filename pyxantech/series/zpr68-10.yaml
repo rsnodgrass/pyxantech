@@ -7,12 +7,14 @@
   num_sources: 8
 
   max_balance: 20
-  max_bass: 14
-  max_treble: 14
-  max_volume: 38
+  max_bass: 12
+  max_treble: 12
+  max_volume: 40
 
   protocol: zpr68
   min_time_between_commands: 0.4
+
+  zone_status_skip: 2
 
   rs232:
     baudrate: 9600
@@ -27,9 +29,15 @@
     2: "Source 2"
     3: "Source 3"
     4: "Source 4"
+    5: "Source 5"
+    6: "Source 6"
+    7: "Source 7"
+    8: "Source 8"
       
   zones:
     1: "Zone 1"
     2: "Zone 2"
     3: "Zone 3"
     4: "Zone 4"
+    5: "Zone 5"
+    6: "Zone 6"
