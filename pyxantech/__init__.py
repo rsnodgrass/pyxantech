@@ -57,12 +57,22 @@ class ZoneStatus(object):
 
         protocol_type = get_device_config(amp_type, 'protocol')
         pattern = RS232_RESPONSE_PATTERNS[protocol_type].get('zone_status')
+        status_translation = get_protocol_config(amp_type, 'status_translation')
         match = re.search(pattern, string)
+        match_dict = match.groupdict()
+
+        if (status_translation is not None):
+            for key in match_dict:
+                if key in status_translation:
+                    if match_dict[key] in status_translation[key]:
+                        match_dict[key] = status_translation[key][match_dict[key]]
+
+
         if not match:
             LOG.debug("Could not pattern match zone status '%s' with '%s'", string, pattern)
             return None
 
-        return ZoneStatus(match.groupdict())
+        return ZoneStatus(match_dict)
 
 class AmpControlBase(object):
     """
@@ -274,7 +284,7 @@ def get_amp_controller(amp_type: str, port_url, serial_config_overrides={}):
                     raise serial.SerialTimeoutException(
                         'Connection timed out! Last received bytes {}'.format([hex(a) for a in result]))
                 result += c
-                if len(result) > skip and result[-len_eol:] == response_eol:
+                if len(result) > skip and result[-len_eol:] == response_eol.encode('ascii'):
                     break
 
             ret = bytes(result)
@@ -310,7 +320,8 @@ def get_amp_controller(amp_type: str, port_url, serial_config_overrides={}):
             #if get_protocol_config(amp_type, 'zone_status_commands'):
             #    return self._zone_status_manual(zone)
 
-            response = self._send_request(_zone_status_cmd(self._amp_type, zone))
+            skip = get_device_config(amp_type, 'zone_status_skip') or 0
+            response = self._send_request(_zone_status_cmd(self._amp_type, zone), skip)
             status = ZoneStatus.from_string(self._amp_type, response)
             LOG.debug("Status: %s (string: %s)", status, response)
             if status:
@@ -437,7 +448,8 @@ async def async_get_amp_controller(amp_type, port_url, loop, serial_config_overr
             #    return await self._zone_status_manual(zone)
 
             cmd = _zone_status_cmd(self._amp_type, zone)
-            status_string = await self._protocol.send(cmd)
+            skip = get_device_config(amp_type, 'zone_status_skip') or 0
+            status_string = await self._protocol.send(cmd, skip=skip)
 
             status = ZoneStatus.from_string(self._amp_type, status_string)
             LOG.debug("Status: %s (string: %s)", status, status_string)
