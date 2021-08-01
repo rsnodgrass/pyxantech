@@ -23,7 +23,10 @@
     source:
       min: 1
       max: 6
-
+    zone:
+      min: 1
+      max: 6
+ 
   commands:
     zone_status:   ':Z{zone}?'
 
