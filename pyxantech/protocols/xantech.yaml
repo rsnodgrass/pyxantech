@@ -19,10 +19,29 @@
             baud: 19200
 
     - manufacturer: "Xantech"
+      model: "MX88"
+      overrides:
+        connection:
+          rs232: # NOTE: the USB COM connection on front uses same serial settings
+            baud: 19200
+
+    - manufacturer: "Xantech"
       model: "MX88a"
+      overrides:
+        connection:
+          rs232: # NOTE: the USB COM connection on front uses same serial settings
+            baud: 19200
 
     - manufacturer: "Xantech"
       model: "MX88ai"
+      # NOTE:
+      # - two rear expansion  COM ports are DB15 (15-pin) instead of DB9 (9-pin); DB15-DB9 adapter can be used
+      # - front COM port is DB9 (but may not allow unit control)
+      # - front USB-B port exposes a serial port connection depending on client device driver support
+      overrides:
+        connection:
+          rs232: # NOTE: the USB COM connection on front uses same serial settings
+            baud: 19200
       
     - manufacturer: "Xantech"
       model: "MX88vi"
