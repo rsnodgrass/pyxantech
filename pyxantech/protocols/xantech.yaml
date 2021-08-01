@@ -20,7 +20,10 @@
     source:
       min: 1
       max: 8
-
+    zone:
+      min: 1
+      max: 8
+ 
   commands:
     zone_status:   '?{zone}ZD'
     zone_details:  '?{zone}ZD'

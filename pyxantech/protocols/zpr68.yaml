@@ -18,7 +18,10 @@
     source:
       min: 1
       max: 6
-
+    zone:
+      min: 1
+      max: 6
+ 
   command_eol: "\r"
   command_separator: ""
 
