@@ -136,7 +136,6 @@ class AmpControlBase(object):
         :param status: zone state to restore
         """
         raise NotImplemented()
-    
 
 def _command(amp_type: str, format_code: str, args = {}):
     cmd_eol = get_protocol_config(amp_type, CONF_COMMAND_EOL)
@@ -250,7 +249,7 @@ def get_amp_controller(amp_type: str, port_url, serial_config_overrides={}):
             self._port.reset_output_buffer()
             self._port.reset_input_buffer()
 
-            print(f"Sending:  {request}")
+            #print(f"Sending:  {request}")
             LOG.debug(f"Sending:  {request}")
 
             # send
@@ -264,7 +263,7 @@ def get_amp_controller(amp_type: str, port_url, serial_config_overrides={}):
             result = bytearray()
             while True:
                 c = self._port.read(1)
-                print(c)
+                #print(c)
                 if not c:
                     ret = bytes(result)
                     LOG.info(result)
