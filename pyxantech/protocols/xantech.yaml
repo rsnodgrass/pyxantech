@@ -23,11 +23,17 @@
     - manufacturer: "Xantech"
       model: "MX88vi"
 
-    - model: "Xantech"
+    - manufacturer: "Xantech"
       model: "MRC88CTL"
 
-    - model: "Xantech"
+    - manufacturer: "Xantech"
       model: "MRAUDIO8X8CTL"
+
+    - manufacturer: "Xantech"
+      model: "CM8X8"
+
+    - manufacturer: "Xantech"
+      model: "CM8X8DR"
 
   limits:
     volume:
