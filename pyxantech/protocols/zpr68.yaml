@@ -10,10 +10,10 @@
       model: "ZPR68-10"
       overrides:
         limits:
-	  zone:
-	    max: 6
-	  source:
-	    max: 8
+          zone:
+            max: 6
+          source:
+            max: 8
 
   limits:
     volume:
@@ -21,10 +21,10 @@
       max: 40
     treble:
       min: -12
-      max:12
+      max: 12
     bass:
       min: -12
-      max:12
+      max: 12
     balance:
       min: -10
       max: 10
