@@ -13,10 +13,10 @@
       max: 60
     treble:
       min: -8
-      max:8
+      max: 8
     bass:
       min: -8
-      max:8
+      max: 8
     balance:
       min: -10
       max: 10
