@@ -50,13 +50,13 @@
   response_separator: ""
 
   responses:
-    power_status:   '+Z(?P<zone>\d+)(?P<power>[01])'
-    source_status:  '+S(?P<zone>\d+)(?P<source>[1-4])'
-    volume_status:  '+V(?P<zone>\d+)(?P<volume>\d+)'
-    mute_status:    '+M(?P<zone>\d+)(?P<mute>[01])'
-    treble_status:  '+H(?P<zone>\d+)TR(?P<treble>\d+)'
-    bass_status:    '+L(?P<zone>\d+)BS(?P<bass>\d+)'
-    balance_status: '+B(?P<zone>\d+)BA(?P<balance>\d+)'
+    power_status:   '\+Z(?P<zone>\d+)(?P<power>[01])'
+    source_status:  '\+S(?P<zone>\d+)(?P<source>[1-4])'
+    volume_status:  '\+V(?P<zone>\d+)(?P<volume>\d+)'
+    mute_status:    '\+M(?P<zone>\d+)(?P<mute>[01])'
+    treble_status:  '\+H(?P<zone>\d+)TR(?P<treble>\d+)'
+    bass_status:    '\+L(?P<zone>\d+)BS(?P<bass>\d+)'
+    balance_status: '\+B(?P<zone>\d+)BA(?P<balance>\d+)'
 
   extras:
     restore_zone:    [ 'set_power', 'set_source', 'set_volume', 'set_mute', 'set_bass', 'set_balance', 'set_treble' ]
