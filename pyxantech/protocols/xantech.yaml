@@ -1,8 +1,33 @@
 - protocol: xantech
   name: "Xantech 8-Zone Amp Protocol"
+  
+  supported:
+    - manufacturer: "Xantech"
+      model: "MRAUDIO8x8"
+      
+    - manufacturer: "Xantech"
+      model: "MRAUDIO8x8m"
+      
+    - manufacturer: "Xantech"
+      model: "MRC88"
+      
+    - manufacturer: "Xantech"
+      model: "MRC88m"
 
-  command_eol: "\r"
-  command_separator: "+"
+    - manufacturer: "Xantech"
+      model: "MX88a"
+
+    - manufacturer: "Xantech"
+      model: "MX88ai"
+      
+    - manufacturer: "Xantech"
+      model: "MX88vi"
+
+    - model: "Xantech"
+      model: "MRC88CTL"
+
+    - model: "Xantech"
+      model: "MRAUDIO8X8CTL"
 
   limits:
     volume:
@@ -24,6 +49,10 @@
       min: 1
       max: 8
  
+  command_eol: "\r"
+  command_separator: "+"
+
+
   commands:
     zone_status:   '?{zone}ZD'
     zone_details:  '?{zone}ZD'
