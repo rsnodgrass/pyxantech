@@ -20,7 +20,7 @@ FIVE_MINUTES = 300
 async def async_get_rs232_protocol(serial_port, config, serial_config, protocol_config, loop):
 
     # ensure only a single, ordered command is sent to RS232 at a time (non-reentrant lock)
-    async def locked_method(method):
+    def locked_method(method):
         @functools.wraps(method)
         async def wrapper(self, *method_args, **method_kwargs):
             async with self._lock:
@@ -28,7 +28,7 @@ async def async_get_rs232_protocol(serial_port, config, serial_config, protocol_
         return wrapper
 
     # check if connected, and abort calling provided method if no connection before timeout
-    async def ensure_connected(method):
+    def ensure_connected(method):
         @functools.wraps(method)
         async def wrapper(self, *method_args, **method_kwargs):
             try:
@@ -90,13 +90,11 @@ async def async_get_rs232_protocol(serial_port, config, serial_config, protocol_
                 await asyncio.sleep(delay)
 
 
-#        @locked_method
+        @locked_method
         @ensure_connected
         async def send(self, request: bytes, wait_for_reply=True, skip=0):
-            await self._throttle_requests()
+                await self._throttle_requests()
 
-            # only one write/read at a time
-            async with self._lock:
 
                 # clear all buffers of any data waiting to be read before sending the request
                 self._transport.serial.reset_output_buffer()
