@@ -3,7 +3,6 @@ import logging
 import time
 import asyncio
 import functools
-import serial
 from serial_asyncio import create_serial_connection
 from ratelimit import limits
 
