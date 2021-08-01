@@ -24,7 +24,7 @@ async def async_get_rs232_protocol(serial_port, config, serial_config, protocol_
     async def locked_method(method):
         @functools.wraps(method)
         async def wrapper(self, *method_args, **method_kwargs):
-            with (await self._lock):
+            async with self._lock:
                 return await method(self, *method_args, **method_kwargs)
         return wrapper
 
@@ -97,7 +97,7 @@ async def async_get_rs232_protocol(serial_port, config, serial_config, protocol_
             await self._throttle_requests()
 
             # only one write/read at a time
-            with (await self._lock):
+            async with self._lock:
 
                 # clear all buffers of any data waiting to be read before sending the request
                 self._transport.serial.reset_output_buffer()

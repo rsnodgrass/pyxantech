@@ -1,11 +1,8 @@
 import asyncio
-import functools
 import logging
 import re
 import time
 import serial
-import os
-import yaml
 
 from functools import wraps
 from threading import RLock
