@@ -3,7 +3,6 @@ import os
 import re
 import yaml
 import logging
-import pprint as pp
 
 LOG = logging.getLogger(__name__)
 
