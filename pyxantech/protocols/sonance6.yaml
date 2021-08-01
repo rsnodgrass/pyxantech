@@ -3,6 +3,29 @@
 - protocol: sonance6
   name: "Sonance 6-Zone Amp Protocol"
 
+  supported:
+    - manufacturer: "Sonance"
+      model: "C4630 SE"
+
+    - manufacturer: "Sonance"
+      model: "875D SE"
+      overides:
+        limits:
+          source:
+            max: 4
+	  zone:
+            max: 4
+
+    - manufacturer: "Sonance"
+      model: "875D MKII"
+      overides:
+        limits:
+	  source:
+            max: 4
+	  zone:
+            max: 4
+
+
   command_eol: "\r"
   command_separator: ""
 #  command_separator: ":"
