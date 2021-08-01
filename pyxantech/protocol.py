@@ -58,7 +58,7 @@ async def async_get_rs232_protocol(serial_port, config, serial_config, protocol_
             self._connected = asyncio.Event(loop=loop)
             self._q = asyncio.Queue(loop=loop)
 
-          # ensure only a single, ordered command is sent to RS232 at a time (non-reentrant lock)
+            # ensure only a single, ordered command is sent to RS232 at a time (non-reentrant lock)
             self._lock = asyncio.Lock()
 
         def connection_made(self, transport):
@@ -73,16 +73,14 @@ async def async_get_rs232_protocol(serial_port, config, serial_config, protocol_
         def connection_lost(self, exc):
             LOG.debug(f"Port {self._serial_port} closed")
 
-        # throttle the number of RS232 sends per second to avoid causing timeouts
-
         async def _throttle_requests(self):
+            """Throttle the number of RS232 sends per second to avoid causing timeouts"""
             min_time_between_commands = self._config[CONF_THROTTLE_RATE]
             delta_since_last_send = time.time() - self._last_send
 
             if delta_since_last_send < 0:
                 delay = -1 * delta_since_last_send
-                LOG.debug(
-                    f"Sleeping {delay} seconds until sending another RS232 request")
+                LOG.debug(f"Sleeping {delay} seconds until sending next RS232 request")
                 await asyncio.sleep(delay)
 
             elif delta_since_last_send < min_time_between_commands:
