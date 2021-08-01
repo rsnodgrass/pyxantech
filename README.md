@@ -1,7 +1,7 @@
 # Python RS232 API for Xantech/Monoprice multi-zone amps
 
 Library for RS232 serial communication to Xantech, Monoprice and Dayton Audio multi-zone amps.
-This supports any serial protocol for communicating with the amps, including DB9/DB15 RS232 ports,
+This supports any serial protocol for communicating with the amps, including RS232 ports,
 USB serial ports, and possibly the RS232-over-IP interface for more recent Xantech amps. See below
 for exactly which amplifier models are supported.
 
@@ -89,7 +89,7 @@ loop.run_until_complete(main(loop))
   appear to have licensed or copied the serial interface from Xantech. Both Monoprice
   and Dayton Audio use a version of the Xantech multi-zone controller protocol.
 
-* Some Xantech MX88 models use DB15 outputs on the rear, requiring a DB15 to DB9 adapter cable (PN 05913665), with the pinouts documented in some Xantech manuals. These Xantech models have a DB9 RS232 port on the front which can also be used.
+* Some Xantech MX88 models use high-density HD15 (or DE15) connectors for rear COM ports (not DB15 or DB9), requiring a "DB15 to DB9" adapter cable (PN 05913665).  with the pinouts documented in some Xantech manuals. The front DB9 RS232 port (and USB COM) ports cannot be used for device control on these models.
 
 ## See Also
 
