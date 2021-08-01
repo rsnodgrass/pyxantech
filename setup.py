@@ -3,7 +3,7 @@
 import os
 import sys
 
-VERSION = '0.5.20'
+VERSION = '0.6'
 
 try:
     from setuptools import setup
@@ -43,7 +43,7 @@ setup(name='pyxantech',
       author='Egor Tsinko',
       author_email='etsinko@gmail.com',
       license='MIT',
-      install_requires=['pyserial>=3.4','pyserial-asyncio>=0.4','ratelimit>=2.2.1'],
+      install_requires=['pyserial>=3.5','pyserial-asyncio>=0.5','ratelimit>=2.2.1'],
       packages=['pyxantech'],
       classifiers=['Development Status :: 4 - Beta',
                    'License :: OSI Approved :: MIT License',

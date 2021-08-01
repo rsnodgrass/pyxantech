@@ -397,7 +397,7 @@ async def async_get_amp_controller(amp_type, port_url, loop, serial_config_overr
     def locked_coro(coro):
         @wraps(coro)
         async def wrapper(*args, **kwargs):
-            with (await lock):
+            async with lock:
                 return (await coro(*args, **kwargs))
         return wrapper
 
