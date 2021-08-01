@@ -2,6 +2,23 @@
 - protocol: zpr68
   name: "Xantech ZPR68 Protocol"
 
+  limits:
+    volume:
+      min: 0
+      max: 40
+    treble:
+      min: -12
+      max:12
+    bass:
+      min: -12
+      max:12
+    balance:
+      min: -10
+      max: 10
+    source:
+      min: 1
+      max: 6
+
   command_eol: "\r"
   command_separator: ""
 

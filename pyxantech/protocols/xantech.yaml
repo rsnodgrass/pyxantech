@@ -4,6 +4,23 @@
   command_eol: "\r"
   command_separator: "+"
 
+  limits:
+    volume:
+      min: 0
+      max: 38
+    treble:
+      min: 0
+      max: 14
+    bass:
+      min: 0
+      max: 14
+    balance:
+      min: 0
+      max: 20
+    source:
+      min: 1
+      max: 8
+
   commands:
     zone_status:   '?{zone}ZD'
     zone_details:  '?{zone}ZD'
@@ -22,7 +39,7 @@
     mute_toggle:   '!{zone}MT'
 
     volume_status: '?{zone}VO'
-    set_volume:    '!{zone}VO{volume:02}'   # volume: 0-38
+    set_volume:    '!{zone}VO{volume:02}'
     volume_up:     '!{zone}VI'
     volume_down:   '!{zone}VD'
 
@@ -31,17 +48,17 @@
     source_select: '!{zone}SS{source}'
 
     balance_status: '?{zone}BA'
-    set_balance:   '!{zone}BL{balance:02}'  # balance: 0-20
+    set_balance:   '!{zone}BL{balance:02}'
     balance_left:  '!{zone}BL'
     balance_right: '!{zone}BR'
 
     bass_status:   '?{zone}BS'
-    set_bass:      '!{zone}BS{bass:02}'     # bass: 0-14
+    set_bass:      '!{zone}BS{bass:02}'
     bass_up:       '!{zone}BI'
     bass_down:     '!{zone}BD'
 
     treble_status: '?{zone}TR'
-    set_treble:    '!{zone}TR{treble:02}'   # treble: 0-14
+    set_treble:    '!{zone}TR{treble:02}'
     treble_up:     '!{zone}TI'
     treble_down:   '!{zone}TD'
 
