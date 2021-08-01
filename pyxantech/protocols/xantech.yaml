@@ -13,6 +13,10 @@
       
     - manufacturer: "Xantech"
       model: "MRC88m"
+      overrides:
+        connection:
+          rs232:
+            baud: 19200
 
     - manufacturer: "Xantech"
       model: "MX88a"
@@ -34,6 +38,13 @@
 
     - manufacturer: "Xantech"
       model: "CM8X8DR"
+
+  connection:
+    rs232:
+      baud: 9600
+      data: 8
+      parity: N
+      stop: 1
 
   limits:
     volume:

@@ -5,10 +5,19 @@
   supported:
     - manufacturer: "Monoprice"
       model: "MPR-SG6Z"
+      
     - manufacturer: "Monoprice"
       model: "10761"
+      
     - manufacturer: "Daytona Audio"
       model: "DAX66"
+
+  connection:
+    rs232:
+      baud: 9600
+      data: 8
+      parity: N
+      stop: 1
 
   limits:
     volume:
