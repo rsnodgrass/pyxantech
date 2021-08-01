@@ -58,7 +58,6 @@
   command_eol: "\r"
   command_separator: "+"
 
-
   commands:
     zone_status:   '?{zone}ZD'
     zone_details:  '?{zone}ZD'
