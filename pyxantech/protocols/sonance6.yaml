@@ -1,5 +1,5 @@
 # See C4630 SE https://www.sonance.com/assets/media/files/downloads/C4630SEManual_Final8_040213.pdf
-
+0;276;0c
 - protocol: sonance6
   name: "Sonance 6-Zone Amp Protocol"
 
@@ -13,22 +13,25 @@
         limits:
           source:
             max: 4
-	  zone:
+          zone:
             max: 4
 
     - manufacturer: "Sonance"
       model: "875D MKII"
       overides:
         limits:
-	  source:
+          source:
             max: 4
-	  zone:
+          zone:
             max: 4
 
 
-  command_eol: "\r"
-  command_separator: ""
-#  command_separator: ":"
+  connection:
+    rs232:
+      baud: 9600
+      data: 8
+      parity: N
+      stop: 1
 
   limits:
     volume:
@@ -49,7 +52,11 @@
     zone:
       min: 1
       max: 6
- 
+
+  command_eol: "\r"
+  command_separator: ""
+#  command_separator: ":"
+
   commands:
     zone_status:   ':Z{zone}?'
 
