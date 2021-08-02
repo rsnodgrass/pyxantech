@@ -15,7 +15,7 @@ CONF_COMMAND_SEPARATOR = 'command_separator'
 CONF_THROTTLE_RATE = 'min_time_between_commands'
 DEFAULT_TIMEOUT = 1.0
 
-FIVE_MINUTES = 300
+MINUTES = 300
 
 
 async def async_get_rs232_protocol(serial_port, config, serial_config, protocol_config, loop):
@@ -128,8 +128,8 @@ async def async_get_rs232_protocol(serial_port, config, serial_config, protocol_
                         return result
 
             except asyncio.TimeoutError:
-                # log up to two times within a 5 minute period to avoid saturating the logs
-                @limits(calls=2, period=FIVE_MINUTES)
+                # log up to two times within a time period to avoid saturating the logs
+                @limits(calls=2, period=5*MINUTES)
                 def log_timeout():
                     LOG.info(f"Timeout for request '%s': received='%s' ({self._timeout} s; eol={response_eol})", request, data)
                 log_timeout()
