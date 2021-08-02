@@ -89,7 +89,20 @@ loop.run_until_complete(main(loop))
   appear to have licensed or copied the serial interface from Xantech. Both Monoprice
   and Dayton Audio use a version of the Xantech multi-zone controller protocol.
 
-* Some Xantech MX88 models use high-density HD15 (or DE15) connectors for rear COM ports (not DB15 or DB9), requiring a "DB15 to DB9" adapter cable (PN 05913665).  with the pinouts documented in some Xantech manuals. The front DB9 RS232 port (and USB COM) ports cannot be used for device control on these models.
+
+#### High-Density Cable Models
+
+Some Xantech MX88 models use high-density HD15 (or DE15) connectors for rear COM ports (not DB15 or DB9), requiring a "DB15 to DB9" adapter cable (PN 05913665). The front DB9 RS232 port (and USB COM) ports cannot be used for device control on these models.
+
+The pinouts are documented in the Xantech MX88 manual:
+
+| HDB15 Male | DB9 Female | DB9 Color | Function |
+|:----------:|:----------:| --------- | -------- |
+|     2      |      3     | Brown     | Tx/Rx    |
+|     3      |      2     | White     | Rx/Tx    |
+|     4      |      6     | Green     | DSR      |
+|     5      |      5     | Yellow    | GND      |
+|     6      |      4     | Red       | DTR      |
 
 ## See Also
 
