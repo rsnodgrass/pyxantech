@@ -96,12 +96,12 @@ Some Xantech MX88 models use high-density HD15 (or DE15) connectors for rear COM
 
 The pinouts are documented in the Xantech MX88 manual:
 
-| HDB15 Male | DB9 Female | DB9 Color | Function |
-|:----------:|:----------:| --------- | -------- |
-|     2      |      3     | Brown     | Tx/Rx    |
-|     3      |      2     | White     | Rx/Tx    |
+| HDB15 Male | DB9 Female | DB9 Color | Function | Notes |
+|:----------:|:----------:| --------- | -------- | ----- |
+|     2      |      3     | Brown     | Tx/Rx    | May need to swap 2/3 depending on USB-Serial cable type |
+|     3      |      2     | White     | Rx/Tx    | May need to swap 2/3 depending on USB-Serial cable type |
 |     4      |      6     | Green     | DSR      |
-|     5      |      5     | Yellow    | GND      |
+|     5      |      5     | Yellow    | GND      | Ground |
 |     6      |      4     | Red       | DTR      |
 
 ## See Also
