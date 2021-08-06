@@ -96,13 +96,13 @@ Some Xantech MX88 models use high-density HD15 (or DE15) connectors for rear COM
 
 The pinouts are documented in the Xantech MX88 manual:
 
-| HDB15 Male | DB9 Female | DB9 Color | Function | Notes |
-|:----------:|:----------:| --------- | -------- | ----- |
-|     2      |      3     | Brown     | Tx/Rx    | May need to swap 2/3 depending on USB-Serial cable type |
-|     3      |      2     | White     | Rx/Tx    | May need to swap 2/3 depending on USB-Serial cable type |
-|     4      |      6     | Green     | DSR      |
-|     5      |      5     | Yellow    | GND      | Ground |
-|     6      |      4     | Red       | DTR      |
+| HDB15 Male | Function | DB9 Female | DB9 Color | Function | Notes |
+|:----------:|:--------:|:----------:| --------- | -------- | ----- |
+|     2      | Tx  |     3     | Brown     | Rx    | Swap 2/3 as needed |
+|     3      | Rx  |      2     | White     | Tx    |Swap 2/3 as needed |
+|     4      | DSR |       6     | Green     | DTR      | Swap 4/6 as needed |
+|     5      | GND |     5     | Yellow    | GND      | Ground |
+|     6      | DTR |      4     | Red       | DSR      | Swap 4/6 as needed |
 
 Of course, if you are making an adapter/extension cable for an existing USB/serial cable operating as a null model cable then DSR/DTR and Tx/Rx should NOT be swapped as shown in the above table.
 
