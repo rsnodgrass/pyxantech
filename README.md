@@ -90,7 +90,7 @@ loop.run_until_complete(main(loop))
   and Dayton Audio use a version of the Xantech multi-zone controller protocol.
 
 
-#### High-Density Cable Models
+#### Xantech High-Density Cable Models
 
 Some Xantech MX88 models use high-density HD15 (or DE15) connectors for rear COM ports (not DB15 or DB9), requiring a "DB15 to DB9" adapter cable (PN 05913665). The front DB9 RS232 port (and USB COM) ports cannot be used for device control on these models.
 
@@ -103,6 +103,8 @@ The pinouts are documented in the Xantech MX88 manual:
 |     4      |      6     | Green     | DSR      |
 |     5      |      5     | Yellow    | GND      | Ground |
 |     6      |      4     | Red       | DTR      |
+
+Of course, if you are making an adapter/extension cable for an existing USB/serial cable then DSR/DTR and Tx/Rx should NOT be swapped as shown in the above table.
 
 ## See Also
 
