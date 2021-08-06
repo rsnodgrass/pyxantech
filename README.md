@@ -92,7 +92,7 @@ loop.run_until_complete(main(loop))
 
 #### Xantech High-Density Cable Models
 
-Some Xantech MX88 models use high-density HD15 (or DE15) connectors for rear COM ports (not DB15 or DB9), requiring a "DB15 to DB9" adapter cable (PN 05913665). The front DB9 RS232 port (and USB COM) ports cannot be used for device control on these models.
+Some Xantech MX88 models use high-density HD15 (or DE15) connectors for rear COM ports (not DB15 or DB9), requiring a "DB15 to DB9" adapter cable (PN 05913665). The front DB9 RS232 port (and USB COM) ports cannot be used for device control on these models. The rear COM ports on MX88/MX88ai/etc are already wired as a 'null modem' connection, so no use of null modem cable is required as the Transmit and Receive lines have already been interchanged.
 
 The pinouts are documented in the Xantech MX88 manual:
 
