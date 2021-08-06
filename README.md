@@ -104,7 +104,7 @@ The pinouts are documented in the Xantech MX88 manual:
 |     5      |      5     | Yellow    | GND      | Ground |
 |     6      |      4     | Red       | DTR      |
 
-Of course, if you are making an adapter/extension cable for an existing USB/serial cable then DSR/DTR and Tx/Rx should NOT be swapped as shown in the above table.
+Of course, if you are making an adapter/extension cable for an existing USB/serial cable operating as a null model cable then DSR/DTR and Tx/Rx should NOT be swapped as shown in the above table.
 
 ## See Also
 
