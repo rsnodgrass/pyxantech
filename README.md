@@ -92,19 +92,17 @@ loop.run_until_complete(main(loop))
 
 #### Xantech High-Density Cable Models
 
-Some Xantech MX88 models use high-density HD15 (or DE15) connectors for rear COM ports (not DB15 or DB9), requiring a "DB15 to DB9" adapter cable (PN 05913665). The front DB9 RS232 port (and USB COM) ports cannot be used for device control on these models. The rear COM ports on MX88/MX88ai/etc are already wired as a 'null modem' connection, so no use of null modem cable is required as the Transmit and Receive lines have already been interchanged.
+Some Xantech MX88/MX88ai models use high-density HD15 (or DE15) connectors for rear COM ports, thus requiring Xantech's "DB15 to DB9" adapter cable (PN 05913665). The front DB9 RS232 and USB COM ports cannot be used for device control on these models. Instead, use the rear COM ports which are already wired as a 'null modem' connection, so no use of null modem cable is required as the Transmit and Receive lines have already been interchanged.
 
-The pinouts are documented in the Xantech MX88 manual:
+The pinouts as documented in the Xantech MX88 manual:
 
 | HDB15 Male | Function | DB9 Female | DB9 Color | Function | Notes |
 |:----------:|:--------:|:----------:| --------- | -------- | ----- |
-|     2      | Tx  |     3     | Brown     | Rx    | Swap 2/3 as needed |
-|     3      | Rx  |      2     | White     | Tx    |Swap 2/3 as needed |
-|     4      | DSR |       6     | Green     | DTR      | Swap 4/6 as needed |
+|     2      | Tx  |     2     | Brown     | Rx    | |
+|     3      | Rx  |      3     | White     | Tx    | |
+|     4      | DSR |       4     | Green     | DTR      | |
 |     5      | GND |     5     | Yellow    | GND      | Ground |
-|     6      | DTR |      4     | Red       | DSR      | Swap 4/6 as needed |
-
-Of course, if you are making an adapter/extension cable for an existing USB/serial cable operating as a null model cable then DSR/DTR and Tx/Rx should NOT be swapped as shown in the above table.
+|     6      | DTR |      6     | Red       | DSR      | |
 
 ## See Also
 
