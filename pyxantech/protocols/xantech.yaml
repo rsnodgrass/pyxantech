@@ -23,14 +23,14 @@
       overrides:
         connection:
           rs232: # NOTE: the USB COM connection on front uses same serial settings
-            baud: 19200
+            baud: 57600
 
     - manufacturer: "Xantech"
       model: "MX88a"
       overrides:
         connection:
           rs232: # NOTE: the USB COM connection on front uses same serial settings
-            baud: 19200
+            baud: 57600
 
     - manufacturer: "Xantech"
       model: "MX88ai"
@@ -41,7 +41,7 @@
       overrides:
         connection:
           rs232: # NOTE: the USB COM connection on front uses same serial settings
-            baud: 19200
+            baud: 57600
       
     - manufacturer: "Xantech"
       model: "MX88vi"
