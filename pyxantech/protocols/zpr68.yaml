@@ -2,19 +2,6 @@
 - protocol: zpr68
   name: "Xantech ZPR68 Protocol"
 
-  supported:
-    - manufacturer: "Xantech"
-      model: "ZPR68"
-      
-    - manufacturer: "Xantech"
-      model: "ZPR68-10"
-      overrides:
-        limits:
-          zone:
-            max: 6
-          source:
-            max: 8
-
   connection:
     rs232:
       baud: 9600

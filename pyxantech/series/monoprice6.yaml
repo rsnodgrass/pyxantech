@@ -1,9 +1,26 @@
 - series: monoprice6
   name: "Monoprice 6-Zone Amp"
+
+  supported:
+    - manufacturer: "Monoprice"
+      model: "MPR-SG6Z"
+      
+    - manufacturer: "Monoprice"
+      model: "10761"
+      
+    - manufacturer: "Daytona Audio"
+      model: "DAX66"
+
+  features:
+    zones: 6
+    sources: 6
+
+  # FIXME: switch code to features
   num_zones: 6
   num_sources: 6
   max_amps: 3
   
+  # FIXME: load these limits from protocol
   max_balance: 20
   max_bass: 14
   max_treble: 14
