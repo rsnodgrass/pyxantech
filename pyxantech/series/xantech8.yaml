@@ -1,6 +1,6 @@
 - series: xantech8
   name: "Xantech 8-Zone Audio"
-  description: "Example models: MRAUDIO4X4, BXAUDIO4x4, MRC44, MRC44CTL"
+  description: "Xantech 8-zone Matrix Amps"
   num_zones: 8
   num_sources: 8
   max_amps: 3
