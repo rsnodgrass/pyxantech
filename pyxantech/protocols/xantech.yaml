@@ -43,7 +43,7 @@
     power_toggle:  '!{zone}PT'
     all_zones_off: '!AO'
 
-    mute_status:    '?{zone}MU'
+    mute_status:   '?{zone}MU'
     set_mute:      '!{zone}MU{mute}'
     mute_on:       '!{zone}MU1'
     mute_off:      '!{zone}MU0'

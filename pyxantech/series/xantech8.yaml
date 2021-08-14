@@ -14,7 +14,7 @@
       overrides:
         features:
           video: true
-	  rs232_null_internal: true
+          rs232_null_internal: true
 
     - manufacturer: "Xantech"
       model: "MRC88m"
