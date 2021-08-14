@@ -72,11 +72,20 @@
     - manufacturer: "Xantech"
       model: "CM8X8DR"
 
+    - manufacturer: "Xantech"
+      model: "CM8X8CTL"
+      overrides:
+        features:
+          video: true
+          max_expansion_amps: 1
+
   features:
     zones: 8
     sources: 8
+    max_expansion_amps: 2
     rs232_control: true
 
+  # FIXME: deprecate these
   num_zones: 8
   num_sources: 8
   max_amps: 3
