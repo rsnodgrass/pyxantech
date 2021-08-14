@@ -41,7 +41,7 @@
     power_on:      '!{zone}PR1'
     power_off:     '!{zone}PR0'
     power_toggle:  '!{zone}PT'
-    all_zones_off: '!A0'
+    all_zones_off: '!AO'
 
     mute_status:    '?{zone}MU'
     set_mute:      '!{zone}MU{mute}'

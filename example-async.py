@@ -55,8 +55,8 @@ async def main():
         print(f"Zone {zone} status: {status}")
 
     # ensure all zones are turned off
-    for zone in range(1, 8):
-        await amp.set_power(zone, False)
+#    for zone in range(1, 8):
+#        await amp.set_power(zone, False)
     await amp.all_off()
 
     exit()
