@@ -1,63 +1,7 @@
 - protocol: xantech
-  name: "Xantech 8-Zone Amp Protocol"
-  
-  supported:
-    - manufacturer: "Xantech"
-      model: "MRAUDIO8x8"
-      
-    - manufacturer: "Xantech"
-      model: "MRAUDIO8x8m"
-      
-    - manufacturer: "Xantech"
-      model: "MRC88"
-      
-    - manufacturer: "Xantech"
-      model: "MRC88m"
-      overrides:
-        connection:
-          rs232:
-            baud: 19200
+  name: "Xantech 8-Zone Matrix Protocol"
 
-    - manufacturer: "Xantech"
-      model: "MX88"
-      overrides:
-        connection:
-          rs232: # NOTE: the USB COM connection on front uses same serial settings
-            baud: 57600
-
-    - manufacturer: "Xantech"
-      model: "MX88a"
-      overrides:
-        connection:
-          rs232: # NOTE: the USB COM connection on front uses same serial settings
-            baud: 57600
-
-    - manufacturer: "Xantech"
-      model: "MX88ai"
-      # NOTE:
-      # - two rear expansion  COM ports are DB15 (15-pin) instead of DB9 (9-pin); DB15-DB9 adapter can be used
-      # - front COM port is DB9 (but may not allow unit control)
-      # - front USB-B port exposes a serial port connection depending on client device driver support
-      overrides:
-        connection:
-          rs232: # NOTE: the USB COM connection on front uses same serial settings
-            baud: 57600
-      
-    - manufacturer: "Xantech"
-      model: "MX88vi"
-
-    - manufacturer: "Xantech"
-      model: "MRC88CTL"
-
-    - manufacturer: "Xantech"
-      model: "MRAUDIO8X8CTL"
-
-    - manufacturer: "Xantech"
-      model: "CM8X8"
-
-    - manufacturer: "Xantech"
-      model: "CM8X8DR"
-
+  # default baud rate (see series yaml for overrides per model)
   connection:
     rs232:
       baud: 9600
