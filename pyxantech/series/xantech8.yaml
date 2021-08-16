@@ -8,7 +8,7 @@
       
     - manufacturer: "Xantech"
       model: "MRAUDIO8x8m"
-      
+
     - manufacturer: "Xantech"
       model: "MRC88"
       overrides:
@@ -35,7 +35,7 @@
       overrides:
         rs232: # NOTE: the USB COM connection on front uses same serial settings
           baud: 57600
-
+ 
     - manufacturer: "Xantech"
       model: "MX88ai"
       # NOTE:
@@ -47,7 +47,7 @@
           baud: 57600
         features:
           ip_control: true
-      
+
     - manufacturer: "Xantech"
       model: "MX88vi"
       overrides:
@@ -78,12 +78,11 @@
       overrides:
         features:
           video: true
-          max_expansion_amps: 1
 
   features:
     zones: 8
     sources: 8
-    max_expansion_amps: 2
+    max_expansion_amps: 1 # 16 zones using DB15-DB15 cable
     rs232_control: true
 
   # FIXME: deprecate these
@@ -107,6 +106,7 @@
     stopbits: 1
     timeout: 1.0
     write_timeout: 1.0
+    # cable: Xantech PN 05913410 (for MRC88a)
 
   # FIXME: this should really be from protocol...
   hardware_volume_steps: 38
