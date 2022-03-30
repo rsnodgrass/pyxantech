@@ -81,8 +81,8 @@ loop.run_until_complete(main(loop))
 |              | MRC44 / MRC44CTL         |   4   |    *NO*    |    N/A     | audio + video; only supprots IR control          |
 | Monoprice    | MPR-SG6Z / 10761         |   6   | *UNTESTED* | monoprice6 | audio only                                       |
 | Dayton Audio | DAX66                    |   6   | *UNTESTED* | monoprice6 | audio only                                       |
-| Sonance      | C4630 SE (6-zone) / 875D MKII (4-zone) |  4-6   | *UNTESTED* | sonance6   | audio only                                       |
-
+| Sonance      | C4630 SE (6-zone) / 875D MKII (4-zone) |  4-6   | *UNTESTED* | sonance6   | audio only                        |
+| Soundavo     | WS66i                    |   6   | *UNTESTED* | monoprice6 | audio only; see [pyws66i](https://github.com/ssaenger/pyws66i); does not support telnet/IP control (yet) |
 
 * The [Monoprice MPR-SG6Z](https://www.monoprice.com/product?p_id=10761) and
   [Dayton Audio DAX66](https://www.parts-express.com/dayton-audio-dax66-6-source-6-room-distributed-whole-house-audio-system-with-keypads-25-wpc--300-585)
@@ -119,3 +119,4 @@ multi-zone amplifiers:
 * http://cocoontech.com/forums/topic/25893-monoprice-multi-zone-audio/
 * [Home Assistant: Monoprice 6](https://community.home-assistant.io/t/monoprice-whole-home-audio-controller-10761-success/19734/67)
 * [Xantech DIY System](https://www.audaud.com/xantech-multi-room-audio-system/)
+* [Monoprice 6 ESP32 to RS232 custom hardware](https://github.com/jhenkens/monoprice-6ch-esphome)
