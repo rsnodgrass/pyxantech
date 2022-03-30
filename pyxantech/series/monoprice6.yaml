@@ -11,6 +11,9 @@
     - manufacturer: "Daytona Audio"
       model: "DAX66"
 
+    - manufacturer: "Soundavo"
+      model: "WS66i"
+
   features:
     zones: 6
     sources: 6
