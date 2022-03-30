@@ -106,9 +106,16 @@ The pinouts as documented in the Xantech MX88 manual:
 
 ## See Also
 
+* [Protocol Definitions - Xantech / Monoprice / Sonance (reusable in other projects)](pyxantech/protocols)
+* [Hardware Specifications - Xantech / Monoprice / Sonance (reusable in other projects)](pyxantech/series)
+
+#@## Other
+
 * [Home Assistant integration](https://www.home-assistant.io/integrations/monoprice/)
 * [Monoprice RS232 serial protocol manual](doc/Monoprice-RS232-Manual.pdf)
 * [Monoprice RS232 serial protocol control](doc/Monoprice-RS232-Control.pdf)
+* [Xantech DIY System](https://www.audaud.com/xantech-multi-room-audio-system/)
+* [Monoprice 6 ESP32 to RS232 custom hardware](https://github.com/jhenkens/monoprice-6ch-esphome)
 
 #### Community Engagement
 
@@ -118,5 +125,4 @@ multi-zone amplifiers:
 * [AVS Forum: Monoprice 6](https://www.avsforum.com/forum/36-home-v-distribution/1506842-any-experience-monoprice-6-zone-home-audio-multizone-controller-23.html)
 * http://cocoontech.com/forums/topic/25893-monoprice-multi-zone-audio/
 * [Home Assistant: Monoprice 6](https://community.home-assistant.io/t/monoprice-whole-home-audio-controller-10761-success/19734/67)
-* [Xantech DIY System](https://www.audaud.com/xantech-multi-room-audio-system/)
-* [Monoprice 6 ESP32 to RS232 custom hardware](https://github.com/jhenkens/monoprice-6ch-esphome)
+
