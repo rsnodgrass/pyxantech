@@ -88,7 +88,7 @@ loop.run_until_complete(main(loop))
   [Dayton Audio DAX66](https://www.parts-express.com/dayton-audio-dax66-6-source-6-room-distributed-whole-house-audio-system-with-keypads-25-wpc--300-585)
   appear to have licensed or copied the serial interface from Xantech. Both Monoprice
   and Dayton Audio use a version of the Xantech multi-zone controller protocol.
-
+* Soundavo WS66i is an updated version of the Monoprice 10761 which includes 2 wireless streamers, IP/telnet based control, etc. It has not been tested with this, but should use the monoprice6 integration when RS232 controlled.
 
 #### Xantech High-Density Cable Models
 
