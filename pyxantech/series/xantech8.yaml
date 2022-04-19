@@ -1,10 +1,96 @@
 - series: xantech8
   name: "Xantech 8-Zone Audio"
-  description: "Example models: MRAUDIO4X4, BXAUDIO4x4, MRC44, MRC44CTL"
+  description: "Xantech 8-zone Matrix Amps"
+
+  supported:
+    - manufacturer: "Xantech"
+      model: "MRAUDIO8x8"
+      
+    - manufacturer: "Xantech"
+      model: "MRAUDIO8x8m"
+
+    - manufacturer: "Xantech"
+      model: "MRC88"
+      overrides:
+        features:
+          video: true
+          rs232_null_internal: true
+
+    - manufacturer: "Xantech"
+      model: "MRC88m"
+      overrides:
+        rs232:
+          baud: 19200
+        features:
+          video: true
+
+    - manufacturer: "Xantech"
+      model: "MX88"
+      overrides:
+        rs232: # NOTE: the USB COM connection on front uses same serial settings
+          baud: 57600
+
+    - manufacturer: "Xantech"
+      model: "MX88a"
+      overrides:
+        rs232: # NOTE: the USB COM connection on front uses same serial settings
+          baud: 57600
+ 
+    - manufacturer: "Xantech"
+      model: "MX88ai"
+      # NOTE:
+      # - two rear expansion  COM ports are DB15 (15-pin) instead of DB9 (9-pin); DB15-DB9 adapter can be used
+      # - front COM port is DB9 (but may not allow unit control)
+      # - front USB-B port exposes a serial port connection depending on client device driver support
+      overrides:
+        rs232: # NOTE: the USB COM connection on front uses same serial settings
+          baud: 57600
+        features:
+          ip_control: true
+
+    - manufacturer: "Xantech"
+      model: "MX88vi"
+      overrides:
+        features:
+          video: true
+          ip_control: true
+
+    - manufacturer: "Xantech"
+      model: "MRC88CTL"
+      overrides:
+        features:
+          video: true
+
+    - manufacturer: "Xantech"
+      model: "MRAUDIO8X8CTL"
+      overrides:
+        features:
+          video: true
+
+    - manufacturer: "Xantech"
+      model: "CM8X8"
+
+    - manufacturer: "Xantech"
+      model: "CM8X8DR"
+
+    - manufacturer: "Xantech"
+      model: "CM8X8CTL"
+      overrides:
+        features:
+          video: true
+
+  features:
+    zones: 8
+    sources: 8
+    max_expansion_amps: 1 # 16 zones using DB15-DB15 cable
+    rs232_control: true
+
+  # FIXME: deprecate these
   num_zones: 8
   num_sources: 8
   max_amps: 3
 
+  # FIXME: these should come from the protocol...which has them defined (min and max)
   max_balance: 20
   max_bass: 14
   max_treble: 14
@@ -20,7 +106,9 @@
     stopbits: 1
     timeout: 1.0
     write_timeout: 1.0
+    # cable: Xantech PN 05913410 (for MRC88a)
 
+  # FIXME: this should really be from protocol...
   hardware_volume_steps: 38
  
   sources:
@@ -71,6 +159,7 @@
     37: "Amp 3, Zone 7"
     38: "Amp 3, Zone 8"
 
+  # these really map from the hardware protocol to user visible names...should they be in the protocol?
   bass_level:
     unit: "dB"
     steps:

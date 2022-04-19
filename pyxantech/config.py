@@ -3,7 +3,6 @@ import os
 import re
 import yaml
 import logging
-import pprint as pp
 
 LOG = logging.getLogger(__name__)
 
@@ -68,9 +67,9 @@ def _precompile_response_patterns():
     for protocol_type, config in PROTOCOL_CONFIG.items():
         patterns = {}
 
-#        LOG.debug(f"Precompile patterns for {protocol_type}")
+        LOG.debug(f"Precompile patterns for {protocol_type}")
         for name, pattern in config['responses'].items():
-#           LOG.debug(f"Precompiling pattern {name}")
+            #LOG.debug(f"Precompiling pattern {name}: {pattern}")
             patterns[name] = re.compile(pattern)
         precompiled[protocol_type] = patterns
     return precompiled
