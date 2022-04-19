@@ -2,6 +2,33 @@
 - protocol: zpr68
   name: "Xantech ZPR68 Protocol"
 
+  connection:
+    rs232:
+      baud: 9600
+      data: 8
+      parity: N
+      stop: 1
+
+  limits:
+    volume:
+      min: 0
+      max: 40
+    treble:
+      min: 0
+      max: 12
+    bass:
+      min: 0
+      max: 12
+    balance:
+      min: 0
+      max: 20
+    source:
+      min: 1
+      max: 8
+    zone:
+      min: 1
+      max: 15
+
   command_eol: ""
   command_separator: ""
 
