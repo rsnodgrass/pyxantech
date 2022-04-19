@@ -54,6 +54,11 @@ async def main():
         status = await amp.zone_status(zone)
         print(f"Zone {zone} status: {status}")
 
+    # ensure all zones are turned off
+#    for zone in range(1, 8):
+#        await amp.set_power(zone, False)
+    await amp.all_off()
+
     exit()
 
     # Valid zones are 11-16 for main xantech amplifier
