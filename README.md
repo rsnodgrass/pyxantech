@@ -1,6 +1,6 @@
-# Python RS232 API for Xantech/Monoprice multi-zone amps
+# Python RS232 API for Multi-Zone Amps
 
-Library for RS232 serial communication to Xantech, Monoprice and Dayton Audio multi-zone amps.
+Library for RS232 serial communication to Xantech, Monoprice, Dayton Audio, Soundavo, and other multi-zone amps.
 This supports any serial protocol for communicating with the amps, including RS232 ports,
 USB serial ports, and possibly the RS232-over-IP interface for more recent Xantech amps. See below
 for exactly which amplifier models are supported.
