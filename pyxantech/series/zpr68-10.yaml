@@ -31,6 +31,8 @@
   protocol: zpr68
   min_time_between_commands: 0.4
 
+  zone_status_skip: 2
+
   rs232:
     baudrate: 9600
     bytesize: 8
@@ -44,15 +46,24 @@
     2: "Source 2"
     3: "Source 3"
     4: "Source 4"
-    5: "Source 1"
-    6: "Source 2"
-    7: "Source 3"
-    8: "Source 4"
-
+    5: "Source 5"
+    6: "Source 6"
+    7: "Source 7"
+    8: "Source 8"
+      
   zones:
     1: "Zone 1"
     2: "Zone 2"
     3: "Zone 3"
     4: "Zone 4"
-    3: "Zone 5"
-    4: "Zone 6"
+    5: "Zone 5"
+    6: "Zone 6"
+    7: "Zone 7"
+    8: "Zone 8"
+    9: "Zone 9"
+    10: "Zone 10"
+    11: "Zone 11"
+    12: "Zone 12"
+    13: "Zone 13"
+    14: "Zone 14"
+    15: "Zone 15"

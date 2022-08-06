@@ -14,22 +14,22 @@
       min: 0
       max: 40
     treble:
-      min: -12
+      min: 0
       max: 12
     bass:
-      min: -12
+      min: 0
       max: 12
     balance:
-      min: -10
-      max: 10
+      min: 0
+      max: 20
     source:
       min: 1
-      max: 6
+      max: 8
     zone:
       min: 1
-      max: 6
- 
-  command_eol: "\r"
+      max: 15
+
+  command_eol: ""
   command_separator: ""
 
   commands:
@@ -67,7 +67,7 @@
 
   zone_status_commands: [ 'power_status', 'volume_status', 'source_status', 'mute_status', 'treble_status', 'bass_status' ]
 
-  response_eol:       "\n\r"
+  response_eol: "\n\r"
 
   responses:
     ok:               'OK'
@@ -80,8 +80,7 @@
     bass_status:      '\?(?P<zone>\d+)B(?P<bass>\d+)\+'
 
     # Data is sent as a string of ASCII characters. The first string in any group of strings, is preceeded by a line-feed (0Ah), a carraige-return (0Dh) and a bell (07h) and each string is followed by a line-feed (0Ah) and a carraige-return (0Dh). If more than one string is sent, the second and subsequent strings are preceeded by a bell (07h) and each string is followed by a line-feed (0Ah) and a carraige-return (0Dh).
-    zone_status: '(?P<zone>\d\d)(?P<source>\d\d)(?P<trim>\d\d)(?P<volume>\d\d)(?P<balance_ps>\d\d)(?P<balance>\d\d)(?P<treble_ps>\d\d)(?P<treble>\d\d)(?P<bass_ps>\d\d)(?P<bass>\d\d)(?P<power>[01])(?P<mute>[01])(?P<volume_max>\d\d)'
-#    zone_status: '[\\n\\r]{0,1}\a(?P<zone>\d\d)(?P<source>\d\d)(?P<trim>\d\d)(?P<volume>\d\d)(?P<balance_ps>\d\d)(?P<balance>\d\d)(?P<treble_ps>\d\d)(?P<treble>\d\d)(?P<bass_ps>\d\d)(?P<bass>\d\d)(?P<power>[01])(?P<mute>[01])(?P<volume_max>\d\d)[ \t]25PY'
+    zone_status: '[\\n\\r]{0,1}\a(?P<zone>\d\d+)[ \t](?P<source>\d\d)[ \t](?P<trim>\d\d)[ \t](?P<volume>\d\d)[ \t](?P<balance_ps>\d\d[LCR])[ \t](?P<balance>\d\d[LCR])[ \t](?P<treble_ps>\d\d)[ \t](?P<treble>\d\d)[ \t](?P<bass_ps>\d\d)[ \t](?P<bass>\d\d)[ \t](?P<power>[01])[ \t](?P<mute>[01])[ \t](?P<volume_max>\d\d)[ \t]'
 
   status_translation:
     balance:
