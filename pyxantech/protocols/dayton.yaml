@@ -1,0 +1,61 @@
+# FROM @kbrown01
+
+
+- protocol: dayton
+  name: "Dayton Audio 8-Zone Amp Protocol" #Same as monoprice with extra zones
+
+  connection:
+    rs232:
+      baud: 9600
+      data: 8
+      parity: N
+      stop: 1
+
+  limits:
+    volume:
+      min: 0
+      max: 38
+    treble:
+      min: 0
+      max: 14
+    bass:
+      min: 0
+      max: 14
+    balance:
+      min: 0
+      max: 20
+    source: # technically limited by hardware series yaml, not protocol
+      min: 1
+      max: 8
+    zone: # technically limited by hardware series yaml, not protocol
+      min: 1
+      max: 8
+ 
+  command_eol: "\r"
+  command_separator: ""
+
+  commands:
+    zone_status:   '?{zone}'
+
+    set_power:     '<{zone}PR{power:02}' # power: 1 = on; 0 = off
+    power_on:      '<{zone}PR01'
+    power_off:     '<{zone}PR00'
+
+    set_mute:      '<{zone}MU{mute:02}'  # mute: 1 = on; 0 = off
+    mute_on:       '<{zone}MU01'
+    mute_off:      '<{zone}MU00'
+
+    set_volume:    '<{zone}VO{volume:02}'   # volume: 0-38
+    set_treble:    '<{zone}TR{treble}:02}'  # treble: 0-14
+    set_bass:      '<{zone}BS{bass:02}'     # bass: 0-14
+    set_balance:   '<{zone}BL{balance:02}'  # balance: 0-20
+    set_source:    '<{zone}CH{source:02}'   # source: 0-6
+
+  response_eol: "\r"
+
+  responses:
+    zone_status: '>(?P<zone>\d\d)(?P<unknown>\d\d)(?P<power>[01]{2})(?P<mute>[01]{2})(?P<do_not_disturb>[01]{2})(?P<volume>\d\d)(?P<treble>\d\d)(?P<bass>\d\d)(?P<balance>\d\d)(?P<source>\d\d)(?P<keypad>\d\d)'
+
+  extra:
+    restore_zone:    [ 'set_power', 'set_source', 'set_volume', 'set_mute', 'set_bass', 'set_balance', 'set_treble' ]
+    restore_success: "OK\r"

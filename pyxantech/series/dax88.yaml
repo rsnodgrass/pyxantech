@@ -1,0 +1,57 @@
+# FROM @kbrown01
+
+- series: dax88
+  name: "Dax 88 8-Zone Amp"
+
+  supported:
+    - manufacturer: "Dayton Audio"
+      model: "DAX88"
+
+  features:
+    zones: 8
+    sources: 8
+
+  # FIXME: switch code to features
+  num_zones: 8
+  num_sources: 8
+  max_amps: 3
+  
+  # FIXME: load these limits from protocol
+  max_balance: 20
+  max_bass: 14
+  max_treble: 14
+  max_volume: 38
+
+  protocol: dayton
+  min_time_between_commands: 0.4
+
+  rs232:
+    baudrate: 9600
+    bytesize: 8
+    parity: 'N'
+    stopbits: 1
+    timeout: 1.0
+    write_timeout: 1.0
+ 
+  hardware_volume_steps: 38
+ 
+  sources:
+    1: "Source 1"
+    2: "Source 2"
+    3: "Source 3"
+    4: "Source 4"
+    5: "Source 5"
+    6: "Source 6"
+    7: "Source 7"
+    8: "Source 8"
+ 
+  # technically zone = {amp_number}{zone_num_within_amp_1-6} (e.g. 11 = amp number 1, zone 1)
+  zones:
+    11: "Zone 1"          # main amp 1    (e.g. 15 = amp 1, zone 5)
+    12: "Zone 2"
+    13: "Zone 3"
+    14: "Zone 4"
+    15: "Zone 5"
+    16: "Zone 6"
+    17: "Zone 7"
+    18: "Zone 8"
