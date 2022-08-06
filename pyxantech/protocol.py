@@ -102,7 +102,7 @@ async def async_get_rs232_protocol(serial_port, config, serial_config, protocol_
             # send the request
             LOG.debug("Sending RS232 data %s", request)
             self._last_send = time.time()
-            self._transport.write(request)
+            self._transport.serial.write(request)
 
             if not wait_for_reply:
                 return
@@ -113,7 +113,7 @@ async def async_get_rs232_protocol(serial_port, config, serial_config, protocol_
             try:
                 while True:
                     data += await asyncio.wait_for(self._q.get(), self._timeout, loop=self._loop)
-                    if response_eol in data:
+                    if response_eol in data[skip:]:
                         # only return the first line
                         LOG.debug(f"Received: %s (eol={response_eol})", bytes(data).decode('ascii'))
                         result_lines = data.split(response_eol)
@@ -123,6 +123,9 @@ async def async_get_rs232_protocol(serial_port, config, serial_config, protocol_
 
                         if len(result_lines) > 1:
                             LOG.debug("Multiple response lines, ignore all but first: %s", result_lines)
+                        
+                        if len(result_lines) == 0:
+                            return ''
 
                         result = result_lines[0].decode('ascii')
                         return result
