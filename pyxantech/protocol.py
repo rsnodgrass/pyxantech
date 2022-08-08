@@ -56,7 +56,7 @@ async def async_get_rs232_protocol(serial_port, config, serial_config, protocol_
 
             self._transport = None
             self._connected = asyncio.Event()
-            self._q = asyncio.Queue(loop=loop)
+            self._q = asyncio.Queue()
 
             # ensure only a single, ordered command is sent to RS232 at a time (non-reentrant lock)
             self._lock = asyncio.Lock()
