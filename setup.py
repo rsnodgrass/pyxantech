@@ -2,8 +2,10 @@
 
 import os
 import sys
+if sys.version_info < (3, 10):
+    raise RuntimeError("This package requres Python 3.10+")
 
-VERSION = '0.6.6'
+VERSION = '0.6.7'
 
 try:
     from setuptools import setup
@@ -36,6 +38,7 @@ SOFTWARE.
 """
 
 setup(name='pyxantech',
+      python_requires = ">=3.10",
       version=VERSION,
       description='Python RS232 API for Monoprice/Xantech/Dayton Audio multi-zone amps',
       url='https://github.com/rsnodgrass/pymonoprice',
@@ -47,6 +50,6 @@ setup(name='pyxantech',
       packages=['pyxantech'],
       classifiers=['Development Status :: 4 - Beta',
                    'License :: OSI Approved :: MIT License',
-                   'Programming Language :: Python :: 3' ],
+                   'Programming Language :: Python :: 3.10' ],
       include_package_data=True,
       zip_safe=True)
