@@ -68,7 +68,7 @@ async def async_get_rs232_protocol(serial_port, config, serial_config, protocol_
 
         def data_received(self, data):
 #            LOG.debug(f"Received from {self._serial_port}: {data}")
-            asyncio.ensure_future(self._q.put(data), loop=self._loop)
+            asyncio.ensure_future(self._q.put(data))   #, loop=self._loop)
 
         def connection_lost(self, exc):
             LOG.debug(f"Port {self._serial_port} closed")
@@ -112,7 +112,7 @@ async def async_get_rs232_protocol(serial_port, config, serial_config, protocol_
             response_eol = self._protocol_config[CONF_RESPONSE_EOL].encode('ascii')
             try:
                 while True:
-                    data += await asyncio.wait_for(self._q.get(), self._timeout, loop=self._loop)
+                    data += await asyncio.wait_for(self._q.get(), self._timeout)  #, loop=self._loop)
                     if response_eol in data[skip:]:
                         # only return the first line
                         LOG.debug(f"Received: %s (eol={response_eol})", bytes(data).decode('ascii'))
