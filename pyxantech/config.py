@@ -53,11 +53,12 @@ def pattern_to_dictionary(protocol_type, match, source_text: str) -> dict:
                 d[k] = True
     return d
 
-def get_with_log(name, dictionary, key: str):
+def get_with_log(name, dictionary, key: str, log_missing=True):
     value = dictionary.get(key)
     if value:
         return dictionary.get(key)
-    LOG.warning(f"Invalid key '{key}' in dictionary '{name}'; returning None")
+    if log_missing:
+        LOG.warning(f"Missing key '{key}' in dictionary '{name}'; returning None")
     return None
 
 # cached dictionary pattern matches for all responses for each protocol
