@@ -495,6 +495,10 @@ async def async_get_amp_controller(amp_type, port_url, loop, serial_config_overr
 
             # send all the commands necessary to restore the various status settings to the amp
             restore_commands = get_protocol_config(amp_type, 'restore_zone')
+            if not restore_commands:
+                LOG.info(f"restore_zone() requested, but amp type {amp_type} does not support 'restore_zone' command for zone {zone}")
+                return
+
             for command in restore_commands:
                 result = await self._protocol._send( _command(amp_type, command, status) )
                 if result != success:
