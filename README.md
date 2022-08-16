@@ -85,6 +85,7 @@ loop.run_until_complete(main(loop))
 |              | MRC44 / MRC44CTL         |   4   |    *NO*    |    N/A     | audio + video; only supprots IR control          |
 | Monoprice    | MPR-SG6Z / 10761         |   6   | *UNTESTED* | monoprice6 | audio only                                       |
 | Dayton Audio | DAX66                    |   6   | *UNTESTED* | monoprice6 | audio only                                       |
+|              | DAX88                    |  6+2  | *UNTESTED* |    dax88   | audio only                                       |
 | Sonance      | C4630 SE (6-zone) / 875D MKII (4-zone) |  4-6   | *UNTESTED* | sonance6   | audio only                        |
 | Soundavo     | WS66i                    |   6   | *UNTESTED* | monoprice6 | audio only; see [pyws66i](https://github.com/ssaenger/pyws66i); does not support telnet/IP control (yet) |
 
