@@ -1,0 +1,79 @@
+RS232 Serial Control
+Page | 41
+The DAX88 can be controlled by many home and commercial automation systems
+through its RS-232 serial port. The RS-232 command list, command structure,
+and transmission specifications are detailed below.
+Baud Rate: 9600
+Data Bits: 8
+Stop Bits: 1
+Parity: None
+Flow Control: None
+'CR': Carriage Return (0x0D) is required
+Control command structure <xxPPuu'CR'
+xx: Zone number
+01: Zone1
+02: Zone2
+03: Zone3
+04: Zone4
+05: Zone5
+06: Zone6
+07: Zone7
+08: Zone8
+uu: indicates a value that the command uses, such as 0-38 for volume control
+PP: indicates one of the following control action codes
+PR:Power control
+PR00:Power off
+PR01:Power on
+MU:Mute control
+MU00:Mute off
+MU01:Mute on
+RS232 Serial Control
+Page | 42
+VO:Volume control
+VO(00-38):Volume control
+TR:Treble control
+TR(00-24): Ranges from -12 to +12
+Example: <01TR00 sets zone 1 treble to -12
+<03TR12 sets zone 3 treble to 0
+<05TR24 sets zone 5 treble to +12
+BS:Bass control
+BS(00-24):Bass control. Ranges from -12 to +12
+Example: <01BS00 sets zone 1 bass to -12
+<03BS12 sets zone 3 bass to 0
+<05BS24 sets zone 5 bass to +12
+BL:Balance control
+BL(00-20):Balance control.
+Example: <01BL00 sets zone 1 balance to 100% left
+<03BS10 sets zone 3 balance to normal
+<05BS20 sets zone 5 balance to 100% right
+CH:Source control
+CH(01-08):Source control
+Examples of Various Commands :
+Set Zone 1 to Power Off <01PR00
+Set Zone 1 to Volume 23 <01VO23
+Set Zone 1 to Power On <01PR01
+Set Zone 6 to Source 4 <06CH04
+RS232 Serial Control
+Page | 43
+Ask Status command structure ?xx'CR'
+xx: Indicates the control object code
+01 : Zone1
+02 : Zone2
+03 : Zone3
+04 : Zone4
+05 : Zone5
+06 : Zone6
+07 : Zone7
+08 : Zone8
+...............
+Reply command: >xxaabbccddeeffgghhiijj'CR'
+aa:PA Control Status
+bb:Power Control Status
+cc:Mute Control Status
+dd:DT Control Status
+ee:Volume Control Status
+ff:Treble Control Status
+gg:Bass Control Status
+hh:Balance Control Status
+ii:Source Control Status
+jj:Keypad Connection status (00:Not connected, 01:Connected)
