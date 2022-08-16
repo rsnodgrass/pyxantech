@@ -13,6 +13,10 @@ The Monoprice version was originally created by Egor Tsinko for use with [Home-A
 [![PyPi](https://img.shields.io/pypi/v/pyxantech.svg)](https://pypi.python.org/pypi/pyxantech)
 [![MIT license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
 
+## Support
+
+Visit the [community support discussion thread](https://community.home-assistant.io/t/xantech-dayton-audio-sonance-multi-zone-amps/450908) for issues with this library.
+
 ## Usage
 
 For Monoprice and Dayton Audio 6-zone amplifiers:
