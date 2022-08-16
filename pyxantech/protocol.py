@@ -127,7 +127,8 @@ async def async_get_rs232_protocol(serial_port, config, serial_config, protocol_
                         if len(result_lines) == 0:
                             return ''
 
-                        result = result_lines[0].decode('ascii')
+                        # NOTE: May want to catch decode failures to figure out when non-ASCII chars are returned (for instance DAX88)
+                        result = result_lines[0].decode('ascii', errors='ignore')
                         return result
 
             except asyncio.TimeoutError:
