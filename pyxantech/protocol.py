@@ -115,7 +115,7 @@ async def async_get_rs232_protocol(serial_port, config, serial_config, protocol_
                     data += await asyncio.wait_for(self._q.get(), self._timeout)  #, loop=self._loop)
                     if response_eol in data[skip:]:
                         # only return the first line
-                        LOG.debug(f"Received: %s (eol={response_eol})", bytes(data).decode('ascii'))
+                        LOG.debug(f"Received: %s (len=%d, eol={response_eol})", bytes(data).decode('ascii', errors='ignore'), len(data))
                         result_lines = data.split(response_eol)
 
                         # strip out any blank lines
