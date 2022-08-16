@@ -19,8 +19,8 @@ SUPPORTED_AMP_TYPES = DEVICE_CONFIG.keys()
 
 CONF_SERIAL_CONFIG='rs232'
 
-def get_device_config(amp_type, key):
-    return get_with_log(amp_type, DEVICE_CONFIG[amp_type], key)
+def get_device_config(amp_type, key, log_missing=True):
+    return get_with_log(amp_type, DEVICE_CONFIG[amp_type], key, log_missing=log_missing)
 
 def get_protocol_config(amp_type, key):
     protocol = get_device_config(amp_type, 'protocol')
@@ -316,7 +316,7 @@ def get_amp_controller(amp_type: str, port_url, serial_config_overrides={}):
             #if get_protocol_config(amp_type, 'zone_status_commands'):
             #    return self._zone_status_manual(zone)
 
-            skip = get_device_config(amp_type, 'zone_status_skip') or 0
+            skip = get_device_config(amp_type, 'zone_status_skip', log_missing=False) or 0
             response = self._send_request(_zone_status_cmd(self._amp_type, zone), skip)
             status = ZoneStatus.from_string(self._amp_type, response)
             LOG.debug("Status: %s (string: %s)", status, response)
