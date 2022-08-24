@@ -504,7 +504,6 @@ async def async_get_amp_controller(amp_type, port_url, loop, serial_config_overr
 
             for command in restore_commands:
                 result = await self._protocol.send(set_commands[command](amp_type, zone, status[command]))
-                #result = await self._protocol.send( _command(amp_type, command, status) )
                 if result != success:
                     LOG.warning(f"Failed restoring zone {zone} command {command}")
                 await asyncio.sleep(0.1) # pause 100 ms
