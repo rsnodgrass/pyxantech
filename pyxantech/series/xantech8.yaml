@@ -99,13 +99,15 @@
   protocol: xantech
   min_time_between_commands: 0.4
 
+  zone_status_skip: 0
+
   rs232:
     baudrate: 9600
     bytesize: 8
     parity: 'N'
     stopbits: 1
-    timeout: 1.0
-    write_timeout: 1.0
+    timeout: 2.0
+    write_timeout: 2.0
     # cable: Xantech PN 05913410 (for MRC88a)
 
   # FIXME: this should really be from protocol...
