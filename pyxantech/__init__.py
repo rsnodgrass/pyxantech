@@ -369,7 +369,7 @@ def get_amp_controller(amp_type: str, port_url, serial_config_overrides={}):
             # send all the commands necessary to restore the various status settings to the amp
             restore_commands = get_protocol_config(amp_type, 'restore_zone')
             for command in restore_commands:
-                result = self._send_request( _command(amp_type, command, status) )
+                result = self._send_request(command(amp_type, zone, status) )
                 if result != success:
                     LOG.warning(f"Failed restoring zone {zone} command {command}")
                 time.sleep(0.1) # pause 100 ms
@@ -488,6 +488,7 @@ async def async_get_amp_controller(amp_type, port_url, loop, serial_config_overr
 
         @locked_coro
         async def restore_zone(self, status: dict):
+            set_commands = {'power': _set_power_cmd, 'mute': _set_mute_cmd, 'volume': _set_volume_cmd, 'treble': _set_treble_cmd, 'bass': _set_bass_cmd, 'balance': _set_balance_cmd, 'source': _set_source_cmd}
             zone = status['zone']
             amp_type = self._amp_type
             extras = get_protocol_config(amp_type, 'extras')
@@ -496,13 +497,14 @@ async def async_get_amp_controller(amp_type, port_url, loop, serial_config_overr
             #LOG.debug(f"Restoring amp {amp_type} zone {zone} from {status}")
             
             # send all the commands necessary to restore the various status settings to the amp
-            restore_commands = extras.get('restore_zone', default=[])
+            restore_commands = extras.get('restore_zone', [])
             if not restore_commands:
                 LOG.info(f"restore_zone() requested, but amp type {amp_type} does not support 'restore_zone' command for zone {zone}")
                 return
 
             for command in restore_commands:
-                result = await self._protocol._send( _command(amp_type, command, status) )
+                result = await self._protocol.send(set_commands[command](amp_type, zone, status[command]))
+                #result = await self._protocol.send( _command(amp_type, command, status) )
                 if result != success:
                     LOG.warning(f"Failed restoring zone {zone} command {command}")
                 await asyncio.sleep(0.1) # pause 100 ms
