@@ -55,7 +55,7 @@ def pattern_to_dictionary(protocol_type, match, source_text: str) -> dict:
 
 def get_with_log(name, dictionary, key: str, log_missing=True):
     value = dictionary.get(key)
-    if value is none and log_missing:
+    if value is None and log_missing:
         LOG.warning(f"Missing key '{key}' in dictionary '{name}'; returning None")
     return value
 
