@@ -13,12 +13,14 @@ try:
 except ImportError:
     from distutils.core import setup
 
-    
+
 if sys.argv[-1] == "publish":
     os.system("python3 setup.py sdist upload")
     sys.exit()
 
 setup(
     version=VERSION,
-    download_url="https://github.com/rsnodgrass/pymonoprice/archive/{}.tar.gz".format(VERSION)
+    download_url="https://github.com/rsnodgrass/pymonoprice/archive/{}.tar.gz".format(
+        VERSION
+    )
 )
