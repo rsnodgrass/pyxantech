@@ -63,6 +63,7 @@ def get_with_log(name, dictionary, key: str, log_missing=True):
         LOG.warning(f"Missing key '{key}' in dictionary '{name}'; returning None")
     return value
 
+
 # cached dictionary pattern matches for all responses for each protocol
 def _precompile_response_patterns():
     """Precompile all response patterns"""
