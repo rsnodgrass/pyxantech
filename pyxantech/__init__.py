@@ -98,7 +98,7 @@ class AmpControlBase:
         :param zone: zone 11..16, 21..26, 31..36
         :return: status of the zone or None
         """
-        raise NotImplementedError(()
+        raise NotImplementedError()
 
     def set_power(self, zone: int, power: bool):
         """
@@ -106,7 +106,7 @@ class AmpControlBase:
         :param zone: zone 11..16, 21..26, 31..36
         :param power: True to turn on, False to turn off
         """
-        raise NotImplementedError(()
+        raise NotImplementedError()
 
     def set_mute(self, zone: int, mute: bool):
         """
@@ -114,7 +114,7 @@ class AmpControlBase:
         :param zone: zone 11..16, 21..26, 31..36
         :param mute: True to mute, False to unmute
         """
-        raise NotImplementedError(()
+        raise NotImplementedError()
 
     def set_volume(self, zone: int, volume: int):
         """
@@ -122,7 +122,7 @@ class AmpControlBase:
         :param zone: zone 11..16, 21..26, 31..36
         :param volume: integer from 0 to 38 inclusive
         """
-        raise NotImplementedError(()
+        raise NotImplementedError()
 
     def set_treble(self, zone: int, treble: int):
         """
@@ -130,7 +130,7 @@ class AmpControlBase:
         :param zone: zone 11..16, 21..26, 31..36
         :param treble: integer from 0 to 14 inclusive, where 0 is -7 treble and 14 is +7
         """
-        raise NotImplementedError(()
+        raise NotImplementedError()
 
     def set_bass(self, zone: int, bass: int):
         """
@@ -138,7 +138,7 @@ class AmpControlBase:
         :param zone: zone 11..16, 21..26, 31..36
         :param bass: integer from 0 to 14 inclusive, where 0 is -7 bass and 14 is +7
         """
-        raise NotImplementedError(()
+        raise NotImplementedError()
 
     def set_balance(self, zone: int, balance: int):
         """
@@ -146,7 +146,7 @@ class AmpControlBase:
         :param zone: zone 11..16, 21..26, 31..36
         :param balance: integer from 0 to 20 inclusive, where 0 is -10(left), 0 is center and 20 is +10 (right)
         """
-        raise NotImplementedError(()
+        raise NotImplementedError()
 
     def set_source(self, zone: int, source: int):
         """
@@ -154,14 +154,14 @@ class AmpControlBase:
         :param zone: zone 11..16, 21..26, 31..36
         :param source: integer from 0 to 6 inclusive
         """
-        raise NotImplementedError(()
+        raise NotImplementedError()
 
     def restore_zone(self, status: ZoneStatus):
         """
         Restores zone to its previous state
         :param status: zone state to restore
         """
-        raise NotImplementedError(()
+        raise NotImplementedError()
 
 
 def _command(amp_type: str, format_code: str, args={}):
@@ -407,7 +407,7 @@ def get_amp_controller(amp_type: str, port_url, serial_config_overrides={}):
             # send all the commands necessary to restore the various status settings to the amp
             restore_commands = get_protocol_config(amp_type, "restore_zone")
             for command in restore_commands:
-                result = self._send_request(command(amp_type, zone, status) )
+                result = self._send_request(command(amp_type, zone, status))
                 if result != success:
                     LOG.warning(f"Failed restoring zone {zone} command {command}")
                 time.sleep(0.1)  # pause 100 ms
@@ -534,8 +534,16 @@ async def async_get_amp_controller(
 
         @locked_coro
         async def restore_zone(self, status: dict):
-            set_commands = {'power': _set_power_cmd, 'mute': _set_mute_cmd, 'volume': _set_volume_cmd, 'treble': _set_treble_cmd, 'bass': _set_bass_cmd, 'balance': _set_balance_cmd, 'source': _set_source_cmd}
-            zone = status['zone']
+            set_commands = {
+                "power": _set_power_cmd,
+                "mute": _set_mute_cmd,
+                "volume": _set_volume_cmd,
+                "treble": _set_treble_cmd,
+                "bass": _set_bass_cmd,
+                "balance": _set_balance_cmd,
+                "source": _set_source_cmd,
+            }
+            zone = status["zone"]
             amp_type = self._amp_type
             extras = get_protocol_config(amp_type, "extras")
 
@@ -543,7 +551,7 @@ async def async_get_amp_controller(
             # LOG.debug(f"Restoring amp {amp_type} zone {zone} from {status}")
 
             # send all the commands necessary to restore the various status settings to the amp
-            restore_commands = extras.get('restore_zone', [])
+            restore_commands = extras.get("restore_zone", [])
             if not restore_commands:
                 LOG.info(
                     f"restore_zone() requested, but amp type {amp_type} does not support 'restore_zone' command for zone {zone}"
@@ -551,7 +559,9 @@ async def async_get_amp_controller(
                 return
 
             for command in restore_commands:
-                result = await self._protocol.send(set_commands[command](amp_type, zone, status[command]))
+                result = await self._protocol.send(
+                    set_commands[command](amp_type, zone, status[command])
+                )
                 if result != success:
                     LOG.warning(f"Failed restoring zone {zone} command {command}")
                 await asyncio.sleep(0.1)  # pause 100 ms
