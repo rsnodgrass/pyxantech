@@ -7,7 +7,7 @@ def create_dummy_port(responses):
     def listener(port):
         # continuously listen to commands on the master device
         while 1:
-            res = b''
+            res = b""
             while not res.endswith(b"\r"):
                 # keep reading one byte at a time until we have a full line
                 res += os.read(port, 1)
