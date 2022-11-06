@@ -98,7 +98,7 @@ class AmpControlBase:
         :param zone: zone 11..16, 21..26, 31..36
         :return: status of the zone or None
         """
-        raise NotImplemented()
+        raise NotImplementedError(()
 
     def set_power(self, zone: int, power: bool):
         """
@@ -106,7 +106,7 @@ class AmpControlBase:
         :param zone: zone 11..16, 21..26, 31..36
         :param power: True to turn on, False to turn off
         """
-        raise NotImplemented()
+        raise NotImplementedError(()
 
     def set_mute(self, zone: int, mute: bool):
         """
@@ -114,7 +114,7 @@ class AmpControlBase:
         :param zone: zone 11..16, 21..26, 31..36
         :param mute: True to mute, False to unmute
         """
-        raise NotImplemented()
+        raise NotImplementedError(()
 
     def set_volume(self, zone: int, volume: int):
         """
@@ -122,7 +122,7 @@ class AmpControlBase:
         :param zone: zone 11..16, 21..26, 31..36
         :param volume: integer from 0 to 38 inclusive
         """
-        raise NotImplemented()
+        raise NotImplementedError(()
 
     def set_treble(self, zone: int, treble: int):
         """
@@ -130,7 +130,7 @@ class AmpControlBase:
         :param zone: zone 11..16, 21..26, 31..36
         :param treble: integer from 0 to 14 inclusive, where 0 is -7 treble and 14 is +7
         """
-        raise NotImplemented()
+        raise NotImplementedError(()
 
     def set_bass(self, zone: int, bass: int):
         """
@@ -138,7 +138,7 @@ class AmpControlBase:
         :param zone: zone 11..16, 21..26, 31..36
         :param bass: integer from 0 to 14 inclusive, where 0 is -7 bass and 14 is +7
         """
-        raise NotImplemented()
+        raise NotImplementedError(()
 
     def set_balance(self, zone: int, balance: int):
         """
@@ -146,7 +146,7 @@ class AmpControlBase:
         :param zone: zone 11..16, 21..26, 31..36
         :param balance: integer from 0 to 20 inclusive, where 0 is -10(left), 0 is center and 20 is +10 (right)
         """
-        raise NotImplemented()
+        raise NotImplementedError(()
 
     def set_source(self, zone: int, source: int):
         """
@@ -154,14 +154,14 @@ class AmpControlBase:
         :param zone: zone 11..16, 21..26, 31..36
         :param source: integer from 0 to 6 inclusive
         """
-        raise NotImplemented()
+        raise NotImplementedError(()
 
     def restore_zone(self, status: ZoneStatus):
         """
         Restores zone to its previous state
         :param status: zone state to restore
         """
-        raise NotImplemented()
+        raise NotImplementedError(()
 
 
 def _command(amp_type: str, format_code: str, args={}):
