@@ -41,7 +41,7 @@ def get_protocol_config(amp_type, key):
 
 
 # FIXME: populate based on dictionary, not positional
-class ZoneStatus(object):
+class ZoneStatus:
     def __init__(self, status: dict):
         #       volume   # 0 - 38
         #       treble   # 0 -> -7,  14-> +7
@@ -87,7 +87,7 @@ class ZoneStatus(object):
         return ZoneStatus(match_dict)
 
 
-class AmpControlBase(object):
+class AmpControlBase:
     """
     AmpliferControlBase amplifier interface
     """
