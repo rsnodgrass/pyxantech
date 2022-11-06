@@ -22,5 +22,5 @@ setup(
     version=VERSION,
     download_url="https://github.com/rsnodgrass/pymonoprice/archive/{}.tar.gz".format(
         VERSION
-    )
+    ),
 )
