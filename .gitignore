@@ -2,8 +2,10 @@
 *.pyc
 *.log
 *.egg-info
-dist/
-build/
+
+dist
+build
+
 __pycache__
 .mypy_cache
 *.swp
