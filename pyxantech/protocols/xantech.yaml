@@ -21,7 +21,7 @@
       max: 14
     balance:
       min: 0
-      max: 20
+      max: 63
     source:
       min: 1
       max: 8
@@ -29,7 +29,7 @@
       min: 1
       max: 8
  
-  command_eol: "\r"
+  command_eol: ""
   command_separator: "+"
 
   commands:
@@ -59,7 +59,7 @@
     source_select: '!{zone}SS{source}'
 
     balance_status: '?{zone}BA'
-    set_balance:   '!{zone}BL{balance:02}'
+    set_balance:   '!{zone}BA{balance:02}'
     balance_left:  '!{zone}BL'
     balance_right: '!{zone}BR'
 
@@ -95,8 +95,8 @@
     balance_status: '\?(?P<zone>\d+)BA(?P<balance>\d+)\+'
 
   extras:
-    restore_zone:    [ 'set_power', 'set_source', 'set_volume', 'set_mute', 'set_bass', 'set_balance', 'set_treble' ]
-    restore_success: 'OK\r'
+    restore_zone:    [ 'power', 'source', 'volume', 'mute', 'bass', 'balance', 'treble' ]
+    restore_success: 'OK'
 
   zone_details_supported:
     PO: true  # power (Xantech)
