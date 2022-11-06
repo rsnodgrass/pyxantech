@@ -2,18 +2,19 @@
 
 import os
 import sys
+
 if sys.version_info < (3, 10):
     raise RuntimeError("This package requres Python 3.10+")
 
-VERSION = '0.7.0'
+VERSION = "0.7.0"
 
 try:
     from setuptools import setup
 except ImportError:
     from distutils.core import setup
 
-if sys.argv[-1] == 'publish':
-    os.system('python setup.py sdist upload')
+if sys.argv[-1] == "publish":
+    os.system("python setup.py sdist upload")
     sys.exit()
 
 license = """
@@ -37,19 +38,25 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-setup(name='pyxantech',
-      python_requires = ">=3.10",
-      version=VERSION,
-      description='Python RS232 API for Monoprice/Xantech/Dayton Audio multi-zone amps',
-      url='https://github.com/rsnodgrass/pymonoprice',
-      download_url='https://github.com/rsnodgrass/pymonoprice/archive/{}.tar.gz'.format(VERSION),
-      author='Egor Tsinko',
-      author_email='etsinko@gmail.com',
-      license='MIT',
-      install_requires=['pyserial>=3.5','pyserial-asyncio>=0.5','ratelimit>=2.2.1'],
-      packages=['pyxantech'],
-      classifiers=['Development Status :: 4 - Beta',
-                   'License :: OSI Approved :: MIT License',
-                   'Programming Language :: Python :: 3.10' ],
-      include_package_data=True,
-      zip_safe=True)
+setup(
+    name="pyxantech",
+    python_requires=">=3.10",
+    version=VERSION,
+    description="Python RS232 API for Monoprice/Xantech/Dayton Audio multi-zone amps",
+    url="https://github.com/rsnodgrass/pymonoprice",
+    download_url="https://github.com/rsnodgrass/pymonoprice/archive/{}.tar.gz".format(
+        VERSION
+    ),
+    author="Egor Tsinko",
+    author_email="etsinko@gmail.com",
+    license="MIT",
+    install_requires=["pyserial>=3.5", "pyserial-asyncio>=0.5", "ratelimit>=2.2.1"],
+    packages=["pyxantech"],
+    classifiers=[
+        "Development Status :: 4 - Beta",
+        "License :: OSI Approved :: MIT License",
+        "Programming Language :: Python :: 3.10",
+    ],
+    include_package_data=True,
+    zip_safe=True,
+)
