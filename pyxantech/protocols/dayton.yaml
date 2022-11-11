@@ -30,7 +30,7 @@
     zone: # technically limited by hardware series yaml, not protocol
       min: 1
       max: 8
- 
+
   command_eol: "\r"
   command_separator: ""
 

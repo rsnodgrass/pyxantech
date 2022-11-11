@@ -1,11 +1,11 @@
-import asyncio
 import logging
+import asyncio
 import re
 import time
-import serial
-
 from functools import wraps
 from threading import RLock
+
+import serial
 
 from .config import (
     DEVICE_CONFIG,
@@ -15,10 +15,10 @@ from .config import (
     pattern_to_dictionary,
 )
 from .protocol import (
-    async_get_rs232_protocol,
-    CONF_RESPONSE_EOL,
     CONF_COMMAND_EOL,
     CONF_COMMAND_SEPARATOR,
+    CONF_RESPONSE_EOL,
+    async_get_rs232_protocol,
 )
 
 LOG = logging.getLogger(__name__)

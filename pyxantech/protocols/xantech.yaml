@@ -28,7 +28,7 @@
     zone:
       min: 1
       max: 8
- 
+
   command_eol: ""
   command_separator: "+"
 

@@ -4,11 +4,9 @@
 #   ./example-async.py --help
 #   ./example-async.py --tty /dev/tty.usbserial-A501SGSZ
 
-import time
-import asyncio
-import argparse
-import serial
 import logging
+import argparse
+import asyncio
 import sys
 
 from pyxantech import async_get_amp_controller

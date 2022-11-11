@@ -1,10 +1,10 @@
 import logging
-
-import time
 import asyncio
 import functools
-from serial_asyncio import create_serial_connection
+import time
+
 from ratelimit import limits
+from serial_asyncio import create_serial_connection
 
 LOG = logging.getLogger(__name__)
 

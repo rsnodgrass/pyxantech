@@ -1,8 +1,9 @@
 """ Read the configuration for supported devices """
+import logging
 import os
 import re
+
 import yaml
-import logging
 
 LOG = logging.getLogger(__name__)
 

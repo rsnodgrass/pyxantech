@@ -4,10 +4,10 @@
   supported:
     - manufacturer: "Monoprice"
       model: "MPR-SG6Z"
-      
+
     - manufacturer: "Monoprice"
       model: "10761"
-      
+
     - manufacturer: "Daytona Audio"
       model: "DAX66"
 
@@ -22,7 +22,7 @@
   num_zones: 6
   num_sources: 6
   max_amps: 3
-  
+
   # FIXME: load these limits from protocol
   max_balance: 20
   max_bass: 14
@@ -39,9 +39,9 @@
     stopbits: 1
     timeout: 1.0
     write_timeout: 1.0
- 
+
   hardware_volume_steps: 38
- 
+
   sources:
     1: "Source 1"
     2: "Source 2"
@@ -49,7 +49,7 @@
     4: "Source 4"
     5: "Source 5"
     6: "Source 6"
- 
+
   # technically zone = {amp_number}{zone_num_within_amp_1-6} (e.g. 11 = amp number 1, zone 1)
   zones:
     11: "Zone 1"          # main amp 1    (e.g. 15 = amp 1, zone 5)
