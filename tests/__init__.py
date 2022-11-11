@@ -1,6 +1,6 @@
-import threading
 import os
 import pty
+import threading
 
 
 def create_dummy_port(responses):

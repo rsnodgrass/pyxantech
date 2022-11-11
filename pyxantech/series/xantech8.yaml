@@ -5,7 +5,7 @@
   supported:
     - manufacturer: "Xantech"
       model: "MRAUDIO8x8"
-      
+
     - manufacturer: "Xantech"
       model: "MRAUDIO8x8m"
 
@@ -35,7 +35,7 @@
       overrides:
         rs232: # NOTE: the USB COM connection on front uses same serial settings
           baud: 57600
- 
+
     - manufacturer: "Xantech"
       model: "MX88ai"
       # NOTE:
@@ -112,7 +112,7 @@
 
   # FIXME: this should really be from protocol...
   hardware_volume_steps: 38
- 
+
   sources:
     1: "Source 1"
     2: "Source 2"
@@ -122,7 +122,7 @@
     6: "Source 6"
     7: "Source 7"
     8: "Source 8"
-      
+
   zones:
     1: "Zone 1"
     2: "Zone 2"

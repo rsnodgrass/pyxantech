@@ -5,7 +5,6 @@
 #   ./example.py --tty /dev/tty.usbserial-A501SGSZ
 
 import argparse
-import time
 
 from pyxantech import get_amp_controller
 

@@ -1,10 +1,10 @@
+import asyncio
 import unittest
 
 import serial
 
-from pyxantech import get_xantech, get_async_xantech, ZoneStatus
+from pyxantech import ZoneStatus, get_async_xantech, get_xantech
 from tests import create_dummy_port
-import asyncio
 
 
 class TestZoneStatus(unittest.TestCase):

@@ -11,5 +11,3 @@ to a wide variety of legacy/current matrix amps.
 Proprietary amps like Crestron and RTi are probably outside the realm of a mapping solution like what is provided by pyxantech.
 
 This metadata format and pyxantech could possibly be extended to support VIDEO matrix as well as audio.
-
-
