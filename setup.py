@@ -6,7 +6,7 @@ import sys
 if sys.version_info < (3, 10):
     raise RuntimeError("This package requres Python 3.10+")
 
-VERSION = "0.7.0"
+VERSION = "0.7.1"
 
 try:
     from setuptools import setup
