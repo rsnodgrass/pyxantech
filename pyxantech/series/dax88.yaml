@@ -25,6 +25,8 @@
   protocol: dayton
   min_time_between_commands: 0.4
 
+  zone_status_skip: 0
+
   rs232:
     baudrate: 9600
     bytesize: 8
