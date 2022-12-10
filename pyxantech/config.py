@@ -15,7 +15,7 @@ def _load_config(config_file):
     """Load the amp series configuration"""
 
     #    LOG.debug(f"Loading {config_file}")
-    with open(config_file, "r") as stream:
+    with open(config_file) as stream:
         try:
             config = yaml.load(stream, Loader=yaml.FullLoader)
             return config[0]
