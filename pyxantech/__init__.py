@@ -54,7 +54,7 @@ class ZoneStatus:
     def retype_bools(self, keys):
         for key in keys:
             if key in self.dict:
-                self.dict[key] = (self.dict[key] == "1") or (self.dict[key] == "01")
+                self.dict[key] = self.dict[key] in ("1", "01")
 
     def retype_ints(self, keys):
         for key in keys:
@@ -360,8 +360,7 @@ def get_amp_controller(amp_type: str, port_url, serial_config_overrides={}):
             LOG.debug("Status: %s (string: %s)", status, response)
             if status:
                 return status.dict
-            else:
-                return None
+            return None
 
         @synchronized
         def set_power(self, zone: int, power: bool):
@@ -497,8 +496,7 @@ async def async_get_amp_controller(
             LOG.debug("Status: %s (string: %s)", status, status_string)
             if status:
                 return status.dict
-            else:
-                return None
+            return None
 
         @locked_coro
         async def set_power(self, zone: int, power: bool):
