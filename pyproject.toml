@@ -8,3 +8,7 @@ line-length = 90
 
 [tool.pycln]
 all = true
+
+[tool.refurb]
+quiet = true
+ignore = []
