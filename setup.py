@@ -6,7 +6,7 @@ import sys
 if sys.version_info < (3, 10):
     raise RuntimeError("This package requres Python 3.10+")
 
-VERSION = "0.7.1"
+VERSION = "0.7.2"
 
 try:
     from setuptools import setup
@@ -23,4 +23,5 @@ setup(
     download_url="https://github.com/rsnodgrass/pymonoprice/archive/{}.tar.gz".format(
         VERSION
     ),
+    include_package_data=True,
 )
