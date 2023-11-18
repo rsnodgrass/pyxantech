@@ -1,0 +1,93 @@
+# NOTE: THIS IS NOT REALLY DEFINED. ONLY LIMITED DOCS COULD BE FOUND.
+
+- protocol: acurus
+  name: "Acurus Amplifier Control Protocol 1.0"
+  url: https://app.box.com/s/bp7h228vihe92nmjlo6o8w6e66tvj58o
+
+  # default baud rate (see series yaml for overrides per model)
+  connection:
+    rs232:
+      baud: 9600
+      data: 8
+      parity: N
+      stop: 1
+
+  limits:
+    volume:
+      min: 0
+      max: 99
+    treble:
+      min: -10
+      max: 10
+    bass:
+      min: -10
+      max: 10
+    balance:
+      min: 0
+      max: 63
+    source:
+      min: 1
+      max: 8
+    zone:
+      min: 1
+      max: 8
+
+  command_eol: ""
+  command_separator: ""
+
+  commands:
+    zone_status:   '?{zone}ZD'
+    zone_details:  '?{zone}ZD'
+
+    power_status:  'STSPOW'
+    set_power:     "!{zone}PR{power}"
+    power_on:      'PWRONN'
+    power_off:     'PWROFF'
+    power_toggle:  'PWRTGL'
+    all_zones_off: '!AO'
+
+    mute_status:   'STSMUT'
+    set_mute:      'MONCH{zone}'
+    mute_on:       'MONCH{zone}'
+    mute_off:      'MOFCH{zone}'
+    mute_toggle:   'MUTCH{zone}'
+
+    volume_status: '?{zone}VO'
+    set_volume:    '!{zone}VO{volume:02}'
+    volume_up:     'VOLUPP'
+    volume_down:   'VOLDWN'
+
+    source_status: '?{zone}SS'
+    set_source:    '!{zone}SS{source}'
+    source_select: '!{zone}SS{source}'
+
+  response_eol: "\r\n"
+  response_separator: ""
+
+  responses:
+    zone_status:    '#(?P<zone>\d+)ZS PR(?P<power>[01]) SS(?P<source>\d+) VO(?P<volume>\d+) MU(?P<mute>[01]) TR(?P<treble>\d+) BS(?P<bass>\d+) BA(?P<balance>\d+) LS(?P<linked>[01]) PS(?P<paged>[01])\+'
+                    # Example:  #1ZS PR0 SS1 VO0 MU1 TR7 BS7 BA32 LS0 PS0+
+    power_status:   'OK POWER (?P<power>.+)' # ON or OFF
+    source_status:  '\?(?P<zone>\d+)SS(?P<source>[1-8])\+'
+    volume_status:  '\?(?P<zone>\d+)VO(?P<volume>\d+)\+'
+    mute_status:    'OK MUT(?P<mute>.+)' # ON or OFF
+
+  extras:
+    restore_zone:    [ 'power', 'source', 'volume', 'mute', 'bass', 'balance', 'treble' ]
+    restore_success: 'OK'
+
+  zone_details_supported:
+    PO: true  # power (Xantech)
+    PR: false # power (Monoprice/Dayton Audio)
+    SS: true  # source select (Xantech)
+    CH: false # source channel (Monoprice/Dayton Audio)
+    VO: true  # volume
+    MU: true  # mute
+    TR: true  # treble
+    BS: true  # bass
+    BA: true  # balance
+    LS: true  # linked keypad
+    PS: true  # paged (Xantech)
+    DT: false # do-not-disturb (Monoprice/Dayton Audio)
+    PA: false # public-address-12v-control (Monoprice/Dayton Audio)
+    IS: false # input line 1 or bus 0 (Monoprice/Dayton Audio)

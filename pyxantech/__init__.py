@@ -12,7 +12,6 @@ from .config import (
     PROTOCOL_CONFIG,
     RS232_RESPONSE_PATTERNS,
     get_with_log,
-    pattern_to_dictionary,
 )
 from .protocol import (
     CONF_COMMAND_EOL,
@@ -241,7 +240,7 @@ def _set_source_cmd(amp_type, zone: int, source: int) -> bytes:
 def get_amp_controller(amp_type: str, port_url, serial_config_overrides={}):
     """
     Return synchronous version of amplifier control interface
-    :param port_url: serial port, i.e. '/dev/ttyUSB0'
+    :param port_url: serial port, i.e. '/dev/ttyUSB0' or 'socket://remote-host:7000/'
     :param serial_config_overrides: dictionary of serial port configuration overrides (e.g. baudrate)
     :return: synchronous implementation of amplifier control interface
     """
@@ -264,7 +263,6 @@ def get_amp_controller(amp_type: str, port_url, serial_config_overrides={}):
     class AmpControlSync(AmpControlBase):
         def __init__(self, amp_type, port_url, serial_config_overrides):
             self._amp_type = amp_type
-            config = DEVICE_CONFIG[amp_type]
 
             # allow overriding the default serial port configuration, in case the user has changed
             # settings on their amplifier (e.g. increased the default baudrate)
@@ -419,7 +417,7 @@ async def get_async_monoprice(port_url, loop):
     """
     *DEPRECATED* For backwards compatibility only.
     Return asynchronous version of amplifier control interface
-    :param port_url: serial port, i.e. '/dev/ttyUSB0'
+    :param port_url: serial port, i.e. '/dev/ttyUSB0' or 'socket://remote-host:7000/'
     :return: asynchronous implementation of amplifier control interface
     """
     return async_get_amp_controller(MONOPRICE6, port_url, loop)
@@ -430,7 +428,7 @@ async def async_get_amp_controller(
 ):
     """
     Return asynchronous version of amplifier control interface
-    :param port_url: serial port, i.e. '/dev/ttyUSB0'
+    :param port_url: serial port, i.e. '/dev/ttyUSB0' or 'socket://remote-host:7000/'
     :return: asynchronous implementation of amplifier control interface
     """
 
