@@ -1,6 +1,8 @@
 - protocol: xantech
   name: "Xantech 8-Zone Matrix Protocol"
 
+
+
   # default baud rate (see series yaml for overrides per model)
   connection:
     rs232:
@@ -8,6 +10,8 @@
       data: 8
       parity: N
       stop: 1
+
+
 
   limits:
     volume:
@@ -19,30 +23,27 @@
     bass:
       min: 0
       max: 14
-    balance:
-      min: 0
-      max: 63
     source:
       min: 1
       max: 8
     zone:
       min: 1
       max: 8
+    balance:
+      min: 0
+      max: 63
 
   command_eol: ""
   command_separator: "+"
 
   format:
     command:
-      format: "!{command}{eol}"
+      format: "{cmd}{eol}"
       eol: ""
       separator: '#'
 
-    query:
-      format: "?{command}{eol}"
-
-    response:
-      format: "{response}"
+    message:
+      format: "{msg}{eol}"
       eol: "\r"
       separator: '#'
 
@@ -95,23 +96,163 @@
     set_activity_updates: '!ZA{activity_updates}'  # activity_updates:  1 = on; 0 = off
     set_status_updates:   '!ZP{status_updates}'   # status_updates:     1 = on; 0 = off
 
-  commands_v2:
+  api_settings:
+    min_time_between_commands: 0.4
+
+
+  api_vars:
+    zone:
+      pattern: '[1-8]'
+      type: int
+      min: 1
+      max: 8
     power:
+      pattern: '[01]'
+      type: int
+      min: 0
+      max: 1
+    mute:
+      pattern: '[01]'
+      type: int
+      min: 0
+      max: 1
+    volume:
+      type: int
+      min: 0
+      max: 38
+    treble:
+      type: int
+      min: 0
+      max: 14
+    bass:
+      type: int
+      min: 0
+      max: 14
+    balance:
+      type: int
+      min: 0
+      max: 63
+    source:
+      type: int
+      min: 1
+      max: 8
+
+  api_v2:
+    power:
+      api:
         status:
-          command: '?{zone}PR'
-          response: '\?(?P<zone>\d+)PR(?P<power>[01])\+'
+          cmd: '?{zone}PR'
+          msg: '\?(?P<zone>\d+)PR(?P<power>[01])\+'
         set:
-          command: "!{zone}PR{power}"
+          cmd: "!{zone}PR{power}"
         'on':
-          command: '!{zone}PR1'
+          cmd: '!{zone}PR1'
         'off':
-          command: '!{zone}PR0'
+          cmd: '!{zone}PR0'
         toggle:
-          command: '!{zone}PT'
+          cmd: '!{zone}PT'
         all_zones_off:
-          command: '!AO'
+          cmd: '!AO'
 
+    mute:
+      api:
+        status:
+          cmd: '?{zone}MU'
+          msg: '\?(?P<zone>\d+)MU(?P<mute>[01])\+'
+        set:
+          cmd: '!{zone}MU{mute}'
+        'on':
+          cmd: '!{zone}MU1'
+        'off':
+          cmd: '!{zone}MU0'
+        toggle:
+          cmd: '!{zone}MT'
 
+    zone:
+      api:
+        status:
+          cmd: '?{zone}ZD'
+          msg: '#(?P<zone>\d+)ZS PR(?P<power>[01]) SS(?P<source>\d+) VO(?P<volume>\d+) MU(?P<mute>[01]) TR(?P<treble>\d+) BS(?P<bass>\d+) BA(?P<balance>\d+) LS(?P<linked>[01]) PS(?P<paged>[01])\+'
+              # Example:  #1ZS PR0 SS1 VO0 MU1 TR7 BS7 BA32 LS0 PS0+
+        details:
+          cmd: '?{zone}ZD'
+          msg: "FIXME"
+
+    volume:
+      api:
+        status:
+          cmd: '?{zone}VO'
+          msg: '\?(?P<zone>\d+)VO(?P<volume>\d+)\+'
+        set:
+          cmd: '!{zone}VO{volume:02}'
+        up:
+          cmd: '!{zone}VI'
+        down:
+          cmd: '!{zone}VD'
+    source:
+      api:
+        status:
+          cmd: '?{zone}SS'
+          msg: '\?(?P<zone>\d+)SS(?P<source>[1-8])\+'
+        set:
+          cmd: '!{zone}SS{source}'
+        select:
+          cmd: '!{zone}SS{source}'
+
+    balance:
+      api:
+        status:
+          cmd: '?{zone}BA'
+          msg: '\?(?P<zone>\d+)BA(?P<balance>\d+)\+'
+        balance:
+          cmd: '!{zone}BA{balance:02}'
+        left:
+          cmd: '!{zone}BL'
+        right:
+          cmd: '!{zone}BR'
+
+    bass:
+      api:
+        status:
+          cmd: '?{zone}BS'
+          msg: '\?(?P<zone>\d+)BS(?P<bass>\d+)\+'
+
+        set:
+          cmd: '!{zone}BS{bass:02}'
+        up:
+          cmd: '!{zone}BI'
+          aliases:
+            - '+'
+        down:
+          cmd: '!{zone}BD'
+          aliases:
+            - '-'
+
+      treble:
+        api:
+          status:
+            cmd: '?{zone}TR'
+            msg: '\?(?P<zone>\d+)TR(?P<treble>\d+)\+'
+          set:
+            cmd: '!{zone}TR{treble:02}'
+          up:
+            cmd: '!{zone}TI'
+          down:
+            cmd: '!{zone}TD'
+
+      activity_updates:
+        api:
+          'on':
+            cmd: '!ZA1'
+          'off':
+            cmd: '!ZA0'
+      status_updates:
+        api:
+          'on':
+            cmd: '!ZP1'
+
+          'off':
+            cmd: '!ZP0'
 
   response_eol: "\r"
   response_separator: "#"

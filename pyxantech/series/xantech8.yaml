@@ -97,6 +97,9 @@
   max_volume: 38
 
   protocol: xantech
+  protocol_definitions:
+    - xantech
+
   min_time_between_commands: 0.4
 
   zone_status_skip: 0
