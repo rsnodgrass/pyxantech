@@ -28,6 +28,21 @@
       min: 1
       max: 6
 
+  format:
+    command:
+      format: "<{command}{eol}"
+      eol: ""
+      separator: '#'
+
+    query:
+      format: "?{command}{eol}"
+
+    response:
+      format: ">{response}"
+      eol: "\r"
+      separator: '#'
+
+  response_eol: "\r"
   command_eol: "\r"
   command_separator: "#"
 
@@ -48,7 +63,6 @@
     set_balance:   '<{zone}BL{balance:02}'  # balance: 0-20
     set_source:    '<{zone}CH{source:02}'   # source: 0-6
 
-  response_eol: "\r"
 
   responses:
     zone_status: '#>(?P<zone>\d\d)(?P<power>[01]{2})(?P<source>\d\d)(?P<mute>[01]{2})(?P<do_not_disturb>[01])(?P<volume>\d\d)(?P<treble>\d\d)(?P<bass>\d\d)(?P<balance>\d\d)(?P<unknown>\d\d)(?P<keypad>\d\d)'
