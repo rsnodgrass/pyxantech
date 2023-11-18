@@ -1,0 +1,139 @@
+- series: acurus
+  name: "Acurus"
+  description: "Acurus Multi-Zone Amps"
+
+  supported:
+    - manufacturer: "Acurus"
+      model: "M4"
+      overrides:
+        features:
+          ip_control: true
+          zones: 4
+          sources: 4
+
+    - manufacturer: "Acurus"
+      model: "M8"
+      url: https://www.acurusav.com/m-8
+      overrides:
+        features:
+          ip_control: true
+          zones: 8
+          sources: 8
+
+  features:
+    zones: 8
+    sources: 8
+    rs232_control: true
+
+  # FIXME: deprecate these
+  num_zones: 4
+  num_sources: 4
+
+  # FIXME: these should come from the protocol...which has them defined (min and max)
+  max_balance: 20
+  max_bass: 14
+  max_treble: 14
+  max_volume: 38
+
+  protocol: acurus
+  min_time_between_commands: 0.5
+
+  zone_status_skip: 0
+
+  rs232:
+    baudrate: 9600
+    bytesize: 8
+    parity: 'N'
+    stopbits: 1
+    timeout: 2.0
+    write_timeout: 2.0
+
+  # FIXME: this should really be from protocol...
+  hardware_volume_steps: 38
+
+  sources:
+    1: "Source 1"
+    2: "Source 2"
+    3: "Source 3"
+    4: "Source 4"
+    5: "Source 5"
+    6: "Source 6"
+    7: "Source 7"
+    8: "Source 8"
+
+  zones:
+    1: "Zone 1"
+    2: "Zone 2"
+    3: "Zone 3"
+    4: "Zone 4"
+    5: "Zone 5"
+    6: "Zone 6"
+    7: "Zone 7"
+    8: "Zone 8"
+
+  # these really map from the hardware protocol to user visible names...should they be in the protocol?
+  bass_level:
+    unit: "dB"
+    steps:
+      14: "+14"
+      13: "+12"
+      12: "+10"
+      11: "+8"
+      10: "+6"
+      9: "+4"
+      8: "+2"
+      7: "0"
+      6: "-2"
+      5: "-4"
+      4: "-6"
+      3: "-8"
+      2: "-10"
+      1: "-12"
+      0: "-14"
+
+  treble_level:
+    unit: "dB"
+    steps:
+      14: "+14"
+      13: "+12"
+      12: "+10"
+      11: "+8"
+      10: "+6"
+      9: "+4"
+      8: "+2"
+      7:  "0"
+      6: "-2"
+      5: "-4"
+      4: "-6"
+      3: "-8"
+      2: "-10"
+      1: "-12"
+      0: "-14"
+
+  balance_attenuation:
+    unit: "dB"
+    steps:
+      63: { "left": None,  "right": 0      }  # None = Mute
+      62: { "left": -37.5, "right": 0      }
+      #...
+      34: { "left": -2.5,  "right": 0      }
+      33: { "left": -1.25, "right": 0      }
+      32: { "left": 0,     "right": 0      }
+      32: { "left": 0,     "right": 0      }
+      31: { "left": 0,     "right": 0      }
+      30: { "left": 0,     "right": -1.25  }
+      29: { "left": 0,     "right": -2.5   }
+      #...
+      2:  { "left": 0,     "right": -36.25 }
+      1:  { "left": 0,     "right": -37.5  }
+      0:  { "left": 0,     "right": None   }  # None = Mute
+
+  volume_level:
+    units: "dB"
+    steps:
+      38: 0
+      37: -1.25
+      #...
+      2:  -71.25
+      1:  -75.00
+      0:  -78.75

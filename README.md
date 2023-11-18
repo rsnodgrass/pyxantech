@@ -41,13 +41,13 @@ amp.set_volume(zone, 15)
 amp.set_source(zone, 1)
 ```
 
-For Xantech 8-zone amplifiers:
+For Xantech 8-zone amplifiers the following exmaple. In this case pyxantech is used to connect to an RS232 device exposed over the network (e.g. [IP2SL](https://github.com/rsnodgrass/virtual-ip2sl)):
 
 ```python
 from pyxantech import get_amp_controller
 
 zone = 12
-amp = get_amp_controller('xantech8', '/dev/ttyUSB0')
+amp = get_amp_controller('xantech8', 'socket://remote-host:4999/')
 
 amp.set_source(zone, 3) # select source 3
 ```
@@ -94,7 +94,7 @@ loop.run_until_complete(main(loop))
   [Dayton Audio DAX66](https://www.parts-express.com/dayton-audio-dax66-6-source-6-room-distributed-whole-house-audio-system-with-keypads-25-wpc--300-585)
   appear to have licensed or copied the serial interface from Xantech. Both Monoprice
   and Dayton Audio use a version of the Xantech multi-zone controller protocol.
-* Soundavo WS66i is an updated version of the Monoprice 10761 which includes 2 wireless streamers, IP/telnet based control, etc. It has not been tested with this, but should use the monoprice6 integration when RS232 controlled.
+* Soundavo WS66i is an updated version of the Monoprice 10761 which includes 2 wireless streamers, IP/telnet-based control, etc. It has not been tested with this, but should use the monoprice6 integration when RS232 controlled.
 
 #### Xantech High-Density Cable Models
 
@@ -115,7 +115,7 @@ The pinouts as documented in the Xantech MX88 manual:
 * [Protocol Definitions - Xantech / Monoprice / Sonance (reusable in other projects)](pyxantech/protocols)
 * [Hardware Specifications - Xantech / Monoprice / Sonance (reusable in other projects)](pyxantech/series)
 
-#@## Other
+#### Other
 
 * [Home Assistant integration](https://www.home-assistant.io/integrations/monoprice/)
 * [Monoprice RS232 serial protocol manual](doc/Monoprice-RS232-Manual.pdf)

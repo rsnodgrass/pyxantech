@@ -21,7 +21,6 @@ MINUTES = 300
 async def async_get_rs232_protocol(
     serial_port, config, serial_config, protocol_config, loop
 ):
-
     # ensure only a single, ordered command is sent to RS232 at a time (non-reentrant lock)
     def locked_method(method):
         @functools.wraps(method)
@@ -37,7 +36,7 @@ async def async_get_rs232_protocol(
         async def wrapper(self, *method_args, **method_kwargs):
             try:
                 await asyncio.wait_for(self._connected.wait(), self._timeout)
-            except:
+            except Exception:
                 LOG.debug(
                     f"Timeout sending data to {self._serial_port}, no connection!"
                 )
@@ -135,14 +134,14 @@ async def async_get_rs232_protocol(
                         # strip out any blank lines
                         result_lines = [value for value in result_lines if value != b""]
 
+                        if not result_lines:
+                            return ""
+
                         if len(result_lines) > 1:
                             LOG.debug(
                                 "Multiple response lines, ignore all but first: %s",
                                 result_lines,
                             )
-
-                        if len(result_lines) == 0:
-                            return ""
 
                         # NOTE: May want to catch decode failures to figure out when non-ASCII chars are returned (for instance DAX88)
                         result = result_lines[0].decode("ascii", errors="ignore")
