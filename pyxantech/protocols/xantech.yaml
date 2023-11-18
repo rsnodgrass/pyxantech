@@ -32,6 +32,21 @@
   command_eol: ""
   command_separator: "+"
 
+  format:
+    command:
+      format: "!{command}{eol}"
+      eol: ""
+      separator: '#'
+
+    query:
+      format: "?{command}{eol}"
+
+    response:
+      format: "{response}"
+      eol: "\r"
+      separator: '#'
+
+
   commands:
     zone_status:   '?{zone}ZD'
     zone_details:  '?{zone}ZD'
@@ -79,6 +94,24 @@
     disable_status_updates:   '!ZP0'
     set_activity_updates: '!ZA{activity_updates}'  # activity_updates:  1 = on; 0 = off
     set_status_updates:   '!ZP{status_updates}'   # status_updates:     1 = on; 0 = off
+
+  commands_v2:
+    power:
+        status:
+          command: '?{zone}PR'
+          response: '\?(?P<zone>\d+)PR(?P<power>[01])\+'
+        set:
+          command: "!{zone}PR{power}"
+        'on':
+          command: '!{zone}PR1'
+        'off':
+          command: '!{zone}PR0'
+        toggle:
+          command: '!{zone}PT'
+        all_zones_off:
+          command: '!AO'
+
+
 
   response_eol: "\r"
   response_separator: "#"
