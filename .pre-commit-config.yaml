@@ -10,17 +10,17 @@ repos:
     hooks:
     -   id: black
         args: [--config=pyproject.toml]
-#-   repo: https://github.com/hadialqattan/pycln
-#    rev: v2.4.0
-#    hooks:
-#    -   id: pycln
-#        args: [--config=pyproject.toml]
-#-   repo: https://github.com/pycqa/isort
-#    rev: 5.12.0
-#    hooks:
-#    -   id: isort
-#        files: "\\.(py)$"
-#        args: [--settings-path=pyproject.toml]
+-   repo: https://github.com/hadialqattan/pycln
+    rev: v2.4.0
+    hooks:
+    -   id: pycln
+        args: [--config=pyproject.toml]
+-   repo: https://github.com/pycqa/isort
+    rev: 5.12.0
+    hooks:
+    -   id: isort
+        files: "\\.(py)$"
+        args: [--settings-path=pyproject.toml]
 -   repo: https://github.com/dosisod/refurb
     rev: v1.24.0
     hooks:
