@@ -157,6 +157,7 @@
     mute:
       api:
         status:
+          description: 'Mute status'
           cmd: '?{zone}MU'
           msg: '\?(?P<zone>\d+)MU(?P<mute>[01])\+'
         set:
@@ -166,6 +167,7 @@
         'off':
           cmd: '!{zone}MU0'
         toggle:
+          description: 'Toggle Mute'
           cmd: '!{zone}MT'
 
     zone:
