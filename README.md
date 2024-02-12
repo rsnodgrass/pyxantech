@@ -100,6 +100,24 @@ loop.run_until_complete(main(loop))
 
 Some Xantech MX88/MX88ai models use high-density HD15 (or DE15) connectors for rear COM ports, thus requiring Xantech's "DB15 to DB9" adapter cable (PN 05913665). The front DB9 RS232 and USB COM ports cannot be used for device control on these models. Instead, use the rear COM ports which are already wired as a 'null modem' connection, so no use of null modem cable is required as the Transmit and Receive lines have already been interchanged.
 
+##### MX88 RS232 Control Cable (Xantech Part 05913665)
+
+Thanks to @skavan for figuring out the pinouts for the discontinued RS232 Control DB15 cable (PN 05913665)
+that is not listed correcly in the manual.
+
+| HDB15 Male | Function | DB9 Female | DB9 Color | Function | Notes |
+|:----------:|:--------:|:----------:| --------- | -------- | ----- |
+|     13      | Tx  |     2     | Brown     | Rx    | |
+|     12      | Rx  |     3     | White     | Tx    | |
+|     4      | DSR |       4     | Green     | DTR      | |
+|     6      | DTR |      6     | Red       | DSR      | |
+|     9      | GND |     5     | Yellow    | GND      | Ground (see also pin 11) |
+|     11      | GND |     5     | Yellow    | GND      | Ground (OPTIONAL) |
+
+See https://community.home-assistant.io/t/xantech-dayton-audio-sonance-multi-zone-amps/450908/80
+
+##### Expansion Port Cable (Xantech Part ???)
+
 The pinouts as documented in the Xantech MX88 manual:
 
 | HDB15 Male | Function | DB9 Female | DB9 Color | Function | Notes |
@@ -109,6 +127,8 @@ The pinouts as documented in the Xantech MX88 manual:
 |     4      | DSR |       4     | Green     | DTR      | |
 |     5      | GND |     5     | Yellow    | GND      | Ground |
 |     6      | DTR |      6     | Red       | DSR      | |
+
+
 
 ## See Also
 
