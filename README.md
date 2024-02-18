@@ -118,7 +118,7 @@ See https://community.home-assistant.io/t/xantech-dayton-audio-sonance-multi-zon
 
 ##### Expansion Port Cable (Xantech Part ???)
 
-The pinouts as documented in the Xantech MX88 manual:
+Pinouts as documented in the Xantech MX88 manual:
 
 | HDB15 Male | Function | DB9 Female | DB9 Color | Function | Notes |
 |:----------:|:--------:|:----------:| --------- | -------- | ----- |
@@ -127,8 +127,6 @@ The pinouts as documented in the Xantech MX88 manual:
 |     4      | DSR |       4     | Green     | DTR      | |
 |     5      | GND |     5     | Yellow    | GND      | Ground |
 |     6      | DTR |      6     | Red       | DSR      | |
-
-
 
 ## See Also
 
@@ -151,3 +149,4 @@ multi-zone amplifiers:
 * [AVS Forum: Monoprice 6](https://www.avsforum.com/forum/36-home-v-distribution/1506842-any-experience-monoprice-6-zone-home-audio-multizone-controller-23.html)
 * http://cocoontech.com/forums/topic/25893-monoprice-multi-zone-audio/
 * [Home Assistant: Monoprice 6](https://community.home-assistant.io/t/monoprice-whole-home-audio-controller-10761-success/19734/67)
+* [RS232 to USB cable](https://www.amazon.com/RS232-to-USB/dp/B0759HSLP1?tag=carreramfi-20)
