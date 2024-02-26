@@ -102,8 +102,7 @@ Some Xantech MX88/MX88ai models use high-density HD15 (or DE15) connectors for r
 
 ##### MX88 RS232 Control Cable (Xantech Part 05913665)
 
-Thanks to @skavan for figuring out the pinouts for the discontinued RS232 Control DB15 cable (PN 05913665)
-that is not listed correcly in the manual.
+Thanks to @skavan for figuring out the pinouts for the discontinued RS232 Control DB15 cable (PN 05913665) with incorrect pinouts listed in the Xantech manual. The following are the correct pinouts:
 
 | HDB15 Male | Function | DB9 Female | DB9 Color | Function | Notes |
 |:----------:|:--------:|:----------:| --------- | -------- | ----- |
