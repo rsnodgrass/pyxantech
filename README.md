@@ -116,6 +116,8 @@ that is not listed correcly in the manual.
 
 Example parts needed to build a custom Xantech MX88 style cable:
 
+* [USB to DB9 RS232 Cable](https://amzn.com/gp/product/B0753HBT12?tag=carreramfi-20&tracking_id=carreramfi-20)
+
 * [DB9 Female Connector with wires](https://amzn.com/dp/B0BG2BPVXV?tag=carreramfi-20&tracking_id=carreramfi-20) or [DB9 Female Connector](https://amzn.com/dp/B09L7K511Y?tag=carreramfi-20&tracking_id=carreramfi-20)
 
 * [Xantech Male DB15 Connector](https://amzn.com/dp/B07P6R8DRJ?tag=carreramfi-20&tracking_id=carreramfi-20)
