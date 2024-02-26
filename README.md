@@ -114,7 +114,13 @@ that is not listed correcly in the manual.
 |     9      | GND |     5     | Yellow    | GND      | Ground (see also pin 11) |
 |     11      | GND |     5     | Yellow    | GND      | Ground (OPTIONAL) |
 
-See https://community.home-assistant.io/t/xantech-dayton-audio-sonance-multi-zone-amps/450908/80
+Example parts needed to build a custom Xantech MX88 style cable:
+
+* [DB9 Female Connector with wires](https://amzn.com/dp/B0BG2BPVXV?tag=carreramfi-20&tracking_id=carreramfi-20) or [DB9 Female Connector](https://amzn.com/dp/B09L7K511Y?tag=carreramfi-20&tracking_id=carreramfi-20)
+
+* [Xantech Male DB15 Connector](https://amzn.com/dp/B07P6R8DRJ?tag=carreramfi-20&tracking_id=carreramfi-20)
+
+For help, [ask questions on the support forum](https://community.home-assistant.io/t/xantech-dayton-audio-sonance-multi-zone-amps/450908/80)
 
 ##### Expansion Port Cable (Xantech Part ???)
 
