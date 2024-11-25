@@ -135,6 +135,9 @@ Pinouts as documented in the Xantech MX88 manual:
 |     5      | GND |     5     | Yellow    | GND      | Ground |
 |     6      | DTR |      6     | Red       | DSR      | |
 
+This may be the Xantech Null Modem Cable PN 05913560.
+
+
 ## See Also
 
 * [Protocol Definitions - Xantech / Monoprice / Sonance (reusable in other projects)](pyxantech/protocols)
