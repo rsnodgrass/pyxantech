@@ -100,8 +100,7 @@
   protocol_definitions:
     - xantech
 
-  min_time_between_commands: 0.4
-
+  min_time_between_commands: 0.05
   zone_status_skip: 0
 
   rs232:

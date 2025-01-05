@@ -23,7 +23,7 @@
   max_volume: 38
 
   protocol: dayton
-  min_time_between_commands: 0.4
+  min_time_between_commands: 0.05
 
   zone_status_skip: 0
 

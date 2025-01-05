@@ -1,8 +1,6 @@
 - protocol: xantech
   name: "Xantech 8-Zone Matrix Protocol"
 
-
-
   # default baud rate (see series yaml for overrides per model)
   connection:
     rs232:
@@ -10,8 +8,6 @@
       data: 8
       parity: N
       stop: 1
-
-
 
   limits:
     volume:
@@ -97,8 +93,7 @@
     set_status_updates:   '!ZP{status_updates}'   # status_updates:     1 = on; 0 = off
 
   api_settings:
-    min_time_between_commands: 0.4
-
+    min_time_between_commands: 0.05 # usually set by the manufacturer
 
   api_vars:
     zone:
