@@ -35,7 +35,7 @@
   max_volume: 60
 
   protocol: sonance6
-  min_time_between_commands: 0.4
+  min_time_between_commands: 0.05
 
   rs232:
     baudrate: 19200

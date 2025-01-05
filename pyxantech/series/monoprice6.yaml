@@ -30,7 +30,7 @@
   max_volume: 38
 
   protocol: monoprice
-  min_time_between_commands: 0.4
+  min_time_between_commands: 0.05
 
   rs232:
     baudrate: 9600
