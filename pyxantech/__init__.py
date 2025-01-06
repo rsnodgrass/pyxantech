@@ -22,12 +22,12 @@ from .protocol import (
 
 LOG = logging.getLogger(__name__)
 
-MONOPRICE6 = "monoprice6"  # hardcoded for backwards compatibility
+MONOPRICE6 = 'monoprice6'  # hardcoded for backwards compatibility
 BAUD_RATES = [9600, 14400, 19200, 38400, 57600, 115200]
 
 SUPPORTED_AMP_TYPES = DEVICE_CONFIG.keys()
 
-CONF_SERIAL_CONFIG = "rs232"
+CONF_SERIAL_CONFIG = 'rs232'
 
 
 def get_device_config(amp_type, key, log_missing=True):
@@ -35,7 +35,7 @@ def get_device_config(amp_type, key, log_missing=True):
 
 
 def get_protocol_config(amp_type, key):
-    protocol = get_device_config(amp_type, "protocol")
+    protocol = get_device_config(amp_type, 'protocol')
     return PROTOCOL_CONFIG[protocol].get(key)
 
 
@@ -47,13 +47,13 @@ class ZoneStatus:
         #       bass     # 0 -> -7,  14-> +7
         #       balance  # 0 - left, 10 - center, 20 right
         self.dict = status
-        self.retype_bools(["power", "mute", "paged", "linked", "pa"])
-        self.retype_ints(["zone", "volume", "treble", "bass", "balance", "source"])
+        self.retype_bools(['power', 'mute', 'paged', 'linked', 'pa'])
+        self.retype_ints(['zone', 'volume', 'treble', 'bass', 'balance', 'source'])
 
     def retype_bools(self, keys):
         for key in keys:
             if key in self.dict:
-                self.dict[key] = self.dict[key] in ("1", "01")
+                self.dict[key] = self.dict[key] in ('1', '01')
 
     def retype_ints(self, keys):
         for key in keys:
@@ -65,9 +65,9 @@ class ZoneStatus:
         if not string:
             return None
 
-        protocol_type = get_device_config(amp_type, "protocol")
-        pattern = RS232_RESPONSE_PATTERNS[protocol_type].get("zone_status")
-        status_translation = get_protocol_config(amp_type, "status_translation")
+        protocol_type = get_device_config(amp_type, 'protocol')
+        pattern = RS232_RESPONSE_PATTERNS[protocol_type].get('zone_status')
+        status_translation = get_protocol_config(amp_type, 'status_translation')
         match = re.search(pattern, string)
         match_dict = match.groupdict()
 
@@ -167,74 +167,74 @@ def _command(amp_type: str, format_code: str, args={}):
     cmd_eol = get_protocol_config(amp_type, CONF_COMMAND_EOL)
     cmd_separator = get_protocol_config(amp_type, CONF_COMMAND_SEPARATOR)
 
-    rs232_commands = get_protocol_config(amp_type, "commands")
+    rs232_commands = get_protocol_config(amp_type, 'commands')
     command = rs232_commands.get(format_code) + cmd_separator + cmd_eol
 
-    return command.format(**args).encode("ascii")
+    return command.format(**args).encode('ascii')  # noqa: FURB184
 
 
 def _zone_status_cmd(amp_type, zone: int) -> bytes:
-    assert zone in get_device_config(amp_type, "zones")
-    return _command(amp_type, "zone_status", args={"zone": zone})
+    assert zone in get_device_config(amp_type, 'zones')
+    return _command(amp_type, 'zone_status', args={'zone': zone})
 
 
 def _set_power_cmd(amp_type, zone: int, power: bool) -> bytes:
-    assert zone in get_device_config(amp_type, "zones")
+    assert zone in get_device_config(amp_type, 'zones')
     if power:
-        LOG.info(f"Powering on {amp_type} zone {zone}")
-        return _command(amp_type, "power_on", {"zone": zone})
+        LOG.info(f'Powering on {amp_type} zone {zone}')
+        return _command(amp_type, 'power_on', {'zone': zone})
     else:
-        LOG.info(f"Powering off {amp_type} zone {zone}")
-        return _command(amp_type, "power_off", {"zone": zone})
+        LOG.info(f'Powering off {amp_type} zone {zone}')
+        return _command(amp_type, 'power_off', {'zone': zone})
 
 
 def _set_mute_cmd(amp_type, zone: int, mute: bool) -> bytes:
-    assert zone in get_device_config(amp_type, "zones")
+    assert zone in get_device_config(amp_type, 'zones')
     if mute:
-        LOG.info(f"Muting {amp_type} zone {zone}")
-        return _command(amp_type, "mute_on", {"zone": zone})
+        LOG.info(f'Muting {amp_type} zone {zone}')
+        return _command(amp_type, 'mute_on', {'zone': zone})
     else:
-        LOG.info(f"Turning off mute {amp_type} zone {zone}")
-        return _command(amp_type, "mute_off", {"zone": zone})
+        LOG.info(f'Turning off mute {amp_type} zone {zone}')
+        return _command(amp_type, 'mute_off', {'zone': zone})
 
 
 def _set_volume_cmd(amp_type, zone: int, volume: int) -> bytes:
-    assert zone in get_device_config(amp_type, "zones")
-    max_volume = get_device_config(amp_type, "max_volume")
+    assert zone in get_device_config(amp_type, 'zones')
+    max_volume = get_device_config(amp_type, 'max_volume')
     volume = int(max(0, min(volume, max_volume)))
-    LOG.info(f"Setting volume {amp_type} zone {zone} to {volume}")
-    return _command(amp_type, "set_volume", args={"zone": zone, "volume": volume})
+    LOG.info(f'Setting volume {amp_type} zone {zone} to {volume}')
+    return _command(amp_type, 'set_volume', args={'zone': zone, 'volume': volume})
 
 
 def _set_treble_cmd(amp_type, zone: int, treble: int) -> bytes:
-    assert zone in get_device_config(amp_type, "zones")
-    max_treble = get_device_config(amp_type, "max_treble")
+    assert zone in get_device_config(amp_type, 'zones')
+    max_treble = get_device_config(amp_type, 'max_treble')
     treble = int(max(0, min(treble, max_treble)))
-    LOG.info(f"Setting treble {amp_type} zone {zone} to {treble}")
-    return _command(amp_type, "set_treble", args={"zone": zone, "treble": treble})
+    LOG.info(f'Setting treble {amp_type} zone {zone} to {treble}')
+    return _command(amp_type, 'set_treble', args={'zone': zone, 'treble': treble})
 
 
 def _set_bass_cmd(amp_type, zone: int, bass: int) -> bytes:
-    assert zone in get_device_config(amp_type, "zones")
-    max_bass = get_device_config(amp_type, "max_bass")
+    assert zone in get_device_config(amp_type, 'zones')
+    max_bass = get_device_config(amp_type, 'max_bass')
     bass = int(max(0, min(bass, max_bass)))
-    LOG.info(f"Setting bass {amp_type} zone {zone} to {bass}")
-    return _command(amp_type, "set_bass", args={"zone": zone, "bass": bass})
+    LOG.info(f'Setting bass {amp_type} zone {zone} to {bass}')
+    return _command(amp_type, 'set_bass', args={'zone': zone, 'bass': bass})
 
 
 def _set_balance_cmd(amp_type, zone: int, balance: int) -> bytes:
-    assert zone in get_device_config(amp_type, "zones")
-    max_balance = get_device_config(amp_type, "max_balance")
+    assert zone in get_device_config(amp_type, 'zones')
+    max_balance = get_device_config(amp_type, 'max_balance')
     balance = max(0, min(balance, max_balance))
-    LOG.info(f"Setting balance {amp_type} zone {zone} to {balance}")
-    return _command(amp_type, "set_balance", args={"zone": zone, "balance": balance})
+    LOG.info(f'Setting balance {amp_type} zone {zone} to {balance}')
+    return _command(amp_type, 'set_balance', args={'zone': zone, 'balance': balance})
 
 
 def _set_source_cmd(amp_type, zone: int, source: int) -> bytes:
-    assert zone in get_device_config(amp_type, "zones")
-    assert source in get_device_config(amp_type, "sources")
-    LOG.info(f"Setting source {amp_type} zone {zone} to {source}")
-    return _command(amp_type, "set_source", args={"zone": zone, "source": source})
+    assert zone in get_device_config(amp_type, 'zones')
+    assert source in get_device_config(amp_type, 'sources')
+    LOG.info(f'Setting source {amp_type} zone {zone} to {source}')
+    return _command(amp_type, 'set_source', args={'zone': zone, 'source': source})
 
 
 def get_amp_controller(amp_type: str, port_url, serial_config_overrides={}):
@@ -269,7 +269,7 @@ def get_amp_controller(amp_type: str, port_url, serial_config_overrides={}):
             serial_config = get_device_config(amp_type, CONF_SERIAL_CONFIG)
             if serial_config_overrides:
                 LOG.debug(
-                    f"Overiding serial port config for {port_url}: {serial_config_overrides}"
+                    f'Overiding serial port config for {port_url}: {serial_config_overrides}'
                 )
                 serial_config.update(serial_config_overrides)
 
@@ -286,7 +286,7 @@ def get_amp_controller(amp_type: str, port_url, serial_config_overrides={}):
             self._port.reset_input_buffer()
 
             # print(f"Sending:  {request}")
-            LOG.debug(f"Sending:  {request}")
+            LOG.debug(f'Sending:  {request}')
 
             # send
             self._port.write(request)
@@ -304,33 +304,33 @@ def get_amp_controller(amp_type: str, port_url, serial_config_overrides={}):
                     ret = bytes(result)
                     LOG.info(result)
                     raise serial.SerialTimeoutException(
-                        "Connection timed out! Last received bytes {}".format(
+                        'Connection timed out! Last received bytes {}'.format(
                             [hex(a) for a in result]
                         )
                     )
                 result += c
                 if len(result) > skip and result[-len_eol:] == response_eol.encode(
-                    "ascii"
+                    'ascii'
                 ):
                     break
 
             ret = bytes(result)
             LOG.debug('Received "%s"', ret)
             #            print(f"Received: {ret}")
-            return ret.decode("ascii")
+            return ret.decode('ascii')
 
         @synchronized
         def _zone_status_manual(self, zone: int):
             status = {}
-            responses = get_protocol_config(self._amp_type, "responses")
+            responses = get_protocol_config(self._amp_type, 'responses')
 
             # send all the commands necessary to restore the various status settings to the amp
-            for command in get_protocol_config(amp_type, "zone_status_commands"):
+            for command in get_protocol_config(amp_type, 'zone_status_commands'):
                 pattern = responses[command]
                 result = self._send_request(_zone_status_cmd(self._amp_type, command))
 
                 # parse the result into status dictionary
-                LOG.info(f"Received zone stats {result}, matching to {pattern}")
+                LOG.info(f'Received zone stats {result}, matching to {pattern}')
                 match = re.search(pattern, result)
                 if match:
                     status.copy(match.groupdict())
@@ -351,11 +351,11 @@ def get_amp_controller(amp_type: str, port_url, serial_config_overrides={}):
             #    return self._zone_status_manual(zone)
 
             skip = (
-                get_device_config(amp_type, "zone_status_skip", log_missing=False) or 0
+                get_device_config(amp_type, 'zone_status_skip', log_missing=False) or 0
             )
             response = self._send_request(_zone_status_cmd(self._amp_type, zone), skip)
             status = ZoneStatus.from_string(self._amp_type, response)
-            LOG.debug("Status: %s (string: %s)", status, response)
+            LOG.debug('Status: %s (string: %s)', status, response)
             if status:
                 return status.dict
             return None
@@ -390,23 +390,23 @@ def get_amp_controller(amp_type: str, port_url, serial_config_overrides={}):
 
         @synchronized
         def all_off(self):
-            self._send_request(_command(amp_type, "all_zones_off"))
+            self._send_request(_command(amp_type, 'all_zones_off'))
 
         @synchronized
         def restore_zone(self, status: dict):
-            zone = status["zone"]
+            zone = status['zone']
             amp_type = self._amp_type
-            success = get_protocol_config(amp_type, "restore_success")
+            success = get_protocol_config(amp_type, 'restore_success')
             # LOG.debug(f"Restoring amp {amp_type} zone {zone} from {status}")
 
             # FIXME: fetch current status first and only call those that changed
 
             # send all the commands necessary to restore the various status settings to the amp
-            restore_commands = get_protocol_config(amp_type, "restore_zone")
+            restore_commands = get_protocol_config(amp_type, 'restore_zone')
             for command in restore_commands:
                 result = self._send_request(command(amp_type, zone, status))
                 if result != success:
-                    LOG.warning(f"Failed restoring zone {zone} command {command}")
+                    LOG.warning(f'Failed restoring zone {zone} command {command}')
                 time.sleep(0.1)  # pause 100 ms
 
     return AmpControlSync(amp_type, port_url, serial_config_overrides)
@@ -456,15 +456,15 @@ async def async_get_amp_controller(
         @locked_coro
         async def _zone_status_manual(self, zone: int):
             status = {}
-            responses = get_protocol_config(amp_type, "responses")
+            responses = get_protocol_config(amp_type, 'responses')
 
             # send all the commands necessary to restore the various status settings to the amp
-            for command in get_protocol_config(amp_type, "zone_status_commands"):
+            for command in get_protocol_config(amp_type, 'zone_status_commands'):
                 pattern = responses[command]
                 result = await self._protocol._send(_command(amp_type, command))
 
                 # parse the result into status dictionary
-                LOG.info(f"Received zone stats {result}, matching to {pattern}")
+                LOG.info(f'Received zone stats {result}, matching to {pattern}')
                 match = re.search(pattern, result)
                 if match:
                     status.copy(match.groupdict())
@@ -487,11 +487,11 @@ async def async_get_amp_controller(
             #    return await self._zone_status_manual(zone)
 
             cmd = _zone_status_cmd(self._amp_type, zone)
-            skip = get_device_config(amp_type, "zone_status_skip") or 0
+            skip = get_device_config(amp_type, 'zone_status_skip') or 0
             status_string = await self._protocol.send(cmd, skip=skip)
 
             status = ZoneStatus.from_string(self._amp_type, status_string)
-            LOG.debug("Status: %s (string: %s)", status, status_string)
+            LOG.debug('Status: %s (string: %s)', status, status_string)
             if status:
                 return status.dict
             return None
@@ -526,28 +526,28 @@ async def async_get_amp_controller(
 
         @locked_coro
         async def all_off(self):
-            await self._protocol.send(_command(self._amp_type, "all_zones_off"))
+            await self._protocol.send(_command(self._amp_type, 'all_zones_off'))
 
         @locked_coro
         async def restore_zone(self, status: dict):
             set_commands = {
-                "power": _set_power_cmd,
-                "mute": _set_mute_cmd,
-                "volume": _set_volume_cmd,
-                "treble": _set_treble_cmd,
-                "bass": _set_bass_cmd,
-                "balance": _set_balance_cmd,
-                "source": _set_source_cmd,
+                'power': _set_power_cmd,
+                'mute': _set_mute_cmd,
+                'volume': _set_volume_cmd,
+                'treble': _set_treble_cmd,
+                'bass': _set_bass_cmd,
+                'balance': _set_balance_cmd,
+                'source': _set_source_cmd,
             }
-            zone = status["zone"]
+            zone = status['zone']
             amp_type = self._amp_type
-            extras = get_protocol_config(amp_type, "extras")
+            extras = get_protocol_config(amp_type, 'extras')
 
-            success = extras.get("restore_success")
+            success = extras.get('restore_success')
             # LOG.debug(f"Restoring amp {amp_type} zone {zone} from {status}")
 
             # send all the commands necessary to restore the various status settings to the amp
-            restore_commands = extras.get("restore_zone", [])
+            restore_commands = extras.get('restore_zone', [])
             if not restore_commands:
                 LOG.info(
                     f"restore_zone() requested, but amp type {amp_type} does not support 'restore_zone' command for zone {zone}"
@@ -559,10 +559,10 @@ async def async_get_amp_controller(
                     set_commands[command](amp_type, zone, status[command])
                 )
                 if result != success:
-                    LOG.warning(f"Failed restoring zone {zone} command {command}")
+                    LOG.warning(f'Failed restoring zone {zone} command {command}')
                 await asyncio.sleep(0.1)  # pause 100 ms
 
-    protocol = get_device_config(amp_type, "protocol")
+    protocol = get_device_config(amp_type, 'protocol')
     protocol_config = PROTOCOL_CONFIG[protocol]
 
     # allow overriding the default serial port configuration, in case the user has changed
@@ -570,11 +570,11 @@ async def async_get_amp_controller(
     serial_config = get_device_config(amp_type, CONF_SERIAL_CONFIG)
     if serial_config_overrides:
         LOG.debug(
-            f"Overiding serial port config for {port_url}: {serial_config_overrides}"
+            f'Overiding serial port config for {port_url}: {serial_config_overrides}'
         )
         serial_config.update(serial_config_overrides)
 
-    LOG.debug(f"Loading amp {amp_type}/{protocol}: {serial_config}, {protocol_config}")
+    LOG.debug(f'Loading amp {amp_type}/{protocol}: {serial_config}, {protocol_config}')
     protocol = await async_get_rs232_protocol(
         port_url, DEVICE_CONFIG[amp_type], serial_config, protocol_config, loop
     )

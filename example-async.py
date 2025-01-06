@@ -17,29 +17,29 @@ LOG.setLevel(logging.DEBUG)
 
 handler = logging.StreamHandler(sys.stdout)
 handler.setLevel(logging.DEBUG)
-formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 handler.setFormatter(formatter)
 LOG.addHandler(handler)
 ####----------------------------------------
 
 parser = argparse.ArgumentParser(
-    description="Xantech RS232 client example (asynchronous)"
+    description='Xantech RS232 client example (asynchronous)'
 )
 parser.add_argument(
-    "--tty", help="/dev/tty to use (e.g. /dev/tty.usbserial-A501SGSZ)", required=True
+    '--tty', help='/dev/tty to use (e.g. /dev/tty.usbserial-A501SGSZ)', required=True
 )
 parser.add_argument(
-    "--model", default="xantech8", help=f"model (e.g. xantech8, monoprice6)"
+    '--model', default='xantech8', help=f'model (e.g. xantech8, monoprice6)'
 )
 parser.add_argument(
-    "--baud",
+    '--baud',
     type=int,
     default=9600,
-    help="baud rate (9600, 14400, 19200, 38400, 57600, 115200)",
+    help='baud rate (9600, 14400, 19200, 38400, 57600, 115200)',
 )
 args = parser.parse_args()
 
-serial_config = {"baudrate": args.baud}
+serial_config = {'baudrate': args.baud}
 
 
 async def main():
@@ -65,7 +65,7 @@ async def main():
         await amp.set_mute(zone, False)
 
         status = await amp.zone_status(zone)
-        print(f"Zone {zone} status: {status}")
+        print(f'Zone {zone} status: {status}')
 
     # ensure all zones are turned off
     #    for zone in range(1, 8):
