@@ -18,6 +18,10 @@ The Monoprice version was originally created by Egor Tsinko for use with [Home-A
 
 Visit the [community support discussion thread](https://community.home-assistant.io/t/xantech-dayton-audio-sonance-multi-zone-amps/450908) for issues with this library. The developers are just volunteers from the community and do not provide any support, so it is best to ask the entire community for help or questions. There is no support or dedicated development for this integration, thus GitHub issue tracking has been turned off. Please submit Pull Requests with bug fixes!
 
+## Roadmap
+
+* **2025 Q3**: reduce the min interval between commands from 50ms to 10ms (was originally 400ms) if there are no bug reports of the 50ms drop
+
 ## Usage
 
 For Monoprice and Dayton Audio 6-zone amplifiers:
