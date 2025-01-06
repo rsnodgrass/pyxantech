@@ -8,22 +8,22 @@ import argparse
 
 from pyxantech import get_amp_controller
 
-parser = argparse.ArgumentParser(description="Xantech RS232 client example")
+parser = argparse.ArgumentParser(description='Xantech RS232 client example')
 parser.add_argument(
-    "--tty", help="/dev/tty to use (e.g. /dev/tty.usbserial-A501SGSZ)", required=True
+    '--tty', help='/dev/tty to use (e.g. /dev/tty.usbserial-A501SGSZ)', required=True
 )
 parser.add_argument(
-    "--model", default="xantech8", help=f"model (e.g. xantech8, monoprice6)"
+    '--model', default='xantech8', help=f'model (e.g. xantech8, monoprice6)'
 )
 parser.add_argument(
-    "--baud",
+    '--baud',
     type=int,
     default=9600,
-    help="baud rate (9600, 14400, 19200, 38400, 57600, 115200)",
+    help='baud rate (9600, 14400, 19200, 38400, 57600, 115200)',
 )
 args = parser.parse_args()
 
-serial_config = {"baudrate": args.baud}
+serial_config = {'baudrate': args.baud}
 
 zone = 1
 amp = get_amp_controller(args.model, args.tty, serial_config_overrides=serial_config)
@@ -32,7 +32,7 @@ amp = get_amp_controller(args.model, args.tty, serial_config_overrides=serial_co
 zone_status = {}
 for zone in range(1, 9):
     zone_status[zone] = amp.zone_status(zone)  # save current status for all zones
-    print(f"Zone {zone} status: {zone_status[zone]}")
+    print(f'Zone {zone} status: {zone_status[zone]}')
 
 amp.all_off()
 exit
