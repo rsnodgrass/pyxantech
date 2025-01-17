@@ -396,13 +396,14 @@ def get_amp_controller(amp_type: str, port_url, serial_config_overrides={}):
         def restore_zone(self, status: dict):
             zone = status['zone']
             amp_type = self._amp_type
-            success = get_protocol_config(amp_type, 'restore_success')
-            # LOG.debug(f"Restoring amp {amp_type} zone {zone} from {status}")
+            extras = get_protocol_config(amp_type, 'extras')
+            success = extras.get('restore_success')
+            LOG.debug(f'Restoring amp {amp_type} zone {zone} from {status}')
 
             # FIXME: fetch current status first and only call those that changed
 
             # send all the commands necessary to restore the various status settings to the amp
-            restore_commands = get_protocol_config(amp_type, 'restore_zone')
+            restore_commands = extras.get('restore_zone')
             for command in restore_commands:
                 result = self._send_request(command(amp_type, zone, status))
                 if result != success:
