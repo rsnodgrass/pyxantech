@@ -1,6 +1,4 @@
-
-
-- protocol: sonance6
+- protocol: sonance
   name: "Sonance 6-Zone Amp Protocol"
 
   connection:
@@ -46,8 +44,8 @@
 
     mute_status:   ':M{zone}?'
     set_mute:      ':M{zone}{mute}'
-    mute_on:       ':M{zone}M1'
-    mute_off:      ':M{zone}M0'
+    mute_on:       ':M{zone}1'
+    mute_off:      ':M{zone}0'
 
     volume_status: ':V{zone}?'
     set_volume:    ':V{zone}{volume:02}'
@@ -80,6 +78,7 @@
 
   responses:
     power_status:   '\+Z(?P<zone>\d+)(?P<power>[01])'
+    zone_status:    '\+Z(?P<zone>\d+)(?P<power>[01])'
     source_status:  '\+S(?P<zone>\d+)(?P<source>[1-4])'
     volume_status:  '\+V(?P<zone>\d+)(?P<volume>\d+)'
     mute_status:    '\+M(?P<zone>\d+)(?P<mute>[01])'
