@@ -34,8 +34,11 @@
   max_treble: 8
   max_volume: 60
 
-  protocol: sonance6
+  protocol: sonance
+  protocol_definitions:
+    - sonance
   min_time_between_commands: 0.05
+  zone_status_skip: 0
 
   rs232:
     baudrate: 19200
