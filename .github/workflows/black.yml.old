@@ -1,3 +1,5 @@
+# DO NOT ENABLE while brunette is setup in .pre-commit-config.yml
+
 name: Lint
 
 on: [push, pull_request]
