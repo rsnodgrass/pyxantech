@@ -13,7 +13,7 @@ parser.add_argument(
     '--tty', help='/dev/tty to use (e.g. /dev/tty.usbserial-A501SGSZ)', required=True
 )
 parser.add_argument(
-    '--model', default='xantech8', help=f'model (e.g. xantech8, monoprice6)'
+    '--model', default='xantech8', help='model (e.g. xantech8, monoprice6)'
 )
 parser.add_argument(
     '--baud',

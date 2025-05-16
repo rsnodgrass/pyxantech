@@ -1,4 +1,5 @@
-""" Read the configuration for supported devices """
+"""Read the configuration for supported devices"""
+
 import logging
 import os
 import re
