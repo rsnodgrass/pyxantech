@@ -4,7 +4,6 @@ import functools
 import time
 
 from ratelimit import limits
-from serial_asyncio import create_serial_connection
 
 LOG = logging.getLogger(__name__)
 
@@ -164,6 +163,17 @@ async def async_get_rs232_protocol(
         RS232ControlProtocol, serial_port, config, serial_config, protocol_config, loop
     )
     LOG.info(f'Creating RS232 connection to {serial_port}: {serial_config}')
+
+    # defer import to avoid blocking import_module call in event loop
+    def _import_serial_asyncio():
+        from serial_asyncio import create_serial_connection
+
+        return create_serial_connection
+
+    # run the potentially blocking import in executor
+    create_serial_connection = await loop.run_in_executor(None, _import_serial_asyncio)
+
+    # now create the connection normally with the imported function
     _, protocol = await create_serial_connection(
         loop, factory, serial_port, **serial_config
     )
