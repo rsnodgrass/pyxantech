@@ -292,7 +292,7 @@ def get_amp_controller(amp_type: str, port_url, serial_config_overrides={}):
             self._port.write(request)
             self._port.flush()
 
-            response_eol = get_protocol_config(amp_type, CONF_RESPONSE_EOL)
+            response_eol = get_protocol_config(self._amp_type, CONF_RESPONSE_EOL)
             len_eol = len(response_eol)
 
             # receive
@@ -315,9 +315,24 @@ def get_amp_controller(amp_type: str, port_url, serial_config_overrides={}):
                     break
 
             ret = bytes(result)
-            LOG.debug('Received "%s"', ret)
-            #            print(f"Received: {ret}")
-            return ret.decode('ascii')
+            LOG.debug("RX raw bytes: %r", ret)
+            text = ret.decode("ascii", "ignore")
+            LOG.debug("RX text     : %s", repr(text))
+
+            # If we only captured the echo (?xx), grab another line
+            if text.startswith("?") and ">" not in text:
+                more = self._port.read_until(b"\n", 1024) or b""
+                LOG.debug("RX more     : %r", more)
+                text += more.decode("ascii", "ignore")
+
+            # Keep only the last complete frame that starts with '>'
+            j = text.rfind(">")
+            if j != -1:
+                text = text[j:]
+            # Strip leading '#' and surrounding whitespace/CR/LF
+            text = text.lstrip("#").strip()
+            LOG.debug("RX selected : %s", repr(text))
+            return text
 
         @synchronized
         def _zone_status_manual(self, zone: int):

@@ -1,0 +1,65 @@
+- series: monoprice6
+  name: "Monoprice 6-Zone Amp"
+
+  supported:
+    - manufacturer: "Daytona Audio"
+      model: "DAX66"
+
+  features:
+    zones: 6
+    sources: 6
+
+  # FIXME: switch code to features
+  num_zones: 6
+  num_sources: 6
+  max_amps: 3
+
+  # FIXME: load these limits from protocol
+  max_balance: 20
+  max_bass: 14
+  max_treble: 14
+  max_volume: 38
+
+  protocol: dax66
+  min_time_between_commands: 0.05
+
+  zone_status_skip: 1
+
+  rs232:
+    baudrate: 9600
+    bytesize: 8
+    parity: 'N'
+    stopbits: 1
+    timeout: 1.0
+    write_timeout: 1.0
+
+  hardware_volume_steps: 38
+
+  sources:
+    1: "Source 1"
+    2: "Source 2"
+    3: "Source 3"
+    4: "Source 4"
+    5: "Source 5"
+    6: "Source 6"
+
+  # technically zone = {amp_number}{zone_num_within_amp_1-6} (e.g. 11 = amp number 1, zone 1)
+  zones:
+    11: "Zone 1"          # main amp 1    (e.g. 15 = amp 1, zone 5)
+    12: "Zone 2"
+    13: "Zone 3"
+    14: "Zone 4"
+    15: "Zone 5"
+    16: "Zone 6"
+    21: "Amp 2, Zone 1"   # amp 2         (e.g. 21 = amp 2, zone 1)
+    22: "Amp 2, Zone 2"
+    23: "Amp 2, Zone 3"
+    24: "Amp 2, Zone 4"
+    25: "Amp 2, Zone 5"
+    26: "Amp 2, Zone 6"
+    31: "Amp 3, Zone 1"   # amp 3         (e.g. 32 = amp 3, zone 2)
+    32: "Amp 3, Zone 2"
+    33: "Amp 3, Zone 3"
+    34: "Amp 3, Zone 4"
+    35: "Amp 3, Zone 5"
+    36: "Amp 3, Zone 6"
