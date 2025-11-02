@@ -23,6 +23,8 @@
   protocol: dax66
   min_time_between_commands: 0.05
 
+  zone_status_skip: 1
+
   rs232:
     baudrate: 9600
     bytesize: 8

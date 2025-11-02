@@ -31,20 +31,19 @@
   format:
     command:
       format: "<{command}{eol}"
-      eol: ""
-      separator: '#'
-
+      eol: ""              # keep empty; the global command_eol will add CR
+      separator: ""        # <<< do NOT insert '#'
     query:
       format: "?{command}{eol}"
-
     response:
       format: ">{response}"
-      eol: "\r"
-      separator: '#'
+      eol: "\n"            # <<< read until LF to consume the device's \r\r\n
+      separator: ""        # <<< don't expect a '#'
 
-  response_eol: "\r"
-  command_eol: "\r"
-  command_separator: ""
+  # Global line endings
+  response_eol: "\n"       # <<< critical: consume full \r\r\n line
+  command_eol:  "\r"       # DAX66 wants CR on send
+  command_separator: ""    # no '#'
 
   commands:
     zone_status:   '?{zone}'
@@ -65,7 +64,7 @@
 
 
   responses:
-    zone_status: '^#?> (?P<zone>\d{2})(?P<pa>\d{2})(?P<power>[01]{2})(?P<mute>[01]{2})(?P<do_not_disturb>[01]{2})(?P<volume>\d{2})(?P<treble>\d{2})(?P<bass>\d{2})(?P<balance>\d{2})(?P<source>\d{2})(?P<keypad>\d{2})\r?$'
+    zone_status: '#?>\s*(?P<zone>\d{2})(?P<pa>\d{2})(?P<power>[01]{2})(?P<mute>[01]{2})(?P<do_not_disturb>[01]{2})(?P<volume>\d{2})(?P<treble>\d{2})(?P<bass>\d{2})(?P<balance>\d{2})(?P<source>\d{2})(?P<keypad>\d{2})\s*$'
 
   extras:
     restore_zone:    [ 'set_power', 'set_source', 'set_volume', 'set_mute', 'set_bass', 'set_balance', 'set_treble' ]
