@@ -1,19 +1,32 @@
+"""Test utilities for pyxantech tests."""
+
+from __future__ import annotations
+
 import os
 import pty
 import threading
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 
-def create_dummy_port(responses):
-    def listener(port):
-        # continuously listen to commands on the master device
-        while 1:
+def create_dummy_port(responses: dict[bytes, bytes]) -> str:
+    """Create a pseudo-terminal that simulates serial port responses.
+
+    Args:
+        responses: Dictionary mapping request bytes to response bytes.
+
+    Returns:
+        Path to the slave pseudo-terminal device.
+    """
+
+    def listener(port: int) -> None:
+        while True:
             res = b''
             while not res.endswith(b'\r'):
-                # keep reading one byte at a time until we have a full line
                 res += os.read(port, 1)
-            print('command: %s' % res)
 
-            # write back the response
             if res in responses:
                 resp = responses[res]
                 del responses[res]
