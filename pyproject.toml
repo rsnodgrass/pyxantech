@@ -30,20 +30,20 @@ dependencies = [
     'ratelimit>=2.2.1',
 ]
 
-[project.optional-dependencies]
-dev = [
-    'pytest>=8.0',
-    'pytest-cov>=4.0',
-    'pytest-asyncio>=0.23',
-    'mypy>=1.8',
-    'ruff>=0.3',
-    'types-PyYAML',
-]
-
 [project.urls]
 Homepage = 'https://github.com/rsnodgrass/pyxantech'
 Repository = 'https://github.com/rsnodgrass/pyxantech'
 Issues = 'https://github.com/rsnodgrass/pyxantech/issues'
+
+[dependency-groups]
+dev = [
+    'pytest>=9.0',
+    'pytest-cov>=7.0',
+    'pytest-asyncio>=1.0',
+    'mypy>=1.8',
+    'ruff>=0.3',
+    'types-PyYAML',
+]
 
 [tool.setuptools.packages.find]
 where = ['.']
@@ -82,7 +82,7 @@ warn_unused_ignores = true
 show_error_codes = true
 
 [[tool.mypy.overrides]]
-module = ['serial.*', 'serial_asyncio.*']
+module = ['serial.*', 'serial_asyncio.*', 'ratelimit.*']
 ignore_missing_imports = true
 
 [tool.ruff]
@@ -111,10 +111,3 @@ all = true
 python_version = '3.12'
 quiet = true
 ignore = []
-
-[dependency-groups]
-dev = [
-    "pytest>=9.0.2",
-    "pytest-asyncio>=1.3.0",
-    "pytest-cov>=7.0.0",
-]

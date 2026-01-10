@@ -93,11 +93,14 @@ class TestZoneStatusParsing:
         """Parse valid Monoprice zone status response.
 
         Format: #>zone(2)+power(2)+source(2)+mute(2)+dnd(1)+volume(2)+treble(2)+bass(2)+balance(2)+unknown(2)+keypad(2)
-        Example: #>11 01 04 00 0 13 11 12 10 06 01
-                    z  pw sr mu d vo tr ba bl uk kp
+        Total: 21 characters after #>
+
+        Example breakdown:
+        #>11 01 04 00 0 13 11 12 10 06 01
+           z  pw sr mu d vo tr ba bl uk kp
         """
         # zone=11, power=01(on), source=04, mute=00(off), dnd=0, vol=13, treble=11, bass=12, bal=10, unk=06, keypad=01
-        response = '\r\n#>1101040001311121006011\r\n#'
+        response = '\r\n#>110104000131112100601\r\n#'
         status = ZoneStatus.from_string('monoprice6', response)
 
         assert status is not None
@@ -117,18 +120,18 @@ class TestZoneStatusMonopricePatterns:
 
     Monoprice zone status format:
     #>zone(2)+power(2)+source(2)+mute(2)+dnd(1)+volume(2)+treble(2)+bass(2)+balance(2)+unknown(2)+keypad(2)
-    Total: 23 digits after #>
+    Total: 21 characters after #>
     """
 
     @pytest.mark.parametrize(
         'response,expected_zone,expected_power,expected_volume',
         [
             # zone=11, power=01(on), src=00, mute=00, dnd=0, vol=13, tr=11, bs=12, bal=10, unk=04, kp=01
-            ('\r\n#>11010000001311121004011\r\n#', 11, True, 13),
+            ('\r\n#>110100000131112100401\r\n#', 11, True, 13),
             # zone=12, power=00(off), src=00, mute=00, dnd=0, vol=20, tr=10, bs=10, bal=10, unk=02, kp=01
-            ('\r\n#>12000000002010101002011\r\n#', 12, False, 20),
+            ('\r\n#>120000000201010100201\r\n#', 12, False, 20),
             # zone=16, power=01(on), src=03, mute=00, dnd=0, vol=38, tr=07, bs=07, bal=10, unk=18, kp=01
-            ('\r\n#>16010300003807071018011\r\n#', 16, True, 38),
+            ('\r\n#>160103000380707101801\r\n#', 16, True, 38),
         ],
     )
     def test_parse_various_zone_responses(
