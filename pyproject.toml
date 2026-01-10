@@ -1,27 +1,120 @@
-[tool.pycln]
-all = true
+[build-system]
+requires = ['setuptools>=61.0', 'wheel']
+build-backend = 'setuptools.build_meta'
 
-[tool.refurb]
-python_version = "3.12"
-quiet = true
-ignore = []
+[project]
+name = 'pyxantech'
+version = '0.10.0'
+description = 'Python library for controlling Xantech, Monoprice, and Dayton Audio multi-zone amplifiers via RS232'
+readme = 'README.md'
+license = {text = 'MIT'}
+requires-python = '>=3.12'
+authors = [
+    {name = 'Ryan Snodgrass'}
+]
+classifiers = [
+    'Development Status :: 4 - Beta',
+    'Intended Audience :: Developers',
+    'License :: OSI Approved :: MIT License',
+    'Programming Language :: Python :: 3',
+    'Programming Language :: Python :: 3.12',
+    'Programming Language :: Python :: 3.13',
+    'Topic :: Home Automation',
+    'Topic :: Multimedia :: Sound/Audio',
+]
+keywords = ['xantech', 'monoprice', 'dayton', 'audio', 'rs232', 'home-automation']
+dependencies = [
+    'pyserial>=3.5',
+    'pyserial-asyncio>=0.6',
+    'pyyaml>=6.0',
+    'ratelimit>=2.2.1',
+]
+
+[project.optional-dependencies]
+dev = [
+    'pytest>=8.0',
+    'pytest-cov>=4.0',
+    'pytest-asyncio>=0.23',
+    'mypy>=1.8',
+    'ruff>=0.3',
+    'types-PyYAML',
+]
+
+[project.urls]
+Homepage = 'https://github.com/rsnodgrass/pyxantech'
+Repository = 'https://github.com/rsnodgrass/pyxantech'
+Issues = 'https://github.com/rsnodgrass/pyxantech/issues'
+
+[tool.setuptools.packages.find]
+where = ['.']
+include = ['pyxantech*']
+
+[tool.setuptools.package-data]
+pyxantech = ['protocols/*.yaml', 'series/*.yaml']
+
+[tool.pytest.ini_options]
+testpaths = ['tests']
+asyncio_mode = 'auto'
+addopts = '-v --tb=short'
+
+[tool.coverage.run]
+source = ['pyxantech']
+branch = true
+
+[tool.coverage.report]
+exclude_lines = [
+    'pragma: no cover',
+    'raise NotImplementedError',
+    'if TYPE_CHECKING:',
+]
+
+[tool.mypy]
+python_version = '3.12'
+strict = true
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+show_error_codes = true
+
+[[tool.mypy.overrides]]
+module = ['serial.*', 'serial_asyncio.*']
+ignore_missing_imports = true
 
 [tool.ruff]
 line-length = 88
 indent-width = 4
-lint.ignore = [
-       "F405"  # * imports
-]
+target-version = 'py312'
 
-# import sorting settings (replaces isort)
+[tool.ruff.lint]
+select = ['E', 'F', 'W', 'I', 'UP', 'B', 'C4', 'SIM']
+ignore = ['F405', 'E501']
+
 [tool.ruff.lint.isort]
 force-single-line = false
 force-sort-within-sections = true
-known-first-party = ["custom_components"]
-section-order = ["future", "standard-library", "third-party", "first-party", "local-folder"]
+known-first-party = ['pyxantech']
+section-order = ['future', 'standard-library', 'third-party', 'first-party', 'local-folder']
 combine-as-imports = true
-#known-first-party-from-imports = true
-force-to-top = ["logging"]
 
 [tool.ruff.format]
-quote-style = "single" # Use a single quote instead of double
+quote-style = 'single'
+
+[tool.pycln]
+all = true
+
+[tool.refurb]
+python_version = '3.12'
+quiet = true
+ignore = []
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.2",
+    "pytest-asyncio>=1.3.0",
+    "pytest-cov>=7.0.0",
+]
