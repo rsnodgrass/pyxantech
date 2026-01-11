@@ -4,7 +4,7 @@ build-backend = 'setuptools.build_meta'
 
 [project]
 name = 'pyxantech'
-version = '0.10.0'
+version = '0.10.1'
 description = 'Python library for controlling Xantech, Monoprice, and Dayton Audio multi-zone amplifiers via RS232'
 readme = 'README.md'
 license = {text = 'MIT'}
