@@ -122,37 +122,37 @@ class TestDax88Commands:
     """Tests for DAX88 (Dayton Audio) protocol command generation."""
 
     def test_zone_status_command(self) -> None:
-        """Verify DAX88 zone status query uses two-digit format."""
-        cmd = _zone_status_cmd('dax88', 1)
-        assert cmd == b'?01\r'
+        """Verify DAX88 zone status query format."""
+        cmd = _zone_status_cmd('dax88', 11)
+        assert cmd == b'?11\r'
 
     def test_power_on_command(self) -> None:
         """Verify DAX88 power on command format."""
-        cmd = _set_power_cmd('dax88', 1, True)
-        assert cmd == b'<01PR01\r'
+        cmd = _set_power_cmd('dax88', 11, True)
+        assert cmd == b'<11PR01\r'
 
     def test_power_off_command(self) -> None:
         """Verify DAX88 power off command format."""
-        cmd = _set_power_cmd('dax88', 1, False)
-        assert cmd == b'<01PR00\r'
+        cmd = _set_power_cmd('dax88', 11, False)
+        assert cmd == b'<11PR00\r'
 
     def test_volume_command(self) -> None:
         """Verify DAX88 volume command format."""
-        cmd = _set_volume_cmd('dax88', 1, 20)
-        assert cmd == b'<01VO20\r'
+        cmd = _set_volume_cmd('dax88', 11, 20)
+        assert cmd == b'<11VO20\r'
 
     def test_source_command(self) -> None:
         """Verify DAX88 source command format."""
-        cmd = _set_source_cmd('dax88', 1, 4)
-        assert cmd == b'<01CH04\r'
+        cmd = _set_source_cmd('dax88', 11, 4)
+        assert cmd == b'<11CH04\r'
 
-    def test_zone_8_commands(self) -> None:
-        """Verify DAX88 zone 8 commands use two-digit format."""
-        cmd = _zone_status_cmd('dax88', 8)
-        assert cmd == b'?08\r'
+    def test_zone_18_commands(self) -> None:
+        """Verify DAX88 zone 18 commands."""
+        cmd = _zone_status_cmd('dax88', 18)
+        assert cmd == b'?18\r'
 
-        cmd = _set_power_cmd('dax88', 8, True)
-        assert cmd == b'<08PR01\r'
+        cmd = _set_power_cmd('dax88', 18, True)
+        assert cmd == b'<18PR01\r'
 
 
 class TestInvalidZoneHandling:

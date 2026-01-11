@@ -35,21 +35,21 @@
   command_separator: ""
 
   commands:
-    zone_status:   '?{zone:02d}'
+    zone_status:   '?{zone}'
 
-    set_power:     '<{zone:02d}PR{power:02d}'  # power: 1 = on; 0 = off
-    power_on:      '<{zone:02d}PR01'
-    power_off:     '<{zone:02d}PR00'
+    set_power:     '<{zone}PR{power:02}' # power: 1 = on; 0 = off
+    power_on:      '<{zone}PR01'
+    power_off:     '<{zone}PR00'
 
-    set_mute:      '<{zone:02d}MU{mute:02d}'   # mute: 1 = on; 0 = off
-    mute_on:       '<{zone:02d}MU01'
-    mute_off:      '<{zone:02d}MU00'
+    set_mute:      '<{zone}MU{mute:02}'  # mute: 1 = on; 0 = off
+    mute_on:       '<{zone}MU01'
+    mute_off:      '<{zone}MU00'
 
-    set_volume:    '<{zone:02d}VO{volume:02d}'    # volume: 0-38
-    set_treble:    '<{zone:02d}TR{treble:02d}'    # treble: 0-14
-    set_bass:      '<{zone:02d}BS{bass:02d}'      # bass: 0-14
-    set_balance:   '<{zone:02d}BL{balance:02d}'   # balance: 0-20
-    set_source:    '<{zone:02d}CH{source:02d}'    # source: 1-8
+    set_volume:    '<{zone}VO{volume:02}'   # volume: 0-38
+    set_treble:    '<{zone}TR{treble}:02}'  # treble: 0-14
+    set_bass:      '<{zone}BS{bass:02}'     # bass: 0-14
+    set_balance:   '<{zone}BL{balance:02}'  # balance: 0-20
+    set_source:    '<{zone}CH{source:02}'   # source: 0-6
 
   response_eol: "\r"
 
