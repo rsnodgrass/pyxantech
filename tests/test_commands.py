@@ -118,6 +118,43 @@ class TestXantechCommands:
         assert cmd == b'!1VO20+'
 
 
+class TestDax88Commands:
+    """Tests for DAX88 (Dayton Audio) protocol command generation."""
+
+    def test_zone_status_command(self) -> None:
+        """Verify DAX88 zone status query uses two-digit format."""
+        cmd = _zone_status_cmd('dax88', 1)
+        assert cmd == b'?01\r'
+
+    def test_power_on_command(self) -> None:
+        """Verify DAX88 power on command format."""
+        cmd = _set_power_cmd('dax88', 1, True)
+        assert cmd == b'<01PR01\r'
+
+    def test_power_off_command(self) -> None:
+        """Verify DAX88 power off command format."""
+        cmd = _set_power_cmd('dax88', 1, False)
+        assert cmd == b'<01PR00\r'
+
+    def test_volume_command(self) -> None:
+        """Verify DAX88 volume command format."""
+        cmd = _set_volume_cmd('dax88', 1, 20)
+        assert cmd == b'<01VO20\r'
+
+    def test_source_command(self) -> None:
+        """Verify DAX88 source command format."""
+        cmd = _set_source_cmd('dax88', 1, 4)
+        assert cmd == b'<01CH04\r'
+
+    def test_zone_8_commands(self) -> None:
+        """Verify DAX88 zone 8 commands use two-digit format."""
+        cmd = _zone_status_cmd('dax88', 8)
+        assert cmd == b'?08\r'
+
+        cmd = _set_power_cmd('dax88', 8, True)
+        assert cmd == b'<08PR01\r'
+
+
 class TestInvalidZoneHandling:
     """Tests for invalid zone error handling."""
 
