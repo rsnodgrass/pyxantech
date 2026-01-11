@@ -139,8 +139,25 @@ class ZoneStatus:
 
     @property
     def dict(self) -> dict[str, Any]:
-        """Return status as dictionary for backwards compatibility."""
-        return self._raw
+        """Return status as dictionary for backwards compatibility.
+
+        Returns converted values (bools/ints) not raw strings.
+        """
+        return {
+            'zone': self.zone,
+            'power': self.power,
+            'mute': self.mute,
+            'volume': self.volume,
+            'treble': self.treble,
+            'bass': self.bass,
+            'balance': self.balance,
+            'source': self.source,
+            'paged': self.paged,
+            'linked': self.linked,
+            'pa': self.pa,
+            'do_not_disturb': self.do_not_disturb,
+            'keypad': self.keypad,
+        }
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> ZoneStatus:
