@@ -240,21 +240,29 @@ class RS232ControlProtocol(asyncio.Protocol):
                     return result_lines[0].decode('ascii', errors='ignore')
 
         except asyncio.TimeoutError:
-            self._log_timeout(request=b'', data=data, response_eol=response_eol)
+            # rate-limited logging to avoid log saturation
+            self._log_timeout(data=data, response_eol=response_eol)
             raise
 
-    @limits(calls=2, period=RATE_LIMIT_PERIOD_SECONDS)
     def _log_timeout(
         self,
-        request: bytes,
         data: bytearray,
         response_eol: bytes,
     ) -> None:
         """Log timeout with rate limiting to prevent log saturation."""
-        LOG.info(
-            "Request timeout: request=%s, received=%s, timeout=%s, eol=%s",
-            request,
-            bytes(data),
-            self._timeout,
-            response_eol,
-        )
+        # use local function with @limits to get fresh rate limit per timeout context
+        # (avoids RateLimitException being raised and propagated up)
+        @limits(calls=2, period=RATE_LIMIT_PERIOD_SECONDS)
+        def _do_log() -> None:
+            LOG.info(
+                'Request timeout: received=%s, timeout=%s, eol=%s',
+                bytes(data),
+                self._timeout,
+                response_eol,
+            )
+
+        try:
+            _do_log()
+        except Exception:
+            # suppress rate limit exceptions - we just want to skip logging
+            pass
