@@ -11,6 +11,11 @@
     zones: 8
     sources: 8
 
+  # tone control capabilities
+  supports_bass: true
+  supports_treble: true
+  supports_balance: true
+
   # FIXME: switch code to features
   num_zones: 8
   num_sources: 8

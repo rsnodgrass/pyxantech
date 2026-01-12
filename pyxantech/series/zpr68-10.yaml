@@ -19,6 +19,11 @@
     zones: 6
     sources: 6
 
+  # tone control capabilities
+  supports_bass: true
+  supports_treble: true
+  supports_balance: false  # zpr68 protocol has no balance command
+
   num_zones: 6
   num_sources: 8
 

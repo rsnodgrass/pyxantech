@@ -24,6 +24,11 @@
     sources: 4
     rs232_control: true
 
+  # tone control capabilities
+  supports_bass: true
+  supports_treble: true
+  supports_balance: true
+
   # FIXME: switch to using features
   num_zones: 6
   num_sources: 4
