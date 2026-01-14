@@ -146,6 +146,25 @@ class TestDax88Commands:
         cmd = _set_source_cmd('dax88', 11, 4)
         assert cmd == b'<11CH04\r'
 
+    def test_treble_command(self) -> None:
+        """Verify DAX88 treble command format."""
+        cmd = _set_treble_cmd('dax88', 11, 7)
+        assert cmd == b'<11TR07\r'
+
+        # test single digit gets zero-padded
+        cmd = _set_treble_cmd('dax88', 11, 3)
+        assert cmd == b'<11TR03\r'
+
+    def test_bass_command(self) -> None:
+        """Verify DAX88 bass command format."""
+        cmd = _set_bass_cmd('dax88', 11, 10)
+        assert cmd == b'<11BS10\r'
+
+    def test_balance_command(self) -> None:
+        """Verify DAX88 balance command format."""
+        cmd = _set_balance_cmd('dax88', 11, 15)
+        assert cmd == b'<11BL15\r'
+
     def test_zone_18_commands(self) -> None:
         """Verify DAX88 zone 18 commands."""
         cmd = _zone_status_cmd('dax88', 18)
