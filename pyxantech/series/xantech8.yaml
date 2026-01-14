@@ -96,7 +96,7 @@
   max_amps: 3
 
   # FIXME: these should come from the protocol...which has them defined (min and max)
-  max_balance: 20
+  max_balance: 63
   max_bass: 14
   max_treble: 14
   max_volume: 38
