@@ -53,6 +53,7 @@ __all__ = [
     'get_amp_controller',
     'async_get_amp_controller',
     'get_async_monoprice',
+    'get_device_config',
     'SUPPORTED_AMP_TYPES',
     'BAUD_RATES',
     'MONOPRICE6',
@@ -341,9 +342,20 @@ def _command(amp_type: str, format_code: str, args: dict[str, Any] | None = None
     return command.format(**args).encode('ascii')
 
 
+def _get_valid_zones(amp_type: str) -> dict[int, str]:
+    """Get all valid zones for an amp type, including alternative zones.
+
+    Merges primary zones with alternative_zones (if defined) to build
+    the complete set of valid zone IDs for command validation.
+    """
+    zones = get_device_config(amp_type, 'zones') or {}
+    alt_zones = get_device_config(amp_type, 'alternative_zones', log_missing=False) or {}
+    return {**zones, **alt_zones}
+
+
 def _zone_status_cmd(amp_type: str, zone: int) -> bytes:
     """Build zone status query command."""
-    zones = get_device_config(amp_type, 'zones')
+    zones = _get_valid_zones(amp_type)
     if zone not in zones:
         raise ValueError(f'Invalid zone {zone} for amp type {amp_type}')
     return _command(amp_type, 'zone_status', args={'zone': zone})
@@ -351,7 +363,7 @@ def _zone_status_cmd(amp_type: str, zone: int) -> bytes:
 
 def _set_power_cmd(amp_type: str, zone: int, power: bool) -> bytes:
     """Build power control command."""
-    zones = get_device_config(amp_type, 'zones')
+    zones = _get_valid_zones(amp_type)
     if zone not in zones:
         raise ValueError(f'Invalid zone {zone} for amp type {amp_type}')
 
@@ -365,7 +377,7 @@ def _set_power_cmd(amp_type: str, zone: int, power: bool) -> bytes:
 
 def _set_mute_cmd(amp_type: str, zone: int, mute: bool) -> bytes:
     """Build mute control command."""
-    zones = get_device_config(amp_type, 'zones')
+    zones = _get_valid_zones(amp_type)
     if zone not in zones:
         raise ValueError(f'Invalid zone {zone} for amp type {amp_type}')
 
@@ -379,7 +391,7 @@ def _set_mute_cmd(amp_type: str, zone: int, mute: bool) -> bytes:
 
 def _set_volume_cmd(amp_type: str, zone: int, volume: int) -> bytes:
     """Build volume control command."""
-    zones = get_device_config(amp_type, 'zones')
+    zones = _get_valid_zones(amp_type)
     if zone not in zones:
         raise ValueError(f'Invalid zone {zone} for amp type {amp_type}')
 
@@ -391,7 +403,7 @@ def _set_volume_cmd(amp_type: str, zone: int, volume: int) -> bytes:
 
 def _set_treble_cmd(amp_type: str, zone: int, treble: int) -> bytes:
     """Build treble control command."""
-    zones = get_device_config(amp_type, 'zones')
+    zones = _get_valid_zones(amp_type)
     if zone not in zones:
         raise ValueError(f'Invalid zone {zone} for amp type {amp_type}')
 
@@ -403,7 +415,7 @@ def _set_treble_cmd(amp_type: str, zone: int, treble: int) -> bytes:
 
 def _set_bass_cmd(amp_type: str, zone: int, bass: int) -> bytes:
     """Build bass control command."""
-    zones = get_device_config(amp_type, 'zones')
+    zones = _get_valid_zones(amp_type)
     if zone not in zones:
         raise ValueError(f'Invalid zone {zone} for amp type {amp_type}')
 
@@ -415,7 +427,7 @@ def _set_bass_cmd(amp_type: str, zone: int, bass: int) -> bytes:
 
 def _set_balance_cmd(amp_type: str, zone: int, balance: int) -> bytes:
     """Build balance control command."""
-    zones = get_device_config(amp_type, 'zones')
+    zones = _get_valid_zones(amp_type)
     if zone not in zones:
         raise ValueError(f'Invalid zone {zone} for amp type {amp_type}')
 
@@ -427,7 +439,7 @@ def _set_balance_cmd(amp_type: str, zone: int, balance: int) -> bytes:
 
 def _set_source_cmd(amp_type: str, zone: int, source: int) -> bytes:
     """Build source selection command."""
-    zones = get_device_config(amp_type, 'zones')
+    zones = _get_valid_zones(amp_type)
     sources = get_device_config(amp_type, 'sources')
 
     if zone not in zones:
