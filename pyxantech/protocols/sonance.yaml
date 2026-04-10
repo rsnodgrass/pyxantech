@@ -57,17 +57,17 @@
     source_select: ':S{zone}{source}'
 
     balance_status: ':B{zone}?'
-    set_balance:   ':B{zone}{balance:02}'
+    set_balance:   ':B{zone}{balance:+03d}'
     balance_left:  ':B{zone}--'
     balance_right: ':B{zone}++'
 
     bass_status:   ':L{zone}?'
-    set_bass:      ':L{zone}{bass:02}'
+    set_bass:      ':L{zone}{bass:+03d}'
     bass_up:       ':L{zone}++'
     bass_down:     ':L{zone}--'
 
     treble_status: ':H{zone}?'
-    set_treble:    ':H{zone}{treble:02}'
+    set_treble:    ':H{zone}{treble:+03d}'
     treble_up:     ':H{zone}++'
     treble_down:   ':H{zone}--'
 
@@ -80,11 +80,20 @@
     power_status:   '\+Z(?P<zone>\d+)(?P<power>[01])'
     zone_status:    '\+Z(?P<zone>\d+)(?P<power>[01])'
     source_status:  '\+S(?P<zone>\d+)(?P<source>[1-4])'
-    volume_status:  '\+V(?P<zone>\d+)(?P<volume>\d+)'
+    volume_status:  '\+V(?P<zone>[1-6])(?P<volume>\d+)'
     mute_status:    '\+M(?P<zone>\d+)(?P<mute>[01])'
-    treble_status:  '\+H(?P<zone>\d+)TR(?P<treble>\d+)'
-    bass_status:    '\+L(?P<zone>\d+)BS(?P<bass>\d+)'
-    balance_status: '\+B(?P<zone>\d+)BA(?P<balance>\d+)'
+    treble_status:  '\+H(?P<zone>\d+)(?P<treble>[+-]?\d+)'
+    bass_status:    '\+L(?P<zone>\d+)(?P<bass>[+-]?\d+)'
+    balance_status: '\+B(?P<zone>\d+)(?P<balance>[+-]?\d+)'
+
+  zone_status_queries:
+    - zone_status
+    - volume_status
+    - source_status
+    - mute_status
+    - bass_status
+    - treble_status
+    - balance_status
 
   extras:
     restore_zone:    [ 'set_power', 'set_source', 'set_volume', 'set_mute', 'set_bass', 'set_balance', 'set_treble' ]

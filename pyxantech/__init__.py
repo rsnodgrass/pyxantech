@@ -361,6 +361,40 @@ def _zone_status_cmd(amp_type: str, zone: int) -> bytes:
     return _command(amp_type, 'zone_status', args={'zone': zone})
 
 
+def _zone_status_query_commands(amp_type: str, zone: int) -> list[tuple[str, bytes]] | None:
+    """Return list of (query_name, command) pairs if protocol uses multi-query zone status."""
+    zones = _get_valid_zones(amp_type)
+    if zone not in zones:
+        raise ValueError(f'Invalid zone {zone} for amp type {amp_type}')
+    queries = get_protocol_config(amp_type, 'zone_status_queries')
+    if not queries:
+        return None
+    return [(q, _command(amp_type, q, args={'zone': zone})) for q in queries]
+
+
+def _merge_zone_status_responses(amp_type: str, responses: list[tuple[str, str]]) -> dict | None:
+    """Merge named-group captures from multiple query responses into one dict."""
+    protocol_type = get_device_config(amp_type, 'protocol')
+    patterns = RS232_RESPONSE_PATTERNS.get(protocol_type, {})
+    status_translation = get_protocol_config(amp_type, 'status_translation')
+    merged: dict = {}
+    for query_name, response in responses:
+        if not response:
+            continue
+        pattern = patterns.get(query_name)
+        if pattern is None:
+            continue
+        m = pattern.search(response)
+        if m:
+            groups = m.groupdict()
+            if status_translation:
+                for key, value in groups.items():
+                    if key in status_translation and value in status_translation[key]:
+                        groups[key] = status_translation[key][value]
+            merged.update(groups)
+    return merged if merged else None
+
+
 def _set_power_cmd(amp_type: str, zone: int, power: bool) -> bytes:
     """Build power control command."""
     zones = _get_valid_zones(amp_type)
@@ -549,6 +583,12 @@ def get_amp_controller(
         @synchronized
         def zone_status(self, zone: int) -> dict[str, Any] | None:
             skip = get_device_config(amp_type, 'zone_status_skip', log_missing=False) or 0
+            queries = _zone_status_query_commands(self._amp_type, zone)
+            if queries:
+                responses = [(name, self._send_request(cmd, skip)) for name, cmd in queries]
+                merged = _merge_zone_status_responses(self._amp_type, responses)
+                LOG.debug('Zone status (multi-query): merged=%s', merged)
+                return ZoneStatus.from_dict(merged).dict if merged else None
             response = self._send_request(_zone_status_cmd(self._amp_type, zone), skip)
             status = ZoneStatus.from_string(self._amp_type, response)
             LOG.debug('Zone status: status=%s, raw=%s', status, response)
@@ -670,10 +710,15 @@ async def async_get_amp_controller(
 
         @locked_coro
         async def zone_status(self, zone: int) -> dict[str, Any] | None:
-            cmd = _zone_status_cmd(self._amp_type, zone)
             skip = get_device_config(amp_type, 'zone_status_skip', log_missing=False) or 0
+            queries = _zone_status_query_commands(self._amp_type, zone)
+            if queries:
+                responses = [(name, await self._protocol.send(cmd, skip=skip)) for name, cmd in queries]
+                merged = _merge_zone_status_responses(self._amp_type, responses)
+                LOG.debug('Zone status (multi-query): merged=%s', merged)
+                return ZoneStatus.from_dict(merged).dict if merged else None
+            cmd = _zone_status_cmd(self._amp_type, zone)
             status_string = await self._protocol.send(cmd, skip=skip)
-
             status = ZoneStatus.from_string(self._amp_type, status_string)
             LOG.debug('Zone status: status=%s, raw=%s', status, status_string)
             return status.dict if status else None
