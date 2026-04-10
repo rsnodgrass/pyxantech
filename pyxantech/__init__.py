@@ -408,7 +408,8 @@ def _set_treble_cmd(amp_type: str, zone: int, treble: int) -> bytes:
         raise ValueError(f'Invalid zone {zone} for amp type {amp_type}')
 
     max_treble = get_device_config(amp_type, 'max_treble') or 14
-    treble = int(max(0, min(treble, max_treble)))
+    min_treble = get_device_config(amp_type, 'min_treble', log_missing=False) or 0
+    treble = int(max(min_treble, min(treble, max_treble)))
     LOG.info('Setting treble: amp_type=%s, zone=%s, treble=%s', amp_type, zone, treble)
     return _command(amp_type, 'set_treble', args={'zone': zone, 'treble': treble})
 
@@ -420,7 +421,8 @@ def _set_bass_cmd(amp_type: str, zone: int, bass: int) -> bytes:
         raise ValueError(f'Invalid zone {zone} for amp type {amp_type}')
 
     max_bass = get_device_config(amp_type, 'max_bass') or 14
-    bass = int(max(0, min(bass, max_bass)))
+    min_bass = get_device_config(amp_type, 'min_bass', log_missing=False) or 0
+    bass = int(max(min_bass, min(bass, max_bass)))
     LOG.info('Setting bass: amp_type=%s, zone=%s, bass=%s', amp_type, zone, bass)
     return _command(amp_type, 'set_bass', args={'zone': zone, 'bass': bass})
 
@@ -432,7 +434,8 @@ def _set_balance_cmd(amp_type: str, zone: int, balance: int) -> bytes:
         raise ValueError(f'Invalid zone {zone} for amp type {amp_type}')
 
     max_balance = get_device_config(amp_type, 'max_balance') or 20
-    balance = max(0, min(balance, max_balance))
+    min_balance = get_device_config(amp_type, 'min_balance', log_missing=False) or 0
+    balance = max(min_balance, min(balance, max_balance))
     LOG.info('Setting balance: amp_type=%s, zone=%s, balance=%s', amp_type, zone, balance)
     return _command(amp_type, 'set_balance', args={'zone': zone, 'balance': balance})
 
