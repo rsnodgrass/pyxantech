@@ -121,7 +121,7 @@ class RS232ControlProtocol(asyncio.Protocol):
 
     def data_received(self, data: bytes) -> None:
         """Handle incoming data from serial port."""
-        asyncio.ensure_future(self._queue.put(data))
+        self._queue.put_nowait(data)
 
     def connection_lost(self, exc: Exception | None) -> None:
         """Handle connection closure."""
