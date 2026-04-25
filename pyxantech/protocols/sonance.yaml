@@ -57,6 +57,8 @@
     source_select: ':S{zone}{source}'
 
     balance_status: ':B{zone}?'
+    # Sonance requires an explicit sign prefix and 2-digit magnitude (e.g. +02, -08, +00).
+    # The :+03d format produces this — standard zero-padded unsigned values are rejected.
     set_balance:   ':B{zone}{balance:+03d}'
     balance_left:  ':B{zone}--'
     balance_right: ':B{zone}++'

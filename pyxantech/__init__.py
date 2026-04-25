@@ -372,26 +372,57 @@ def _zone_status_query_commands(amp_type: str, zone: int) -> list[tuple[str, byt
     return [(q, _command(amp_type, q, args={'zone': zone})) for q in queries]
 
 
-def _merge_zone_status_responses(amp_type: str, responses: list[tuple[str, str]]) -> dict | None:
-    """Merge named-group captures from multiple query responses into one dict."""
+def _merge_zone_status_responses(
+    amp_type: str,
+    zone: int,
+    responses: list[tuple[str, list[str]]],
+) -> dict | None:
+    """Merge named-group captures from multiple query responses into one dict.
+
+    For each query, all returned lines are scanned for the first match whose
+    zone field (if present) matches the queried zone. This handles amps that
+    batch multiple response lines into one serial/TCP packet.
+    """
     protocol_type = get_device_config(amp_type, 'protocol')
     patterns = RS232_RESPONSE_PATTERNS.get(protocol_type, {})
     status_translation = get_protocol_config(amp_type, 'status_translation')
     merged: dict = {}
-    for query_name, response in responses:
-        if not response:
+    matched = 0
+    for query_name, lines in responses:
+        if not lines:
+            LOG.debug('No response lines for query: query=%s, zone=%s', query_name, zone)
             continue
         pattern = patterns.get(query_name)
         if pattern is None:
             continue
-        m = pattern.search(response)
-        if m:
+        for line in lines:
+            m = pattern.search(line)
+            if not m:
+                continue
             groups = m.groupdict()
+            if 'zone' in groups and groups['zone'] != str(zone):
+                LOG.debug(
+                    'Skipping response for wrong zone: expected=%s, got=%s, query=%s, line=%s',
+                    zone, groups['zone'], query_name, line,
+                )
+                continue
             if status_translation:
                 for key, value in groups.items():
                     if key in status_translation and value in status_translation[key]:
                         groups[key] = status_translation[key][value]
             merged.update(groups)
+            matched += 1
+            break
+        else:
+            LOG.debug(
+                'No matching line for query: query=%s, zone=%s, lines=%s',
+                query_name, zone, lines,
+            )
+    if matched < len(responses):
+        LOG.debug(
+            'Partial zone status: zone=%s, matched=%d/%d queries',
+            zone, matched, len(responses),
+        )
     return merged if merged else None
 
 
@@ -585,10 +616,13 @@ def get_amp_controller(
             skip = get_device_config(amp_type, 'zone_status_skip', log_missing=False) or 0
             queries = _zone_status_query_commands(self._amp_type, zone)
             if queries:
-                responses = [(name, self._send_request(cmd, skip)) for name, cmd in queries]
-                merged = _merge_zone_status_responses(self._amp_type, responses)
+                responses = [(name, [self._send_request(cmd, skip)]) for name, cmd in queries]
+                merged = _merge_zone_status_responses(self._amp_type, zone, responses)
                 LOG.debug('Zone status (multi-query): merged=%s', merged)
-                return ZoneStatus.from_dict(merged).dict if merged else None
+                if not merged:
+                    return None
+                status = ZoneStatus.from_dict(merged)
+                return {k: v for k, v in status.dict.items() if k in merged}
             response = self._send_request(_zone_status_cmd(self._amp_type, zone), skip)
             status = ZoneStatus.from_string(self._amp_type, response)
             LOG.debug('Zone status: status=%s, raw=%s', status, response)
@@ -714,11 +748,15 @@ async def async_get_amp_controller(
             queries = _zone_status_query_commands(self._amp_type, zone)
             if queries:
                 responses = [(name, await self._protocol.send(cmd, skip=skip)) for name, cmd in queries]
-                merged = _merge_zone_status_responses(self._amp_type, responses)
+                merged = _merge_zone_status_responses(self._amp_type, zone, responses)
                 LOG.debug('Zone status (multi-query): merged=%s', merged)
-                return ZoneStatus.from_dict(merged).dict if merged else None
+                if not merged:
+                    return None
+                status = ZoneStatus.from_dict(merged)
+                return {k: v for k, v in status.dict.items() if k in merged}
             cmd = _zone_status_cmd(self._amp_type, zone)
-            status_string = await self._protocol.send(cmd, skip=skip)
+            lines = await self._protocol.send(cmd, skip=skip)
+            status_string = lines[0] if lines else ''
             status = ZoneStatus.from_string(self._amp_type, status_string)
             LOG.debug('Zone status: status=%s, raw=%s', status, status_string)
             return status.dict if status else None

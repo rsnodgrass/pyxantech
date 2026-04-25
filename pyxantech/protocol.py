@@ -159,7 +159,7 @@ class RS232ControlProtocol(asyncio.Protocol):
         *,
         wait_for_reply: bool = True,
         skip: int = 0,
-    ) -> str:
+    ) -> list[str]:
         """Send command and optionally wait for response.
 
         Args:
@@ -168,14 +168,15 @@ class RS232ControlProtocol(asyncio.Protocol):
             skip: Number of bytes to skip when looking for EOL.
 
         Returns:
-            Response string, or empty string if no reply expected/received.
+            List of response lines (may be >1 if amp batches responses).
+            Empty list if no reply expected or connection failed.
 
         Raises:
             asyncio.TimeoutError: If response not received within timeout.
         """
         async with self._lock:
             if not await self._wait_for_connection():
-                return ''
+                return []
 
             await self._throttle_requests()
 
@@ -190,18 +191,22 @@ class RS232ControlProtocol(asyncio.Protocol):
             self._transport.serial.write(request)
 
             if not wait_for_reply:
-                return ''
+                return []
 
             return await self._read_response(skip)
 
-    async def _read_response(self, skip: int) -> str:
+    async def _read_response(self, skip: int) -> list[str]:
         """Read and parse response from serial port.
+
+        Returns all complete lines received before the timeout. The amp may
+        batch multiple responses into a single TCP/serial packet, so callers
+        must not assume exactly one line is returned.
 
         Args:
             skip: Number of bytes to skip when looking for EOL.
 
         Returns:
-            Parsed response string.
+            List of decoded response lines (empty strings filtered out).
 
         Raises:
             asyncio.TimeoutError: If response not received within timeout.
@@ -215,6 +220,14 @@ class RS232ControlProtocol(asyncio.Protocol):
                 data += chunk
 
                 if response_eol in data[skip:]:
+                    # Drain any additional data already queued (non-blocking).
+                    # Unsolicited amp broadcasts and the actual query response
+                    # sometimes arrive in rapid succession across separate TCP
+                    # packets. Grabbing everything already in the queue gives
+                    # zone validation a better chance of finding the right line.
+                    while not self._queue.empty():
+                        data += self._queue.get_nowait()
+
                     decoded = bytes(data).decode('ascii', errors='ignore')
                     LOG.debug(
                         'Received response: data=%s, length=%d, eol=%s',
@@ -223,21 +236,16 @@ class RS232ControlProtocol(asyncio.Protocol):
                         response_eol,
                     )
 
-                    result_lines = [
-                        line for line in data.split(response_eol)
+                    lines = [
+                        line.decode('ascii', errors='ignore')
+                        for line in data.split(response_eol)
                         if line
                     ]
 
-                    if not result_lines:
-                        return ''
+                    if len(lines) > 1:
+                        LOG.debug('Multiple response lines received: lines=%s', lines)
 
-                    if len(result_lines) > 1:
-                        LOG.debug(
-                            'Multiple response lines, using first: lines=%s',
-                            result_lines,
-                        )
-
-                    return result_lines[0].decode('ascii', errors='ignore')
+                    return lines
 
         except asyncio.TimeoutError:
             # rate-limited logging to avoid log saturation
