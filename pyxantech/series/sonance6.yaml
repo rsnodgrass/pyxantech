@@ -34,8 +34,11 @@
   num_sources: 4
 
   # FIXME: the limits should come from
+  min_balance: -10
   max_balance: 10
+  min_bass: -8
   max_bass: 8
+  min_treble: -8
   max_treble: 8
   max_volume: 60
 
