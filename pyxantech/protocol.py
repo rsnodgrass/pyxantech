@@ -284,11 +284,23 @@ class RS232ControlProtocol(asyncio.Protocol):
 
                     if len(result_lines) > 1:
                         LOG.debug(
-                            'Multiple response lines, using first: lines=%s',
+                            'Multiple response lines, finding status response: lines=%s',
                             result_lines,
                         )
 
-                    return result_lines[0].decode('ascii', errors='ignore')
+                    # Some amps (e.g. DAX66) echo the command, then send the
+                    # status, then may send a trailing fragment. Find the line
+                    # that looks like a status response (#> prefix), falling
+                    # back to the last line if none matches.
+                    result = None
+                    for line in reversed(result_lines):
+                        decoded_line = line.decode('ascii', errors='ignore')
+                        if decoded_line.startswith('#>') or decoded_line.startswith('#?'):
+                            result = decoded_line
+                            break
+                    if result is None:
+                        result = result_lines[-1].decode('ascii', errors='ignore')
+                    return result
 
         except asyncio.TimeoutError:
             # rate-limited logging to avoid log saturation
