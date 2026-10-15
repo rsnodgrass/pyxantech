@@ -69,6 +69,10 @@ SUPPORTED_AMP_TYPES: KeysView[str] = DEVICE_CONFIG.keys()
 
 CONF_SERIAL_CONFIG = 'rs232'
 
+# Extra bytes already buffered after the first EOL of a multi-query reply.
+# Bounded so the sync reader cannot block on the next command's data.
+_MAX_EXTRA_RESPONSE_BYTES = 512
+
 
 def get_device_config(
     amp_type: str,
@@ -361,6 +365,117 @@ def _zone_status_cmd(amp_type: str, zone: int) -> bytes:
     return _command(amp_type, 'zone_status', args={'zone': zone})
 
 
+def _zone_status_query_commands(amp_type: str, zone: int) -> list[tuple[str, bytes]] | None:
+    """Return (query name, command) pairs when a protocol has no single snapshot.
+
+    Amps without ``zone_status_queries`` return None and keep the one-command
+    zone status path.
+    """
+    zones = _get_valid_zones(amp_type)
+    if zone not in zones:
+        raise ValueError(f'Invalid zone {zone} for amp type {amp_type}')
+
+    queries = get_protocol_config(amp_type, 'zone_status_queries')
+    if not queries:
+        return None
+
+    commands: list[tuple[str, bytes]] = []
+    for query_name in queries:
+        name = str(query_name)
+        commands.append((name, _command(amp_type, name, args={'zone': zone})))
+    return commands
+
+
+def _merge_zone_status_responses(
+    amp_type: str,
+    zone: int,
+    responses: list[tuple[str, list[str]]],
+) -> dict[str, Any] | None:
+    """Merge named-group captures from multiple query responses into one dict.
+
+    For each query, scan returned lines for the first match whose zone field
+    (when present) is the zone that was queried. That drops a broadcast for
+    another zone that arrived in the same packet.
+
+    Returns None when nothing matched. A partial merge is returned and logged
+    so a timed-out field does not erase the fields that did parse.
+    """
+    protocol_type = get_device_config(amp_type, 'protocol')
+    patterns = RS232_RESPONSE_PATTERNS.get(protocol_type, {})
+    status_translation = get_protocol_config(amp_type, 'status_translation')
+    merged: dict[str, Any] = {}
+    matched = 0
+
+    for query_name, lines in responses:
+        if not lines:
+            LOG.debug('No response lines for query: query=%s, zone=%s', query_name, zone)
+            continue
+
+        pattern = patterns.get(query_name)
+        if pattern is None:
+            continue
+
+        for line in lines:
+            match = pattern.search(line)
+            if not match:
+                continue
+
+            groups = match.groupdict()
+            if 'zone' in groups and groups['zone'] != str(zone):
+                LOG.debug(
+                    'Skipping response for wrong zone: expected=%s, got=%s, query=%s, line=%s',
+                    zone,
+                    groups['zone'],
+                    query_name,
+                    line,
+                )
+                continue
+
+            if status_translation:
+                for key, value in groups.items():
+                    if key in status_translation and value in status_translation[key]:
+                        groups[key] = status_translation[key][value]
+
+            merged.update(groups)
+            matched += 1
+            break
+        else:
+            LOG.debug(
+                'No matching line for query: query=%s, zone=%s, lines=%s',
+                query_name,
+                zone,
+                lines,
+            )
+
+    if matched < len(responses):
+        LOG.debug(
+            'Partial zone status: zone=%s, matched=%d/%d queries',
+            zone,
+            matched,
+            len(responses),
+        )
+    return merged if merged else None
+
+
+def _zone_status_from_merged(
+    amp_type: str,
+    zone: int,
+    responses: list[tuple[str, list[str]]],
+) -> dict[str, Any] | None:
+    """Build a zone status dict from multi-query lines.
+
+    Only keys that were actually parsed are returned, so a partial reply does
+    not look like every missing field is zero.
+    """
+    merged = _merge_zone_status_responses(amp_type, zone, responses)
+    LOG.debug('Zone status (multi-query): merged=%s', merged)
+    if not merged:
+        return None
+
+    status = ZoneStatus.from_dict(merged)
+    return {key: value for key, value in status.dict.items() if key in merged}
+
+
 def _set_power_cmd(amp_type: str, zone: int, power: bool) -> bytes:
     """Build power control command."""
     zones = _get_valid_zones(amp_type)
@@ -507,18 +622,12 @@ def get_amp_controller(
 
             self._port = serial.serial_for_url(port_url, **serial_config)
 
-        def _send_request(self, request: bytes, skip: int = 0) -> str:
-            """Send request and read response.
+        def _read_response_bytes(self, request: bytes, skip: int, extra_bytes: int) -> bytes:
+            """Write a command and read through the first EOL.
 
-            Args:
-                request: Command bytes to send.
-                skip: Bytes to skip for EOL detection.
-
-            Returns:
-                Response string.
-
-            Raises:
-                serial.SerialTimeoutException: If no response received.
+            ``extra_bytes`` is a cap on additional data already sitting in the
+            serial buffer after that EOL. Zero preserves the historical
+            single-line read used by ``_send_request``.
             """
             self._port.reset_output_buffer()
             self._port.reset_input_buffer()
@@ -528,27 +637,84 @@ def get_amp_controller(
             self._port.flush()
 
             response_eol = get_protocol_config(amp_type, CONF_RESPONSE_EOL) or '\r'
-            len_eol = len(response_eol)
+            eol_bytes = response_eol.encode('ascii')
+            len_eol = len(eol_bytes)
 
             result = bytearray()
             while True:
-                c = self._port.read(1)
-                if not c:
+                char = self._port.read(1)
+                if not char:
                     LOG.info('Connection timed out: last_bytes=%s', [hex(a) for a in result])
                     raise serial.SerialTimeoutException(
                         f'Connection timed out! Last received: {[hex(a) for a in result]}'
                     )
-                result += c
-                if len(result) > skip and result[-len_eol:] == response_eol.encode('ascii'):
+                result += char
+                if len(result) > skip and result[-len_eol:] == eol_bytes:
                     break
+
+            extra = 0
+            while extra < extra_bytes:
+                try:
+                    waiting = int(self._port.in_waiting)
+                except (AttributeError, OSError, TypeError, ValueError):
+                    break
+                if waiting <= 0:
+                    break
+                chunk = self._port.read(min(waiting, extra_bytes - extra))
+                if not chunk:
+                    break
+                result += chunk
+                extra += len(chunk)
 
             ret = bytes(result)
             LOG.debug('Received response: response=%s', ret)
-            return ret.decode('ascii')
+            return ret
+
+        def _send_request(self, request: bytes, skip: int = 0) -> str:
+            """Send request and read response.
+
+            Args:
+                request: Command bytes to send.
+                skip: Bytes to skip for EOL detection.
+
+            Returns:
+                Response string, including the trailing EOL.
+
+            Raises:
+                serial.SerialTimeoutException: If no response received.
+            """
+            return self._read_response_bytes(request, skip, extra_bytes=0).decode('ascii')
+
+        def _send_request_lines(self, request: bytes, skip: int = 0) -> list[str]:
+            """Send a request and return every complete line already buffered.
+
+            The first EOL is waited for, same as ``_send_request``. Further
+            lines are taken only from data already received, up to
+            ``_MAX_EXTRA_RESPONSE_BYTES``, so the next command is not stalled
+            and its reply is not consumed.
+            """
+            response_eol = get_protocol_config(amp_type, CONF_RESPONSE_EOL) or '\r'
+            raw = self._read_response_bytes(
+                request,
+                skip,
+                extra_bytes=_MAX_EXTRA_RESPONSE_BYTES,
+            )
+            return [
+                line.decode('ascii', errors='ignore')
+                for line in raw.split(response_eol.encode('ascii'))
+                if line
+            ]
 
         @synchronized
         def zone_status(self, zone: int) -> dict[str, Any] | None:
             skip = get_device_config(amp_type, 'zone_status_skip', log_missing=False) or 0
+            queries = _zone_status_query_commands(self._amp_type, zone)
+            if queries:
+                responses = [
+                    (name, self._send_request_lines(cmd, skip)) for name, cmd in queries
+                ]
+                return _zone_status_from_merged(self._amp_type, zone, responses)
+
             response = self._send_request(_zone_status_cmd(self._amp_type, zone), skip)
             status = ZoneStatus.from_string(self._amp_type, response)
             LOG.debug('Zone status: status=%s, raw=%s', status, response)
@@ -670,8 +836,16 @@ async def async_get_amp_controller(
 
         @locked_coro
         async def zone_status(self, zone: int) -> dict[str, Any] | None:
-            cmd = _zone_status_cmd(self._amp_type, zone)
             skip = get_device_config(amp_type, 'zone_status_skip', log_missing=False) or 0
+            queries = _zone_status_query_commands(self._amp_type, zone)
+            if queries:
+                responses = [
+                    (name, await self._protocol.send_lines(cmd, skip=skip))
+                    for name, cmd in queries
+                ]
+                return _zone_status_from_merged(self._amp_type, zone, responses)
+
+            cmd = _zone_status_cmd(self._amp_type, zone)
             status_string = await self._protocol.send(cmd, skip=skip)
 
             status = ZoneStatus.from_string(self._amp_type, status_string)
