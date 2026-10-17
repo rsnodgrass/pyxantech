@@ -30,6 +30,26 @@ CONF_THROTTLE_RATE = 'min_time_between_commands'
 DEFAULT_TIMEOUT = 1.0
 RATE_LIMIT_PERIOD_SECONDS = 300  # 5 minutes
 
+# Extra chunks already queued when a multi-line read sees EOL.
+# Non-blocking and bounded so a chatty amp cannot swallow the next reply.
+_MAX_QUEUED_DRAIN = 8
+
+
+def _select_status_line(lines: list[str]) -> str:
+    """Pick the status line from a multi-line serial read.
+
+    Some amps (for example DAX66) echo the command, then send the status,
+    then may send a trailing fragment. Prefer a line that looks like a
+    status response ('#>' or '#?' prefix). Fall back to the last line.
+    """
+    if not lines:
+        return ''
+
+    for line in reversed(lines):
+        if line.startswith('#>') or line.startswith('#?'):
+            return line
+    return lines[-1]
+
 
 async def async_get_rs232_protocol(
     serial_port: str,
@@ -213,13 +233,69 @@ class RS232ControlProtocol(asyncio.Protocol):
 
         Returns:
             Response string, or empty string if no reply expected/received.
+            When several lines arrive together, the DAX66-style status line
+            is chosen ('#>' / '#?'), otherwise the last line.
 
         Raises:
             asyncio.TimeoutError: If response not received within timeout.
         """
+        lines = await self._transact(
+            request,
+            wait_for_reply=wait_for_reply,
+            skip=skip,
+            drain_queued=False,
+        )
+        if not wait_for_reply:
+            return ''
+
+        if len(lines) > 1:
+            LOG.debug(
+                'Multiple response lines, finding status response: lines=%s',
+                lines,
+            )
+        return _select_status_line(lines)
+
+    async def send_lines(
+        self,
+        request: bytes,
+        *,
+        wait_for_reply: bool = True,
+        skip: int = 0,
+    ) -> list[str]:
+        """Send a command and return every complete response line.
+
+        Used by protocols that query zone status as several commands and
+        must ignore a broadcast line for a different zone. ``send`` still
+        returns one status string for every other caller.
+
+        A short non-blocking drain folds chunks already on the queue into
+        this reply. It does not wait for the next request's data.
+        """
+        lines = await self._transact(
+            request,
+            wait_for_reply=wait_for_reply,
+            skip=skip,
+            drain_queued=True,
+        )
+        if len(lines) > 1:
+            LOG.debug('Multiple response lines received: lines=%s', lines)
+        return lines
+
+    async def _transact(
+        self,
+        request: bytes,
+        *,
+        wait_for_reply: bool,
+        skip: int,
+        drain_queued: bool,
+    ) -> list[str]:
+        """Write one command and collect response lines.
+
+        Returns an empty list when no reply is expected or the port is down.
+        """
         async with self._lock:
             if not await self._wait_for_connection():
-                return ''
+                return []
 
             await self._throttle_requests()
 
@@ -241,18 +317,22 @@ class RS232ControlProtocol(asyncio.Protocol):
                 raise
 
             if not wait_for_reply:
-                return ''
+                return []
 
-            return await self._read_response(skip)
+            return await self._read_response(skip, drain_queued=drain_queued)
 
-    async def _read_response(self, skip: int) -> str:
-        """Read and parse response from serial port.
+    async def _read_response(self, skip: int, *, drain_queued: bool = False) -> list[str]:
+        """Read complete response lines from the serial port.
 
         Args:
             skip: Number of bytes to skip when looking for EOL.
+            drain_queued: When True, append a bounded number of chunks
+                already sitting on the queue after the first EOL. Callers
+                that need one status line leave this False so a later
+                packet is not pulled into this reply.
 
         Returns:
-            Parsed response string.
+            Decoded lines with the EOL removed. Empty lines are dropped.
 
         Raises:
             asyncio.TimeoutError: If response not received within timeout.
@@ -266,6 +346,15 @@ class RS232ControlProtocol(asyncio.Protocol):
                 data += chunk
 
                 if response_eol in data[skip:]:
+                    if drain_queued:
+                        drained = 0
+                        while drained < _MAX_QUEUED_DRAIN:
+                            try:
+                                data += self._queue.get_nowait()
+                            except asyncio.QueueEmpty:
+                                break
+                            drained += 1
+
                     decoded = bytes(data).decode('ascii', errors='ignore')
                     LOG.debug(
                         'Received response: data=%s, length=%d, eol=%s',
@@ -274,33 +363,13 @@ class RS232ControlProtocol(asyncio.Protocol):
                         response_eol,
                     )
 
-                    result_lines = [
-                        line for line in data.split(response_eol)
-                        if line
+                    # Split before decoding so a non-empty raw line is kept
+                    # even if it decodes to an empty string. Matches the
+                    # previous single-line reader.
+                    raw_lines = [line for line in data.split(response_eol) if line]
+                    return [
+                        line.decode('ascii', errors='ignore') for line in raw_lines
                     ]
-
-                    if not result_lines:
-                        return ''
-
-                    if len(result_lines) > 1:
-                        LOG.debug(
-                            'Multiple response lines, finding status response: lines=%s',
-                            result_lines,
-                        )
-
-                    # Some amps (e.g. DAX66) echo the command, then send the
-                    # status, then may send a trailing fragment. Find the line
-                    # that looks like a status response (#> prefix), falling
-                    # back to the last line if none matches.
-                    result = None
-                    for line in reversed(result_lines):
-                        decoded_line = line.decode('ascii', errors='ignore')
-                        if decoded_line.startswith('#>') or decoded_line.startswith('#?'):
-                            result = decoded_line
-                            break
-                    if result is None:
-                        result = result_lines[-1].decode('ascii', errors='ignore')
-                    return result
 
         except asyncio.TimeoutError:
             # rate-limited logging to avoid log saturation

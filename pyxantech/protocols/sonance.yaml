@@ -57,17 +57,22 @@
     source_select: ':S{zone}{source}'
 
     balance_status: ':B{zone}?'
-    set_balance:   ':B{zone}{balance:02}'
+    # Sonance requires an explicit sign and a 2-digit magnitude (e.g. +02, -08, +00).
+    # :+03d produces that; a zero-padded unsigned value is rejected.
+    set_balance:   ':B{zone}{balance:+03d}'
     balance_left:  ':B{zone}--'
     balance_right: ':B{zone}++'
 
+    # Bass and treble are an explicit sign plus one digit (e.g. :L1+4, :H6-8, :L1+0).
+    # The C4630 SE accepts a 2-digit magnitude but echoes a single digit; send :+02d
+    # so the command matches the echo. Range is -8..+8.
     bass_status:   ':L{zone}?'
-    set_bass:      ':L{zone}{bass:02}'
+    set_bass:      ':L{zone}{bass:+02d}'
     bass_up:       ':L{zone}++'
     bass_down:     ':L{zone}--'
 
     treble_status: ':H{zone}?'
-    set_treble:    ':H{zone}{treble:02}'
+    set_treble:    ':H{zone}{treble:+02d}'
     treble_up:     ':H{zone}++'
     treble_down:   ':H{zone}--'
 
@@ -80,11 +85,21 @@
     power_status:   '\+Z(?P<zone>\d+)(?P<power>[01])'
     zone_status:    '\+Z(?P<zone>\d+)(?P<power>[01])'
     source_status:  '\+S(?P<zone>\d+)(?P<source>[1-4])'
-    volume_status:  '\+V(?P<zone>\d+)(?P<volume>\d+)'
+    volume_status:  '\+V(?P<zone>[1-6])(?P<volume>\d+)'
     mute_status:    '\+M(?P<zone>\d+)(?P<mute>[01])'
-    treble_status:  '\+H(?P<zone>\d+)TR(?P<treble>\d+)'
-    bass_status:    '\+L(?P<zone>\d+)BS(?P<bass>\d+)'
-    balance_status: '\+B(?P<zone>\d+)BA(?P<balance>\d+)'
+    treble_status:  '\+H(?P<zone>\d+)(?P<treble>[+-]?\d+)'
+    bass_status:    '\+L(?P<zone>\d+)(?P<bass>[+-]?\d+)'
+    balance_status: '\+B(?P<zone>\d+)(?P<balance>[+-]?\d+)'
+
+  # The C4630 SE has no single zone-status snapshot. Query each field.
+  zone_status_queries:
+    - zone_status
+    - volume_status
+    - source_status
+    - mute_status
+    - bass_status
+    - treble_status
+    - balance_status
 
   extras:
     restore_zone:    [ 'set_power', 'set_source', 'set_volume', 'set_mute', 'set_bass', 'set_balance', 'set_treble' ]
