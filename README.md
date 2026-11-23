@@ -22,6 +22,25 @@ Visit the [community support discussion thread](https://community.home-assistant
 
 * **2025 Q3**: reduce the min interval between commands from 50ms to 10ms (was originally 400ms) if there are no bug reports of the 50ms drop
 
+## Connecting
+
+Install with `pip install pyxantech`. Ports are opened with [serialx](https://puddly.github.io/serialx/)
+(replacing pyserial and pyserial-asyncio), so any serial URL it understands works as the port argument:
+
+| Port | Example |
+|------|---------|
+| Local serial / USB | `/dev/ttyUSB0`, `COM3` |
+| RS232-over-IP (raw TCP) | `socket://remote-host:4999/` |
+| RS232-over-IP (RFC 2217) | `rfc2217://remote-host:4000` |
+| ESPHome serial proxy (e.g. Home Assistant Connect AUX-2) | `esphome://192.168.1.42:6053/?port_name=RS-232+Port+1` (needs `pip install 'serialx[esphome]'`) |
+| Inside Home Assistant | the `esphome-hass://` URL from the serial port selector |
+
+Credentials in ESPHome URLs (`key`, `password`) are redacted from pyxantech log output.
+
+Upgrading from 0.10.x: the sync and async APIs are unchanged. A missing or unreachable port now
+raises `OSError`/`TimeoutError` or `serialx.SerialException` instead of `serial.SerialException`,
+and the sync response timeout is `serialx.SerialTimeoutException` (a `TimeoutError`).
+
 ## Usage
 
 For Monoprice and Dayton Audio 6-zone amplifiers:
@@ -67,7 +86,7 @@ import asyncio
 from pyxantech import async_get_amp_controller
 
 async def main(loop):
-    amp = await async)get_amp_controller('monoprice6', '/dev/ttyUSB0', loop)
+    amp = await async_get_amp_controller('monoprice6', '/dev/ttyUSB0', loop)
     zone_status = await amp.zone_status(11)
     if zone_status.power:
         await amp.set_power(zone_status.zone, False)

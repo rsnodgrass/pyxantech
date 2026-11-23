@@ -12,8 +12,10 @@ import logging
 import time
 from typing import TYPE_CHECKING, Any
 
-import serial
+import serialx
 from ratelimit import limits
+
+from .ports import redact_port_url, serialx_kwargs
 
 if TYPE_CHECKING:
     from asyncio import AbstractEventLoop
@@ -78,24 +80,24 @@ async def async_get_rs232_protocol(
         protocol_config,
         loop,
     )
-    LOG.info('Creating RS232 connection: port=%s, config=%s', serial_port, serial_config)
+    LOG.info(
+        'Creating RS232 connection: port=%s, config=%s',
+        redact_port_url(serial_port),
+        serial_config,
+    )
 
-    # defer import to avoid blocking in event loop
-    def _import_serial_asyncio() -> Callable[..., Any]:
-        from serial_asyncio import create_serial_connection
-        return create_serial_connection
-
-    create_serial_connection = await loop.run_in_executor(None, _import_serial_asyncio)
+    create_serial_connection = serialx.create_serial_connection
+    connect_kwargs = serialx_kwargs(serial_config)
 
     _, protocol = await create_serial_connection(
-        loop, factory, serial_port, **serial_config
+        loop, factory, serial_port, **connect_kwargs
     )
 
     # give the protocol a way to reconnect itself on connection loss,
     # reusing the same protocol instance so callers keep a valid reference
     async def _do_reconnect() -> None:
         await create_serial_connection(
-            loop, lambda: protocol, serial_port, **serial_config
+            loop, lambda: protocol, serial_port, **connect_kwargs
         )
 
     protocol._create_connection = _do_reconnect
@@ -130,6 +132,8 @@ class RS232ControlProtocol(asyncio.Protocol):
         super().__init__()
 
         self._serial_port = serial_port
+        # ESPHome URLs can carry an API key, so only this form is logged
+        self._port_label = redact_port_url(serial_port)
         self._config = config
         self._serial_config = serial_config
         self._protocol_config = protocol_config
@@ -137,7 +141,7 @@ class RS232ControlProtocol(asyncio.Protocol):
 
         self._last_send = time.time() - 1
         self._timeout = float(config.get('timeout', DEFAULT_TIMEOUT))
-        LOG.debug('Protocol initialized: port=%s, timeout=%s', serial_port, self._timeout)
+        LOG.debug('Protocol initialized: port=%s, timeout=%s', redact_port_url(serial_port), self._timeout)
 
         self._transport: Any = None
         self._connected = asyncio.Event()
@@ -153,7 +157,7 @@ class RS232ControlProtocol(asyncio.Protocol):
         """Handle successful connection establishment."""
         self._transport = transport
         self._reconnect_delay = 5  # reset backoff on successful connection
-        LOG.debug('Port opened: port=%s, transport=%s', self._serial_port, transport)
+        LOG.debug('Port opened: port=%s, transport=%s', self._port_label, transport)
         self._connected.set()
 
     def data_received(self, data: bytes) -> None:
@@ -162,7 +166,7 @@ class RS232ControlProtocol(asyncio.Protocol):
 
     def connection_lost(self, exc: Exception | None) -> None:
         """Handle connection closure and trigger auto-reconnect."""
-        LOG.warning('Port closed: port=%s, exc=%s', self._serial_port, exc)
+        LOG.warning('Port closed: port=%s, exc=%s', self._port_label, exc)
         self._connected.clear()
         self._transport = None
         if not self._reconnecting and self._create_connection:
@@ -181,10 +185,10 @@ class RS232ControlProtocol(asyncio.Protocol):
                 await asyncio.sleep(self._reconnect_delay)
                 try:
                     await self._create_connection()  # type: ignore[misc]
-                    LOG.info('Reconnected to %s', self._serial_port)
+                    LOG.info('Reconnected to %s', self._port_label)
                     return
                 except Exception as e:
-                    LOG.warning('Reconnect to %s failed: %s', self._serial_port, e)
+                    LOG.warning('Reconnect to %s failed: %s', self._port_label, e)
                     self._reconnect_delay = min(
                         self._reconnect_delay * 2, self._max_reconnect_delay
                     )
@@ -214,7 +218,7 @@ class RS232ControlProtocol(asyncio.Protocol):
             await asyncio.wait_for(self._connected.wait(), self._timeout)
             return True
         except asyncio.TimeoutError:
-            LOG.debug('Connection timeout: port=%s', self._serial_port)
+            LOG.debug('Connection timeout: port=%s', self._port_label)
             return False
 
     async def send(
@@ -300,17 +304,16 @@ class RS232ControlProtocol(asyncio.Protocol):
             await self._throttle_requests()
 
             try:
-                # clear buffers before sending
-                self._transport.serial.reset_output_buffer()
-                self._transport.serial.reset_input_buffer()
+                # drop stale replies before sending (serialx delivers received
+                # bytes through data_received, so the queue is the input buffer)
                 while not self._queue.empty():
                     self._queue.get_nowait()
 
                 LOG.debug('Sending RS232 command: request=%s', request)
                 self._last_send = time.time()
-                self._transport.serial.write(request)
-            except (OSError, serial.SerialException) as e:
-                LOG.warning('Serial write failed on %s: %s', self._serial_port, e)
+                self._transport.write(request)
+            except (OSError, serialx.SerialException) as e:
+                LOG.warning('Serial write failed on %s: %s', self._port_label, e)
                 self._connected.clear()
                 if self._create_connection:
                     asyncio.ensure_future(self._reconnect())

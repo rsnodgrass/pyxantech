@@ -4,7 +4,7 @@ build-backend = 'setuptools.build_meta'
 
 [project]
 name = 'pyxantech'
-version = '0.10.7'
+version = '0.11.0'
 description = 'Python library for controlling Xantech, Monoprice, and Dayton Audio multi-zone amplifiers via RS232'
 readme = 'README.md'
 license = {text = 'MIT'}
@@ -24,8 +24,7 @@ classifiers = [
 ]
 keywords = ['xantech', 'monoprice', 'dayton', 'audio', 'rs232', 'home-automation']
 dependencies = [
-    'pyserial>=3.5',
-    'pyserial-asyncio>=0.6',
+    'serialx>=1.7.0',
     'pyyaml>=6.0',
     'ratelimit>=2.2.1',
 ]
@@ -82,7 +81,7 @@ warn_unused_ignores = true
 show_error_codes = true
 
 [[tool.mypy.overrides]]
-module = ['serial.*', 'serial_asyncio.*', 'ratelimit.*']
+module = ['ratelimit.*']
 ignore_missing_imports = true
 
 [tool.ruff]

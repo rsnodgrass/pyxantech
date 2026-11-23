@@ -27,7 +27,7 @@ from functools import wraps
 from threading import RLock
 from typing import TYPE_CHECKING, Any
 
-import serial
+import serialx
 
 from .config import (
     DEVICE_CONFIG,
@@ -35,6 +35,7 @@ from .config import (
     RS232_RESPONSE_PATTERNS,
     get_with_log,
 )
+from .ports import redact_port_url, serialx_kwargs
 from .protocol import (
     CONF_COMMAND_EOL,
     CONF_COMMAND_SEPARATOR,
@@ -615,12 +616,14 @@ def get_amp_controller(
             if serial_config_overrides:
                 LOG.debug(
                     'Overriding serial config: port=%s, overrides=%s',
-                    port_url,
+                    redact_port_url(port_url),
                     serial_config_overrides,
                 )
                 serial_config.update(serial_config_overrides)
 
-            self._port = serial.serial_for_url(port_url, **serial_config)
+            # unlike pyserial, serialx never opens the port on construction
+            self._port = serialx.serial_for_url(port_url, **serialx_kwargs(serial_config))
+            self._port.open()
 
         def _read_response_bytes(self, request: bytes, skip: int, extra_bytes: int) -> bytes:
             """Write a command and read through the first EOL.
@@ -629,8 +632,8 @@ def get_amp_controller(
             serial buffer after that EOL. Zero preserves the historical
             single-line read used by ``_send_request``.
             """
-            self._port.reset_output_buffer()
-            self._port.reset_input_buffer()
+            self._port.reset_write_buffer()
+            self._port.reset_read_buffer()
 
             LOG.debug('Sending request: request=%s', request)
             self._port.write(request)
@@ -645,7 +648,7 @@ def get_amp_controller(
                 char = self._port.read(1)
                 if not char:
                     LOG.info('Connection timed out: last_bytes=%s', [hex(a) for a in result])
-                    raise serial.SerialTimeoutException(
+                    raise serialx.SerialTimeoutException(
                         f'Connection timed out! Last received: {[hex(a) for a in result]}'
                     )
                 result += char
@@ -655,7 +658,7 @@ def get_amp_controller(
             extra = 0
             while extra < extra_bytes:
                 try:
-                    waiting = int(self._port.in_waiting)
+                    waiting = int(self._port.num_unread_bytes())
                 except (AttributeError, OSError, TypeError, ValueError):
                     break
                 if waiting <= 0:
@@ -681,7 +684,7 @@ def get_amp_controller(
                 Response string, including the trailing EOL.
 
             Raises:
-                serial.SerialTimeoutException: If no response received.
+                serialx.SerialTimeoutException: If no response received.
             """
             return self._read_response_bytes(request, skip, extra_bytes=0).decode('ascii')
 
@@ -929,7 +932,7 @@ async def async_get_amp_controller(
     if serial_config_overrides:
         LOG.debug(
             'Overriding serial config: port=%s, overrides=%s',
-            port_url,
+            redact_port_url(port_url),
             serial_config_overrides,
         )
         serial_config.update(serial_config_overrides)
